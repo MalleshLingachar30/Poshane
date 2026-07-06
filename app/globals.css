@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Poshane (ಪೋಷಣೆ) — design tokens as CSS variables.
+   These mirror tailwind.config.ts exactly, so the same palette is available
+   outside Tailwind (inline SVG fills, gradients, etc.).
+--------------------------------------------------------------------------- */
+:root {
+  --paper: #f7f5ef;
+  --paper-2: #efebe0;
+  --ink: #1d2721;
+  --ink-soft: #44503f;
+  --navy: #16242e;
+  --navy-2: #0f1a22;
+  --green: #1c4a35;
+  --green-2: #2e6247;
+  --green-tint: #e4ebe2;
+  --bark: #6f5e47;
+  --gold: #b9892e;
+  --gold-soft: #d8b368;
+  --line: #dcd5c5;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Anchor targets clear the sticky header. */
+section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+::selection {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+/* Visible keyboard focus, consistent across the site. */
+:focus-visible {
+  outline: 2px solid var(--green-2);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll-reveal (driven by components/Reveal.tsx).
+   Elements start gently offset and fade in when they enter the viewport.
+--------------------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Timeline / gauge fills animate via transitions declared inline;
+   this class gates them consistently. */
+.fill-animates {
+  transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+    stroke-dashoffset 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gentle highlight for the schematic map regions. */
+.map-region {
+  transition: fill 0.4s ease, opacity 0.4s ease;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion: honour the user's preference everywhere.
+   All entrances resolve instantly; nothing animates.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .fill-animates,
+  .map-region {
+    transition: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
