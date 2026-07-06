@@ -32,10 +32,35 @@ const notoSansKannada = Noto_Sans_Kannada({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://poshane.vercel.app"),
   title:
     "Poshane (ಪೋಷಣೆ) — The KSLSA Five Crore Sapling Plantation Programme",
   description:
     "Poshane — a social commitment of the Karnataka State Legal Services Authority: five crore saplings across Karnataka over five years of planting, engineered for a 95% survival standard through guardianship, science and ground-truth audit.",
+  openGraph: {
+    title: "Five Crore Saplings. One Accountable Karnataka.",
+    description:
+      "Poshane is KSLSA's five-year green commitment to Karnataka—planted with rigour, protected by guardianship, and verified on the ground.",
+    url: "/",
+    siteName: "Poshane",
+    locale: "en_IN",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Poshane — Five Crore Saplings, Five Years, One Accountable Karnataka",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Five Crore Saplings. One Accountable Karnataka.",
+    description:
+      "KSLSA's five-year green commitment to Karnataka, engineered for a 95% survival standard.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 export default function RootLayout({
