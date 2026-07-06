@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import KarnatakaMap from "./KarnatakaMap";
 
 /**
  * ScaleReach — the programme's footprint.
@@ -30,112 +31,6 @@ const PHASES = [
     body: "Two years of sustained monitoring, guardianship and audit — because the measure of success is what survives, not what was planted.",
   },
 ];
-
-function KarnatakaSchematic() {
-  return (
-    <svg
-      viewBox="0 0 360 420"
-      role="img"
-      aria-label="Simplified schematic map of Karnataka showing two crore saplings allocated to the Bengaluru region and three crore across the rest of the State"
-      className="w-full max-w-sm"
-    >
-      {/* Rest-of-Karnataka body — a simplified, schematic outline (not a
-          survey map): broad in the north, tapering along the Western Ghats
-          to the south. */}
-      <path
-        className="map-region"
-        d="M96 22
-           L188 10 L252 34 L282 26 L300 58
-           L276 96 L296 132 L272 168
-           L288 206 L258 240 L268 278
-           L236 306 L242 344 L204 372
-           L176 408 L150 376 L128 384
-           L112 344 L92 336 L84 296
-           L64 280 L70 236 L52 214
-           L60 168 L46 142 L62 104
-           L54 66 L96 22 Z"
-        fill="var(--green-tint)"
-        stroke="var(--green)"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-
-      {/* Bengaluru region — south-eastern zone, emphasised. */}
-      <circle
-        className="map-region"
-        cx="228"
-        cy="322"
-        r="40"
-        fill="var(--green)"
-        opacity="0.92"
-      />
-      <circle
-        cx="228"
-        cy="322"
-        r="52"
-        fill="none"
-        stroke="var(--green)"
-        strokeWidth="1.5"
-        strokeDasharray="3 5"
-        opacity="0.6"
-      />
-
-      {/* Labels */}
-      <text
-        x="120"
-        y="170"
-        fontFamily="var(--font-archivo), sans-serif"
-        fontSize="13"
-        fontWeight="600"
-        fill="var(--green)"
-      >
-        Rest of Karnataka
-      </text>
-      <text
-        x="120"
-        y="190"
-        fontFamily="var(--font-archivo), sans-serif"
-        fontSize="12"
-        fill="var(--ink-soft)"
-      >
-        3 crore saplings
-      </text>
-
-      <text
-        x="228"
-        y="318"
-        textAnchor="middle"
-        fontFamily="var(--font-archivo), sans-serif"
-        fontSize="12"
-        fontWeight="600"
-        fill="var(--paper)"
-      >
-        Bengaluru
-      </text>
-      <text
-        x="228"
-        y="334"
-        textAnchor="middle"
-        fontFamily="var(--font-archivo), sans-serif"
-        fontSize="11"
-        fill="var(--paper)"
-      >
-        2 crore
-      </text>
-
-      <text
-        x="10"
-        y="414"
-        fontFamily="var(--font-archivo), sans-serif"
-        fontSize="10"
-        fontStyle="italic"
-        fill="var(--bark)"
-      >
-        Schematic representation — not to survey scale.
-      </text>
-    </svg>
-  );
-}
 
 function AllocationDonut() {
   const bengaluruShare = 2 / 5;
@@ -218,7 +113,7 @@ export default function ScaleReach() {
         <div className="mt-14 grid items-center gap-12 md:grid-cols-2">
           <Reveal>
             <figure className="flex justify-center md:justify-start">
-              <KarnatakaSchematic />
+              <KarnatakaMap />
             </figure>
           </Reveal>
 

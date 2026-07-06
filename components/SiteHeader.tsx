@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 const NAV_LINKS = [
@@ -31,16 +32,27 @@ export default function SiteHeader() {
         {/* Identity */}
         <Link
           href="#top"
-          className="flex items-baseline gap-3"
+          aria-label="Poshane home"
+          className="flex items-center"
           onClick={closeMenu}
         >
-          <span className="font-kannada text-xl font-semibold leading-none text-green">
-            ಪೋಷಣೆ
+          <span className="flex items-center gap-1">
+            <span className="font-kannada text-xl font-semibold leading-none text-green">
+              ಪೋಷಣೆ
+            </span>
+            <Image
+              src="/poshane-mark.png"
+              alt=""
+              width={231}
+              height={256}
+              priority
+              className="-my-1 h-11 w-auto -translate-y-2 shrink-0"
+            />
+            <span className="-ml-4 font-serif text-xl leading-none tracking-tight text-ink">
+              Poshane
+            </span>
           </span>
-          <span className="font-serif text-xl leading-none tracking-tight text-ink">
-            Poshane
-          </span>
-          <span className="hidden border-l border-line pl-3 text-[0.65rem] font-semibold uppercase tracking-kicker text-ink-soft sm:inline">
+          <span className="ml-3 hidden border-l border-line pl-3 text-[0.65rem] font-semibold uppercase tracking-kicker text-ink-soft sm:inline">
             KSLSA
           </span>
         </Link>

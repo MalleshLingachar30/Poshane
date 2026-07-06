@@ -1,4 +1,5 @@
 import CountUp from "./CountUp";
+import CanopyDivider from "./CanopyDivider";
 import Reveal from "./Reveal";
 
 /**
@@ -15,17 +16,7 @@ export default function Hero() {
       className="relative overflow-hidden border-b border-line bg-gradient-to-b from-paper via-paper to-paper-2"
     >
       {/* Quiet canopy field — native SVG texture, no external assets. */}
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full opacity-[0.07]"
-        viewBox="0 0 1200 200"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M0 200 L0 140 Q60 90 120 140 Q180 80 240 130 Q300 70 360 125 Q420 85 480 135 Q540 75 600 128 Q660 88 720 138 Q780 72 840 126 Q900 84 960 134 Q1020 78 1080 130 Q1140 92 1200 140 L1200 200 Z"
-          fill="var(--green)"
-        />
-      </svg>
+      <CanopyDivider />
 
       <div className="relative mx-auto max-w-6xl px-5 pb-20 pt-16 md:px-8 md:pb-28 md:pt-24">
         <Reveal>

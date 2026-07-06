@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Reveal from "./Reveal";
 
 /**
@@ -145,6 +145,85 @@ function SurvivalGauge() {
   );
 }
 
+function SystemSpine() {
+  const ref = useRef<HTMLOListElement | null>(null);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setActive(true);
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setActive(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setActive(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <ol
+      ref={ref}
+      className={`system-spine flex flex-col items-stretch gap-3 md:flex-row md:items-center md:gap-0 ${
+        active ? "is-visible" : ""
+      }`}
+    >
+      {SPINE_STEPS.map((step, i) => {
+        const isFinal = i === SPINE_STEPS.length - 1;
+        const stagger = { "--spine-index": i } as CSSProperties;
+
+        return (
+          <li
+            key={step}
+            className="system-spine-step flex items-center gap-3 md:flex-1 md:gap-0"
+            style={stagger}
+          >
+            <span
+              className={
+                isFinal
+                  ? "w-full rounded-sm border border-gold bg-gold/10 px-4 py-3 text-center text-sm font-semibold text-ink"
+                  : "w-full rounded-sm border border-green/30 bg-green-tint px-4 py-3 text-center text-sm font-medium text-green"
+              }
+            >
+              {step}
+            </span>
+            {!isFinal && (
+              <span
+                aria-hidden="true"
+                className="system-spine-connector hidden shrink-0 px-1.5 text-green md:inline"
+              >
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                  <path
+                    d="M0 6h13M9 1l5 5-5 5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 export default function SurvivalStandard() {
   return (
     <section id="survival" className="border-b border-line bg-paper">
@@ -192,41 +271,7 @@ export default function SurvivalStandard() {
             role="img"
             aria-label="The system spine: validated nurseries, the right sapling, a site-matched planting model, a committed guardian, surprise ground audits, ninety-five percent survival"
           >
-            <ol className="flex flex-col items-stretch gap-3 md:flex-row md:items-center md:gap-0">
-              {SPINE_STEPS.map((step, i) => {
-                const isFinal = i === SPINE_STEPS.length - 1;
-                return (
-                  <li
-                    key={step}
-                    className="flex items-center gap-3 md:flex-1 md:gap-0"
-                  >
-                    <span
-                      className={
-                        isFinal
-                          ? "w-full rounded-sm border border-gold bg-gold/10 px-4 py-3 text-center text-sm font-semibold text-ink"
-                          : "w-full rounded-sm border border-green/30 bg-green-tint px-4 py-3 text-center text-sm font-medium text-green"
-                      }
-                    >
-                      {step}
-                    </span>
-                    {!isFinal && (
-                      <span
-                        aria-hidden="true"
-                        className="hidden shrink-0 px-1.5 text-green md:inline"
-                      >
-                        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-                          <path
-                            d="M0 6h13M9 1l5 5-5 5"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                          />
-                        </svg>
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
+            <SystemSpine />
             <figcaption className="sr-only">
               Each link in the chain protects the one that follows.
             </figcaption>
