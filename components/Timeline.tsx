@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Reveal from "./Reveal";
 
 /**
- * Timeline — the eight-year arc, 2026–2034.
+ * Timeline — the nine-year arc, 2026–2034.
  *
  * Milestones: Foundation (2026), Planting Yr 1–5 (2027–2031),
- * Survival Assurance (2032), Programme Close (2034).
+ * Survival Assurance (2032–2033), Programme Close (2034).
  *
  * The strip's fill animates left-to-right when it scrolls into view,
  * consistent with the phased strip in Scale & Reach. Under
@@ -22,6 +22,7 @@ const MILESTONES = [
   { year: "2030", label: "Planting Yr 4" },
   { year: "2031", label: "Planting Yr 5" },
   { year: "2032", label: "Survival Assurance" },
+  { year: "2033", label: "Survival Assurance" },
   { year: "2034", label: "Programme Close" },
 ];
 
@@ -61,19 +62,19 @@ export default function Timeline() {
       <div className="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-28">
         <Reveal>
           <p className="text-[0.72rem] font-semibold uppercase tracking-kicker text-green">
-            The Eight-Year Arc · 2026–2034
+            The Nine-Year Arc · 2026–2034
           </p>
         </Reveal>
 
         <Reveal delay={80}>
           <h2 className="mt-8 max-w-3xl font-serif text-3xl leading-snug text-ink md:text-4xl">
-            One year to prepare. Five years to plant. Two years to ensure it
+            One year to prepare. Five years to plant. Three years to ensure it
             endures.
           </h2>
         </Reveal>
 
         <div ref={ref} className="mt-16 overflow-x-auto pb-2">
-          <div className="min-w-[720px]">
+          <div className="min-w-[820px]">
             {/* Track */}
             <div className="relative h-1.5 rounded-full bg-line">
               <div
@@ -83,7 +84,7 @@ export default function Timeline() {
             </div>
 
             {/* Milestones */}
-            <ol className="mt-0 grid grid-cols-8">
+            <ol className="mt-0 grid grid-cols-9">
               {MILESTONES.map((m, i) => (
                 <li key={m.year} className="relative pt-6">
                   {/* Node */}

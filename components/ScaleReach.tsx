@@ -8,7 +8,7 @@ import KarnatakaMap from "./KarnatakaMap";
  *  1. A simplified schematic of Karnataka distinguishing the Bengaluru
  *     region (2 crore) from the rest of the State (3 crore).
  *  2. A 2cr/3cr allocation donut.
- *  3. A phased timeline strip across the eight-year arc.
+ *  3. A phased timeline strip across the nine-year arc.
  *
  * All copy is verbatim from the programme brief.
  */
@@ -23,12 +23,12 @@ const PHASES = [
     body: "Nurseries built, systems and protocols established, guardianship networks formed — survival engineered before the first sapling reaches the ground.",
   },
   {
-    title: "Phases 1–5 (2027–2032): Planting.",
+    title: "Phases 1–5 (2027–2031): Planting.",
     body: "Five years of field planting, each cycle beginning with the June–July monsoon that gives young saplings their strongest start.",
   },
   {
-    title: "Phases 6–7 (2032–2034): Survival Assurance.",
-    body: "Two years of sustained monitoring, guardianship and audit — because the measure of success is what survives, not what was planted.",
+    title: "Phases 6–8 (2032–2034): Survival Assurance.",
+    body: "Three years of sustained monitoring, guardianship and audit — because the measure of success is what survives, not what was planted.",
   },
 ];
 
@@ -147,7 +147,7 @@ export default function ScaleReach() {
               <strong className="font-semibold">
                 A programme designed around survival — not just planting.
               </strong>{" "}
-              One year to prepare. Five years to plant. Two years to ensure
+              One year to prepare. Five years to plant. Three years to ensure
               what is planted endures.
             </p>
           </Reveal>

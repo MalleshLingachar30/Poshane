@@ -54,7 +54,7 @@ export default function SiteFooter() {
             <dl className="mt-5 space-y-5">
               <div>
                 <dt className="text-sm font-semibold text-paper">
-                  IAFT (Institute of Agroforestry, Farmers and Technologists)
+                  IAFT ( Institution of Agroforestry Farmers and Technologists)
                 </dt>
                 <dd className="text-sm text-paper/70">
                   Program Management &amp; Principal Scientific Advisor
