@@ -298,6 +298,12 @@ export function Frame3() {
 
 /* ============ FRAME 4 — STAKEHOLDERS ============ */
 const STK_COLORS: Record<string, string> = { "NGO": "#1C5A33", "Government agency": "#27467A", "Volunteer network": "#8F5A14" };
+const STK_LABELS: Record<string, string> = {
+  All: "All",
+  NGO: "NGOs",
+  "Government agency": "Government agencies",
+  "Volunteer network": "Volunteer networks",
+};
 const initials = (n: string) => n.split(" ").filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
 
 export function Frame4() {
@@ -314,7 +320,7 @@ export function Frame4() {
         <div className="chipbtns">
           {types.map(t => (
             <button key={t} className={`chipbtn${cur === t ? " on" : ""}`} onClick={() => setCur(t)}>
-              {t === "All" ? "All" : t + "s"}
+              {STK_LABELS[t]}
             </button>
           ))}
         </div>
