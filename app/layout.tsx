@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Archivo, Noto_Sans_Kannada } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 /**
@@ -71,7 +72,10 @@ export default function RootLayout({
       lang="en"
       className={`${fraunces.variable} ${archivo.variable} ${notoSansKannada.variable}`}
     >
-      <body className="font-sans bg-paper text-ink">{children}</body>
+      <body className="font-sans bg-paper text-ink">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
