@@ -131,11 +131,12 @@ export function verifyCommandCenterCredentials(email: string, password: string) 
   return emailMatches && passwordMatches;
 }
 
-export function getCommandCenterSession() {
-  return readSessionCookie(cookies().get(COOKIE_NAME)?.value);
+export async function getCommandCenterSession() {
+  const cookieStore = await cookies();
+  return readSessionCookie(cookieStore.get(COOKIE_NAME)?.value);
 }
 
-export function setCommandCenterSession() {
+export async function setCommandCenterSession() {
   const session: CommandCenterSession = {
     email: ADMIN_EMAIL,
     name: ADMIN_NAME,
@@ -143,7 +144,8 @@ export function setCommandCenterSession() {
     expiresAt: Date.now() + SESSION_MAX_AGE_SECONDS * 1000,
   };
 
-  cookies().set(COOKIE_NAME, createSessionCookie(session), {
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, createSessionCookie(session), {
     httpOnly: true,
     maxAge: SESSION_MAX_AGE_SECONDS,
     path: "/command-center",
@@ -152,8 +154,9 @@ export function setCommandCenterSession() {
   });
 }
 
-export function clearCommandCenterSession() {
-  cookies().set(COOKIE_NAME, "", {
+export async function clearCommandCenterSession() {
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, "", {
     httpOnly: true,
     maxAge: 0,
     path: "/command-center",

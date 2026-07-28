@@ -15,15 +15,18 @@ export const metadata: Metadata = {
 /**
  * /command-center — restricted programme operations console.
  */
-export default function CommandCenterPage({
+export default async function CommandCenterPage({
   searchParams,
 }: {
-  searchParams?: { error?: string };
+  searchParams?: Promise<{ error?: string }>;
 }) {
-  const session = getCommandCenterSession();
+  const [session, resolvedSearchParams] = await Promise.all([
+    getCommandCenterSession(),
+    searchParams,
+  ]);
 
   if (!session) {
-    return <LoginForm error={searchParams?.error} />;
+    return <LoginForm error={resolvedSearchParams?.error} />;
   }
 
   return (

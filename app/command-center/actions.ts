@@ -15,11 +15,11 @@ export async function loginCommandCenter(formData: FormData) {
     redirect("/command-center?error=invalid");
   }
 
-  setCommandCenterSession();
+  await setCommandCenterSession();
   redirect("/command-center");
 }
 
 export async function logoutCommandCenter() {
-  clearCommandCenterSession();
+  await clearCommandCenterSession();
   redirect("/command-center");
 }
