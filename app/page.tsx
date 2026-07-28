@@ -2,6 +2,7 @@ import SiteHeader from "@/components/SiteHeader";
 import Hero from "@/components/Hero";
 import Commitment from "@/components/Commitment";
 import ScaleReach from "@/components/ScaleReach";
+import DistrictLiveExplorer from "@/components/DistrictLiveExplorer";
 import SurvivalStandard from "@/components/SurvivalStandard";
 import Governance from "@/components/Governance";
 import Guardianship from "@/components/Guardianship";
@@ -27,6 +28,7 @@ export default function HomePage() {
         <Hero />
         <Commitment />
         <ScaleReach />
+        <DistrictLiveExplorer />
         <SurvivalStandard />
         <Governance />
         <Guardianship />

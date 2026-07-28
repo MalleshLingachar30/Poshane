@@ -1,13 +1,12 @@
-import CountUp from "./CountUp";
 import CanopyDivider from "./CanopyDivider";
+import PublicLiveStats from "./PublicLiveStats";
 import Reveal from "./Reveal";
 
 /**
  * Hero — full-bleed, dignified opening statement.
  *
- * Copy is verbatim from the programme brief. The counter tiles are
- * illustrative and explicitly labelled as such; live figures arrive via the
- * Command Center.
+ * Copy is verbatim from the programme brief. Public live figures use the same
+ * programme snapshot as the Command Center.
  */
 export default function Hero() {
   return (
@@ -52,45 +51,21 @@ export default function Hero() {
               Explore the Programme
             </a>
             <a
-              href="#platform"
+              href="#districts"
               className="rounded-sm border border-green px-6 py-3 text-sm font-semibold text-green transition-colors hover:bg-green-tint"
             >
-              View Live Dashboard
+              View District Snapshot
             </a>
           </div>
         </Reveal>
 
-        {/* Live-counter tiles — illustrative */}
+        {/* Public live snapshot */}
         <Reveal delay={400}>
           <div className="mt-14 border-t border-line pt-8">
-            <dl className="grid gap-6 sm:grid-cols-3">
-              <div className="border-l-2 border-gold pl-5">
-                <dd className="font-serif text-3xl text-ink md:text-4xl">
-                  <CountUp value={1247580} />
-                </dd>
-                <dt className="mt-1 text-[0.72rem] font-semibold uppercase tracking-kicker text-ink-soft">
-                  Saplings Planted
-                </dt>
-              </div>
-              <div className="border-l-2 border-gold pl-5">
-                <dd className="font-serif text-3xl text-ink md:text-4xl">
-                  <CountUp value={31} />
-                </dd>
-                <dt className="mt-1 text-[0.72rem] font-semibold uppercase tracking-kicker text-ink-soft">
-                  Districts Active
-                </dt>
-              </div>
-              <div className="border-l-2 border-gold pl-5">
-                <dd className="font-serif text-3xl text-ink md:text-4xl">
-                  <CountUp value={95} suffix="%" />
-                </dd>
-                <dt className="mt-1 text-[0.72rem] font-semibold uppercase tracking-kicker text-ink-soft">
-                  Survival Rate
-                </dt>
-              </div>
-            </dl>
+            <PublicLiveStats />
             <p className="mt-5 text-xs italic text-bark">
-              Illustrative figures — live data via the Command Center.
+              Prototype live figures — synchronised with the Command Center
+              demonstration feed.
             </p>
           </div>
         </Reveal>

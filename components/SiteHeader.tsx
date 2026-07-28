@@ -7,6 +7,7 @@ import { useState } from "react";
 const NAV_LINKS = [
   { label: "Vision", href: "#vision" },
   { label: "Scale & Reach", href: "#scale" },
+  { label: "Districts", href: "#districts" },
   { label: "Governance", href: "#governance" },
   { label: "Guardianship", href: "#guardianship" },
   { label: "Digital Platform", href: "#platform" },
