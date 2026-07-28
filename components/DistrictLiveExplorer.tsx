@@ -69,20 +69,19 @@ export default function DistrictLiveExplorer() {
           </p>
         </Reveal>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]">
-          <Reveal>
+        <Reveal className="mt-8">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)] lg:items-end">
+            <h2 className="max-w-2xl font-serif text-3xl leading-snug text-ink md:text-4xl">
+              Public district statistics, drawn from the same programme
+              snapshot as the Command Center.
+            </h2>
             <div className="space-y-6">
-              <h2 className="max-w-2xl font-serif text-3xl leading-snug text-ink md:text-4xl">
-                Public district statistics, drawn from the same programme
-                snapshot as the Command Center.
-              </h2>
               <p className="max-w-measure text-base leading-relaxed text-ink-soft">
                 Select any district to see planting progress, survival, local
                 mobilisation and nursery strength at the current point in time.
                 The distribution below ranks districts by saplings planted to
                 date.
               </p>
-
               <label className="block max-w-sm">
                 <span className="text-[0.68rem] font-semibold uppercase tracking-kicker text-ink-soft">
                   Select District
@@ -99,7 +98,13 @@ export default function DistrictLiveExplorer() {
                   ))}
                 </select>
               </label>
+            </div>
+          </div>
+        </Reveal>
 
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]">
+          <Reveal>
+            <div>
               <div className="rounded-sm border border-line bg-paper-2 p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
