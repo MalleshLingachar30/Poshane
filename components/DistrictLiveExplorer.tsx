@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DISTRICTS,
   ZONES,
@@ -33,6 +33,7 @@ function districtRoom(district: District, planted: number) {
 export default function DistrictLiveExplorer() {
   const live = useLiveSnapshot();
   const [selectedCode, setSelectedCode] = useState("BNU");
+  const activeRowRef = useRef<HTMLButtonElement | null>(null);
 
   const rows = useMemo(() => {
     const maxPlanted = DISTRICTS.reduce(
@@ -59,6 +60,10 @@ export default function DistrictLiveExplorer() {
   const target = y1Of(district);
   const zone = ZONES[district.zone];
   const species = zone.species.slice(0, 4).map(([name]) => name).join(", ");
+
+  useEffect(() => {
+    activeRowRef.current?.scrollIntoView({ block: "nearest" });
+  }, [selectedCode]);
 
   return (
     <section id="districts" className="border-b border-line bg-paper">
@@ -102,10 +107,10 @@ export default function DistrictLiveExplorer() {
           </div>
         </Reveal>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]">
-          <Reveal>
-            <div>
-              <div className="rounded-sm border border-line bg-paper-2 p-6">
+        <div className="mt-8 grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]">
+          <Reveal className="h-full">
+            <div className="h-full">
+              <div className="h-full rounded-sm border border-line bg-paper-2 p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-[0.66rem] font-semibold uppercase tracking-kicker text-green">
@@ -143,9 +148,9 @@ export default function DistrictLiveExplorer() {
             </div>
           </Reveal>
 
-          <Reveal delay={120}>
-            <div className="overflow-hidden rounded-sm border border-line bg-paper-2">
-              <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
+          <Reveal className="h-full min-h-0" delay={120}>
+            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-sm border border-line bg-paper-2">
+              <div className="shrink-0 flex items-center justify-between gap-4 border-b border-line px-5 py-4">
                 <div>
                   <h3 className="font-serif text-xl text-ink">
                     Distribution by District
@@ -160,12 +165,13 @@ export default function DistrictLiveExplorer() {
                 </span>
               </div>
 
-              <div className="max-h-[660px] overflow-y-auto">
+              <div className="min-h-0 flex-1 overflow-y-auto">
                 {rows.map((row, index) => {
                   const active = row.district.code === district.code;
                   return (
                     <button
                       key={row.district.code}
+                      ref={active ? activeRowRef : undefined}
                       type="button"
                       onClick={() => setSelectedCode(row.district.code)}
                       className={`grid w-full grid-cols-[2.25rem_minmax(0,1fr)_4.75rem] items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 ${
