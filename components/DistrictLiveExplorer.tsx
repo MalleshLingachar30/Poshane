@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DISTRICTS,
   ZONES,
@@ -33,7 +33,6 @@ function districtRoom(district: District, planted: number) {
 export default function DistrictLiveExplorer() {
   const live = useLiveSnapshot();
   const [selectedCode, setSelectedCode] = useState("BNU");
-  const activeRowRef = useRef<HTMLButtonElement | null>(null);
 
   const rows = useMemo(() => {
     const maxPlanted = DISTRICTS.reduce(
@@ -54,16 +53,13 @@ export default function DistrictLiveExplorer() {
       .sort((a, b) => b.planted - a.planted);
   }, [live]);
 
+  const topRows = rows.slice(0, 8);
   const selected = rows.find((row) => row.district.code === selectedCode) ?? rows[0];
   const district = selected.district;
   const plantedTrees = selected.planted * LAKH;
   const target = y1Of(district);
   const zone = ZONES[district.zone];
   const species = zone.species.slice(0, 4).map(([name]) => name).join(", ");
-
-  useEffect(() => {
-    activeRowRef.current?.scrollIntoView({ block: "nearest" });
-  }, [selectedCode]);
 
   return (
     <section id="districts" className="border-b border-line bg-paper">
@@ -84,8 +80,8 @@ export default function DistrictLiveExplorer() {
               <p className="max-w-measure text-base leading-relaxed text-ink-soft">
                 Select any district to see planting progress, survival, local
                 mobilisation and nursery strength at the current point in time.
-                The distribution below ranks districts by saplings planted to
-                date.
+                The distribution below shows the top eight districts by
+                saplings planted to date.
               </p>
               <label className="block max-w-sm">
                 <span className="text-[0.68rem] font-semibold uppercase tracking-kicker text-ink-soft">
@@ -102,12 +98,18 @@ export default function DistrictLiveExplorer() {
                     </option>
                   ))}
                 </select>
+                {!topRows.some((row) => row.district.code === selectedCode) ? (
+                  <span className="mt-2 block text-xs text-bark">
+                    Showing {district.name} details on the left; the leaderboard
+                    remains the current top eight.
+                  </span>
+                ) : null}
               </label>
             </div>
           </div>
         </Reveal>
 
-        <div className="mt-8 grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]">
+        <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]">
           <Reveal className="h-full">
             <div className="h-full">
               <div className="h-full rounded-sm border border-line bg-paper-2 p-6">
@@ -148,12 +150,12 @@ export default function DistrictLiveExplorer() {
             </div>
           </Reveal>
 
-          <Reveal className="h-full min-h-0" delay={120}>
-            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-sm border border-line bg-paper-2">
-              <div className="shrink-0 flex items-center justify-between gap-4 border-b border-line px-5 py-4">
+          <Reveal delay={120}>
+            <div className="overflow-hidden rounded-sm border border-line bg-paper-2">
+              <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
                 <div>
                   <h3 className="font-serif text-xl text-ink">
-                    Distribution by District
+                    Top 8 Districts
                   </h3>
                   <p className="mt-1 text-xs text-ink-soft">
                     Lakh saplings planted · live programme feed
@@ -165,13 +167,12 @@ export default function DistrictLiveExplorer() {
                 </span>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                {rows.map((row, index) => {
+              <div>
+                {topRows.map((row, index) => {
                   const active = row.district.code === district.code;
                   return (
                     <button
                       key={row.district.code}
-                      ref={active ? activeRowRef : undefined}
                       type="button"
                       onClick={() => setSelectedCode(row.district.code)}
                       className={`grid w-full grid-cols-[2.25rem_minmax(0,1fr)_4.75rem] items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 ${
