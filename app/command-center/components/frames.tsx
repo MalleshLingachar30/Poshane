@@ -2,10 +2,11 @@
 import React, { useMemo, useState } from "react";
 import {
   DISTRICTS, ZONES, NGO_POOL, SITES, LAND_TYPES, STK, NURSERIES, AUDITS, FEED, ISSUES,
-  MONTHS, MONTH_ACTS, fmtIN, lakhToStr, y1Of, plantedOf, zoneAlloc,
-  TOT_ALLOC, TOT_Y1, TOT_PLANTED, W_SURV, TOT_NUR, UTIL_TOTAL, District,
+  MONTHS, MONTH_ACTS, fmtIN, lakhToStr, lakhFix, y1Of, zoneAlloc,
+  TOT_ALLOC, TOT_Y1, TOT_NUR, UTIL_TOTAL, District,
 } from "../data";
-import { LineChart, Donut, OnboardPill, ContractPill } from "./charts";
+import { useLiveSnapshot, useLiveTotal, useLiveWSurv, useLiveDistrict, liveProg } from "../live";
+import { LineChart, Donut, OnboardPill, ContractPill, Rolling } from "./charts";
 
 /* ============ shared bits ============ */
 function Kpi({ label, val, sub, pct }: { label: string; val: React.ReactNode; sub: string; pct?: number }) {
@@ -19,6 +20,70 @@ function Kpi({ label, val, sub, pct }: { label: string; val: React.ReactNode; su
   );
 }
 
+/* ---- live KPI cards --------------------------------------------------------
+   These subscribe to the shared ticker (../live) individually rather than
+   letting Frame1 subscribe, so a tick re-renders only the numbers that moved —
+   not the 31-tile map and the two charts sitting alongside them.             */
+const LAKH = 100_000;
+
+function LivePlantedKpi() {
+  const live = useLiveTotal();
+  return (
+    <div className="kpi">
+      <div className="klabel">Total Planted<span className="klive">Live</span></div>
+      <div className="kval">
+        <Rolling value={live} format={v => lakhFix(v, 2)} /><small> / 5 Cr</small>
+      </div>
+      <div className="ksub">
+        {/* One Rolling for the whole line rather than three: all three figures
+            derive from the same value, so three rAF loops would be waste.
+            The exact tree count moves every tick; the headline above advances
+            every ~18s. That split is what makes it read as live but credible. */}
+        <Rolling value={live} format={v =>
+          `${fmtIN(v * LAKH)} trees · ${(v / TOT_ALLOC * 100).toFixed(1)}% of programme · ${(v / TOT_Y1 * 100).toFixed(0)}% of Y1`
+        } />
+      </div>
+      <div className="kbar"><i style={{ width: `${Math.min(100, live / TOT_Y1 * 100)}%` }} /></div>
+    </div>
+  );
+}
+
+function LiveSurvivalKpi() {
+  // Recomputed from the live planted weights so it can never silently disagree
+  // with the total. In practice it holds steady at 95.7 for the whole session.
+  const wSurv = useLiveWSurv();
+  return (
+    <div className="kpi">
+      <div className="klabel">Overall Survival</div>
+      <div className="kval"><Rolling value={wSurv} format={v => v.toFixed(1)} /><small> %</small></div>
+      <div className="ksub">Standard: 95% · weighted by stock</div>
+      <div className="kbar"><i style={{ width: `${Math.min(100, wSurv)}%` }} /></div>
+    </div>
+  );
+}
+
+/* Charts subscribe on their own too, for the same reason. */
+function CumulativePlantingChart() {
+  const live = useLiveTotal();
+  return (
+    <LineChart labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"]} ymax={60} aria="Cumulative planting, lakh saplings"
+      yFmt={v => v + " L"}
+      series={[
+        { name: "Plan", color: "#27467A", data: [2.5, 5, 10, 17, 26, 36, 46], dash: true },
+        { name: "Actual", color: "#1C5A33", data: [1.8, 4.2, 7.6, 13.1, 21.9, 33.4, Math.round(live * 10) / 10], fill: true },
+      ]} />
+  );
+}
+
+function SurvivalTrendChart() {
+  const wSurv = useLiveWSurv();
+  return (
+    <LineChart labels={["Feb", "Mar", "Apr", "May", "Jun", "Jul"]} ymin={88} ymax={100} target={95} targetLabel="95% standard"
+      aria="Statewide survival rate trend" yFmt={v => v + "%"}
+      series={[{ name: "Survival", color: "#2E7D4B", data: [97.4, 96.8, 96.1, 95.4, 95.9, Math.round(wSurv * 10) / 10], fill: true }]} />
+  );
+}
+
 /* ============ FRAME 1 — STATE OVERVIEW ============ */
 const GREENS = ["#CFE3CD", "#A8CBA6", "#7DB07E", "#4E8F58", "#2E6E3E", "#174D2A"];
 function progColor(p: number) {
@@ -28,24 +93,34 @@ function progColor(p: number) {
 }
 
 function KarnatakaMap({ onSelect }: { onSelect: (code: string) => void }) {
-  const [tip, setTip] = useState<{ d: District; x: number; y: number } | null>(null);
+  // Tiles all move together on a tick, so this one subscribes to the whole
+  // snapshot. They SNAP (with a CSS fill ease) rather than each running its own
+  // rAF roll — 31 concurrent animation loops for integer percentages is waste.
+  const live = useLiveSnapshot();
+  // Store the CODE, not the District object: holding the static object would
+  // make the tooltip read a stale % while the tile under the cursor reads live.
+  const [tip, setTip] = useState<{ code: string; x: number; y: number } | null>(null);
   const size = 60, gap = 7, pad = 8, cols = 6, rows = 10;
   const w = pad * 2 + cols * (size + gap) - gap, h = pad * 2 + rows * (size + gap) - gap;
+  const tipD = tip ? DISTRICTS.find(d => d.code === tip.code) : null;
   return (
     <>
       <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Stylized district progress map of Karnataka" style={{ maxWidth: 460, margin: "0 auto", display: "block", width: "100%", height: "auto" }}>
         {DISTRICTS.map(d => {
           const x = pad + d.col * (size + gap), yy = pad + d.row * (size + gap);
-          const c = progColor(d.prog), light = d.prog < 65;
+          const prog = liveProg(d.code, live.planted[d.code]);
+          const c = progColor(prog), light = prog < 65;
           return (
+            // key must stay d.code — it's what keeps the hovered <g> from being
+            // remounted on a tick, which would spuriously fire mouseleave.
             <g key={d.code} className="dtile" tabIndex={0}
-              onMouseMove={e => setTip({ d, x: Math.min(window.innerWidth - 220, e.clientX + 14), y: e.clientY + 14 })}
+              onMouseMove={e => setTip({ code: d.code, x: Math.min(window.innerWidth - 220, e.clientX + 14), y: e.clientY + 14 })}
               onMouseLeave={() => setTip(null)}
               onClick={() => { setTip(null); onSelect(d.code); }}
               onKeyDown={e => { if (e.key === "Enter") onSelect(d.code); }}>
               <rect x={x} y={yy} width={size} height={size} rx={10} fill={c} />
               <text x={x + size / 2} y={yy + size / 2 - 3} textAnchor="middle" fontSize={12.5} fontWeight={700} fill={light ? "#20402A" : "#F2F6EE"} fontFamily="var(--sans)">{d.code}</text>
-              <text x={x + size / 2} y={yy + size / 2 + 13} textAnchor="middle" fontSize={9.5} fill={light ? "#3F5C46" : "#D5E5D3"} fontFamily="var(--sans)">{d.prog}%</text>
+              <text x={x + size / 2} y={yy + size / 2 + 13} textAnchor="middle" fontSize={9.5} fill={light ? "#3F5C46" : "#D5E5D3"} fontFamily="var(--sans)">{prog.toFixed(0)}%</text>
             </g>
           );
         })}
@@ -53,13 +128,15 @@ function KarnatakaMap({ onSelect }: { onSelect: (code: string) => void }) {
       <div style={{ textAlign: "center", fontSize: 10.5, color: "var(--ink-dim)", marginTop: 8 }}>
         Stylized tile cartogram — approximate geography. Tile value = planting progress vs Year-1 district target. Click a district to drill down.
       </div>
-      {tip && (
+      {tip && tipD && (
         <div className="maptip" style={{ display: "block", left: tip.x, top: tip.y }}>
-          <div className="t">{tip.d.name}</div>
-          <div className="r"><span>Programme share</span><span>{lakhToStr(tip.d.alloc)}</span></div>
-          <div className="r"><span>Planted (Y1)</span><span>{lakhToStr(plantedOf(tip.d))} · {tip.d.prog}%</span></div>
-          <div className="r"><span>Survival</span><span>{tip.d.survival}%</span></div>
-          <div className="r"><span>Nurseries</span><span>{tip.d.nurseries}</span></div>
+          <div className="t">{tipD.name}</div>
+          <div className="r"><span>Programme share</span><span>{lakhToStr(tipD.alloc)}</span></div>
+          <div className="r"><span>Planted (Y1)</span><span>
+            {lakhFix(live.planted[tipD.code])} · {liveProg(tipD.code, live.planted[tipD.code]).toFixed(0)}%
+          </span></div>
+          <div className="r"><span>Survival</span><span>{tipD.survival}%</span></div>
+          <div className="r"><span>Nurseries</span><span>{tipD.nurseries}</span></div>
         </div>
       )}
     </>
@@ -92,10 +169,8 @@ export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) 
         <span className="fdesc">All districts · consolidated as of 08 Jul 2026 (mock)</span>
       </div>
       <div className="kpirow">
-        <Kpi label="Total Planted" val={<>{lakhToStr(TOT_PLANTED)}<small> / 5 Cr</small></>}
-          sub={`${(TOT_PLANTED / TOT_ALLOC * 100).toFixed(1)}% of programme · ${(TOT_PLANTED / TOT_Y1 * 100).toFixed(0)}% of Year-1 target`}
-          pct={TOT_PLANTED / TOT_Y1 * 100} />
-        <Kpi label="Overall Survival" val={<>{W_SURV.toFixed(1)}<small> %</small></>} sub="Standard: 95% · weighted by stock" pct={(W_SURV / 95) * 95} />
+        <LivePlantedKpi />
+        <LiveSurvivalKpi />
         <Kpi label="Districts Active" val={<>31<small> / 31</small></>} sub="All district units reporting" pct={100} />
         <Kpi label="Nurseries Operational" val={fmtIN(TOT_NUR)} sub="Combined capacity ≈ 92 lakh seedlings" pct={78} />
         <Kpi label="Funds Utilised" val={<>₹{UTIL_TOTAL}<small> Cr</small></>} sub="Of ₹94 Cr received · details in Secure Module" pct={UTIL_TOTAL / 94 * 100} />
@@ -127,22 +202,11 @@ export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) 
       <div className="split11" style={{ marginTop: 14 }}>
         <div className="panel">
           <div className="phead"><h3>Cumulative Planting — Year 1</h3><span className="pnote">Lakh saplings · Jan–Jul 2026</span></div>
-          <div className="pbody chartwrap">
-            <LineChart labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"]} ymax={60} aria="Cumulative planting, lakh saplings"
-              yFmt={v => v + " L"}
-              series={[
-                { name: "Plan", color: "#27467A", data: [2.5, 5, 10, 17, 26, 36, 46], dash: true },
-                { name: "Actual", color: "#1C5A33", data: [1.8, 4.2, 7.6, 13.1, 21.9, 33.4, Math.round(TOT_PLANTED * 10) / 10], fill: true },
-              ]} />
-          </div>
+          <div className="pbody chartwrap"><CumulativePlantingChart /></div>
         </div>
         <div className="panel">
           <div className="phead"><h3>Survival Rate Trend</h3><span className="pnote">Statewide monthly assessment vs 95% standard</span></div>
-          <div className="pbody chartwrap">
-            <LineChart labels={["Feb", "Mar", "Apr", "May", "Jun", "Jul"]} ymin={88} ymax={100} target={95} targetLabel="95% standard"
-              aria="Statewide survival rate trend" yFmt={v => v + "%"}
-              series={[{ name: "Survival", color: "#2E7D4B", data: [97.4, 96.8, 96.1, 95.4, 95.9, Math.round(W_SURV * 10) / 10], fill: true }]} />
-          </div>
+          <div className="pbody chartwrap"><SurvivalTrendChart /></div>
         </div>
       </div>
     </section>
@@ -154,7 +218,10 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
   const d = DISTRICTS.find(x => x.code === code) ?? DISTRICTS[5];
   const z = ZONES[d.zone];
   const gPct = 52 + ((d.name.length * 7) % 31);
-  const pl = plantedOf(d), t = y1Of(d);
+  // Subscribes to this district only, so it re-renders on the ~5% of ticks that
+  // actually credit it rather than on every tick.
+  const pl = useLiveDistrict(d.code), t = y1Of(d);
+  const prog = liveProg(d.code, pl);
   const ngos = STK.filter(s => s[1] === "NGO" && s[2] === d.name);
   const ngoRows: [string, string, string, string, number][] = ngos.length
     ? ngos.map(s => [s[0], s[4], s[3], s[5], s[6]])
@@ -181,7 +248,12 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
       <div className="mkpis" style={{ marginBottom: 14 }}>
         <div className="mkpi"><div className="l">Programme share</div><div className="v">{lakhToStr(d.alloc)}</div></div>
         <div className="mkpi"><div className="l">Year-1 target</div><div className="v">{lakhToStr(t)}</div></div>
-        <div className="mkpi good"><div className="l">Planted to date</div><div className="v">{lakhToStr(pl)} <em>· {d.prog}% of Y1</em></div></div>
+        {/* key={d.code} remounts these on district change so the figures SNAP to
+            the new district instead of rolling across from the previous one. */}
+        <div className="mkpi good"><div className="l">Planted to date</div><div className="v">
+          <Rolling key={d.code} value={pl} format={v => lakhFix(v)} />{" "}
+          <em>· <Rolling key={d.code} value={prog} format={v => v.toFixed(0)} />% of Y1</em>
+        </div></div>
         <div className={`mkpi ${d.survival < 95 ? "bad" : "good"}`}><div className="l">Survival</div><div className="v">{d.survival}% <em>vs 95%</em></div></div>
         <div className="mkpi"><div className="l">Active NGOs</div><div className="v">{d.ngos}</div></div>
         <div className="mkpi"><div className="l">Volunteers</div><div className="v">{fmtIN(d.volunteers)}</div></div>

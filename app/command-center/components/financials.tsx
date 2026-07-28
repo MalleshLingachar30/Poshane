@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { FUNDS, DISTRICTS, plantedOf, UTIL_PER_LAKH, cr, ACCESS_CODE } from "../data";
+import { FUNDS, DISTRICTS, cr, ACCESS_CODE } from "../data";
+import { getLiveTotal, getLivePlanted } from "../live";
 import { HBars } from "./charts";
 
 const committed = FUNDS.reduce((a, f) => a + f[2], 0);
@@ -89,8 +90,16 @@ export function Frame7() {
   const relock = () => { setRevealed(false); setAccessLog(""); };
 
   const fv = (v: number) => (revealed ? cr(v) : "••••••");
-  const topDistricts = DISTRICTS.map(d => [d.name, [Math.round(plantedOf(d) * UTIL_PER_LAKH * 10) / 10]] as [string, number[]])
-    .sort((a, b) => b[1][0] - a[1][0]).slice(0, 10);
+  // Derived from the LIVE planting total (so ₹-per-sapling stays honest as trees
+  // go in) but read ONCE at mount, deliberately non-reactive. Recomputing every
+  // tick would reorder these bars mid-view: after 1dp rounding, ranks 10-12 are a
+  // three-way tie at 2.0, so a district would visibly drop out of the top-10.
+  const [topDistricts] = useState<[string, number[]][]>(() => {
+    const utilPerLakh = utilised / getLiveTotal();
+    return DISTRICTS
+      .map(d => [d.name, [Math.round(getLivePlanted(d.code) * utilPerLakh * 10) / 10]] as [string, number[]])
+      .sort((a, b) => b[1][0] - a[1][0]).slice(0, 10);
+  });
 
   return (
     <section className="frame on" aria-label="Financials — Secure Module">

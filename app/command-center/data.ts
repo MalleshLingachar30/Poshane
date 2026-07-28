@@ -174,17 +174,25 @@ export const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oc
 export const fmtIN = (n: number) => Math.round(n).toLocaleString("en-IN");
 export const lakhToStr = (l: number) =>
   l >= 100 ? (l / 100).toFixed(2).replace(/\.00$/, "") + " Cr" : (Math.round(l * 10) / 10) + " L";
+/* Fixed-width variant for live-updating figures. lakhToStr drops trailing zeros
+   ("2 L" vs "2.1 L"), a 3-to-5 character swing that tabular-nums cannot absorb —
+   so anything bound to the ticker must use this instead. */
+export const lakhFix = (l: number, dp = 1) =>
+  l >= 100 ? (l / 100).toFixed(dp + 1) + " Cr" : l.toFixed(dp) + " L";
 export const cr = (v: number) => "₹" + v.toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " Cr";
 export const y1Of = (d: District) => d.alloc * 0.12;
 export const plantedOf = (d: District) => y1Of(d) * d.prog / 100;
 
 export const TOT_ALLOC = DISTRICTS.reduce((s, d) => s + d.alloc, 0);
 export const TOT_Y1 = DISTRICTS.reduce((s, d) => s + y1Of(d), 0);
-export const TOT_PLANTED = DISTRICTS.reduce((s, d) => s + plantedOf(d), 0);
-export const W_SURV = DISTRICTS.reduce((s, d) => s + d.survival * plantedOf(d), 0) / TOT_PLANTED;
 export const TOT_NUR = DISTRICTS.reduce((s, d) => s + d.nurseries, 0);
 export const UTIL_TOTAL = FUNDS.reduce((a, f) => a + f[4], 0);
-export const UTIL_PER_LAKH = UTIL_TOTAL / TOT_PLANTED;
+/* NOTE: there are deliberately no TOT_PLANTED / W_SURV / UTIL_PER_LAKH constants
+   here. Planting moves at runtime (see live.ts), so any frozen figure derived
+   from it goes stale the moment the ticker starts and makes one panel silently
+   disagree with another. Read those three from live.ts instead:
+     useLiveTotal()  ·  useLiveWSurv()  ·  utilised / getLiveTotal()
+   `plantedOf` above remains the SEED for live.ts — not a display value. */
 export const zoneAlloc = (zi: number) => DISTRICTS.filter(d => d.zone === zi).reduce((s, d) => s + d.alloc, 0);
 
 export const ACCESS_CODE = "000000"; // prototype step-up code

@@ -1,5 +1,51 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+/* ---------- Rolling number -------------------------------------------------
+   Owns ONLY the animation. The value itself comes from the live store, which
+   notifies every few seconds; this eases between those steps at frame rate so
+   the 60fps re-rendering stays confined to a single <span>.                   */
+const EASE_MS = 900;
+/** Beyond this jump (in display units) we snap — an ease would look like a slot machine. */
+const SNAP_OVER = 5;
+
+export function Rolling({ value, format, className }: {
+  value: number;
+  format: (n: number) => string;
+  className?: string;
+}) {
+  const [shown, setShown] = useState(value);
+  // Holds the last DISPLAYED value. Initialising from `value` (rather than using
+  // a `first` boolean flag) makes StrictMode's double-invoked effect a harmless
+  // no-op ease instead of a spurious animation on the real mount.
+  const from = useRef(value);
+
+  useEffect(() => {
+    const to = value;
+    if (from.current === to) return;
+
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    // The global reduced-motion CSS rule kills transitions/animations but cannot
+    // touch requestAnimationFrame, so this check is load-bearing.
+    if (reduced || Math.abs(to - from.current) > SNAP_OVER) {
+      from.current = to; setShown(to);
+      return;
+    }
+
+    const start = from.current, t0 = performance.now();
+    let raf = requestAnimationFrame(function frame(now: number) {
+      const p = Math.min(1, (now - t0) / EASE_MS);
+      const v = start + (to - start) * (1 - Math.pow(1 - p, 3));  // easeOutCubic
+      from.current = v;
+      setShown(v);
+      if (p < 1) raf = requestAnimationFrame(frame);
+      else from.current = to;
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+
+  return <span className={className}>{format(shown)}</span>;
+}
 
 /* ---------- Line / area chart ---------- */
 export interface LineSeries { name: string; color: string; data: number[]; dash?: boolean; fill?: boolean }
