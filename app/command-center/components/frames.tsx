@@ -1,17 +1,22 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   DISTRICTS, ZONES, NGO_POOL, SITES, LAND_TYPES, STK, NURSERIES, AUDITS, FEED, ISSUES,
   MONTHS, MONTH_ACTS, fmtIN, lakhToStr, lakhFix, y1Of, zoneAlloc,
-  TOT_ALLOC, TOT_Y1, TOT_NUR, UTIL_TOTAL, District,
+  TOT_ALLOC, TOT_Y1, TOT_NUR, UTIL_TOTAL,
 } from "../data";
 import { useLiveSnapshot, useLiveTotal, useLiveWSurv, useLiveDistrict, liveProg } from "../live";
 import { LineChart, Donut, OnboardPill, ContractPill, Rolling } from "./charts";
+import type { CommandCenterFilterSet } from "../mitra/types";
 
 /* ============ shared bits ============ */
-function Kpi({ label, val, sub, pct }: { label: string; val: React.ReactNode; sub: string; pct?: number }) {
+function slug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function Kpi({ label, val, sub, pct, mitraId }: { label: string; val: React.ReactNode; sub: string; pct?: number; mitraId?: string }) {
   return (
-    <div className="kpi">
+    <div className="kpi" data-mitra-id={mitraId}>
       <div className="klabel">{label}</div>
       <div className="kval">{val}</div>
       <div className="ksub">{sub}</div>
@@ -29,7 +34,7 @@ const LAKH = 100_000;
 function LivePlantedKpi() {
   const live = useLiveTotal();
   return (
-    <div className="kpi">
+    <div className="kpi" data-mitra-id="state-total-planted">
       <div className="klabel">Total Planted<span className="klive">Live</span></div>
       <div className="kval">
         <Rolling value={live} format={v => lakhFix(v, 2)} /><small> / 5 Cr</small>
@@ -53,7 +58,7 @@ function LiveSurvivalKpi() {
   // with the total. In practice it holds steady at 95.7 for the whole session.
   const wSurv = useLiveWSurv();
   return (
-    <div className="kpi">
+    <div className="kpi" data-mitra-id="state-overall-survival">
       <div className="klabel">Overall Survival</div>
       <div className="kval"><Rolling value={wSurv} format={v => v.toFixed(1)} /><small> %</small></div>
       <div className="ksub">Standard: 95% · weighted by stock</div>
@@ -151,14 +156,14 @@ const ALERT_ICONS: Record<string, React.ReactNode> = {
 
 export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) => void }) {
   const alerts = useMemo(() => {
-    const items: [string, React.ReactNode, string][] = [];
+    const items: [string, React.ReactNode, string, string][] = [];
     DISTRICTS.filter(d => d.survival < 95).sort((a, b) => a.survival - b.survival).slice(0, 3).forEach(d => {
-      items.push(["r", <><b>{d.name}</b> below survival threshold — {d.survival}% vs 95% standard. Casualty-replacement plan escalated to district unit.</>, "Survival watch · updated today"]);
+      items.push(["r", <><b>{d.name}</b> below survival threshold — {d.survival}% vs 95% standard. Casualty-replacement plan escalated to district unit.</>, "Survival watch · updated today", `alert-${slug(d.name)}`]);
     });
-    items.push(["a", <>Audit flagged <b>Raichur Krishna Nursery</b> — shade-net gap on Bevu beds; rectification due 18 Jul.</>, "Nursery audit · 03 Jul"]);
-    items.push(["a", <><b>Sira Block 12, Tumakuru</b> — casualty replacement pending on 2.1% of pits.</>, "Plantation audit · 04 Jul"]);
-    items.push(["b", <>IMD monsoon advisory: heavy-rain window 10–14 Jul — planting drives advanced in <b>Malnad &amp; coastal districts</b>.</>, "Operations advisory"]);
-    items.push(["b", <><b>Corporate Volunteer Pool</b> (Bengaluru Urban) invitation pending acceptance — 3,100 volunteers offered.</>, "Onboarding"]);
+    items.push(["a", <>Audit flagged <b>Raichur Krishna Nursery</b> — shade-net gap on Bevu beds; rectification due 18 Jul.</>, "Nursery audit · 03 Jul", "alert-raichur"]);
+    items.push(["a", <><b>Sira Block 12, Tumakuru</b> — casualty replacement pending on 2.1% of pits.</>, "Plantation audit · 04 Jul", "alert-tumakuru"]);
+    items.push(["b", <>IMD monsoon advisory: heavy-rain window 10–14 Jul — planting drives advanced in <b>Malnad &amp; coastal districts</b>.</>, "Operations advisory", "alert-monsoon-advisory"]);
+    items.push(["b", <><b>Corporate Volunteer Pool</b> (Bengaluru Urban) invitation pending acceptance — 3,100 volunteers offered.</>, "Onboarding", "alert-bengaluru-urban"]);
     return items;
   }, []);
 
@@ -171,12 +176,12 @@ export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) 
       <div className="kpirow">
         <LivePlantedKpi />
         <LiveSurvivalKpi />
-        <Kpi label="Districts Active" val={<>31<small> / 31</small></>} sub="All district units reporting" pct={100} />
-        <Kpi label="Nurseries Operational" val={fmtIN(TOT_NUR)} sub="Combined capacity ≈ 92 lakh seedlings" pct={78} />
-        <Kpi label="Funds Utilised" val={<>₹{UTIL_TOTAL}<small> Cr</small></>} sub="Of ₹94 Cr received · details in Secure Module" pct={UTIL_TOTAL / 94 * 100} />
+        <Kpi mitraId="state-districts-active" label="Districts Active" val={<>31<small> / 31</small></>} sub="All district units reporting" pct={100} />
+        <Kpi mitraId="state-nurseries-operational" label="Nurseries Operational" val={fmtIN(TOT_NUR)} sub="Combined capacity ≈ 92 lakh seedlings" pct={78} />
+        <Kpi mitraId="state-funds-utilised" label="Funds Utilised" val={<>₹{UTIL_TOTAL}<small> Cr</small></>} sub="Of ₹94 Cr received · details in Secure Module" pct={UTIL_TOTAL / 94 * 100} />
       </div>
       <div className="split2">
-        <div className="panel">
+        <div className="panel" data-mitra-id="state-progress-map">
           <div className="phead">
             <h3>District Progress Map — Karnataka</h3>
             <div className="pnote maplegend">
@@ -187,11 +192,11 @@ export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) 
           </div>
           <div className="pbody"><KarnatakaMap onSelect={onSelectDistrict} /></div>
         </div>
-        <div className="panel">
+        <div className="panel" data-mitra-id="alerts">
           <div className="phead"><h3>Alerts &amp; Exceptions</h3><span className="pnote">Auto-generated (mock)</span></div>
           <div className="pbody alist">
             {alerts.map((a, i) => (
-              <div key={i} className={`aitem sev-${a[0]}`}>
+              <div key={i} className={`aitem sev-${a[0]}`} data-mitra-id={a[3]}>
                 <div className="ic">{ALERT_ICONS[a[0]]}</div>
                 <div><div className="at">{a[1]}</div><div className="am">{a[2]}</div></div>
               </div>
@@ -200,11 +205,11 @@ export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) 
         </div>
       </div>
       <div className="split11" style={{ marginTop: 14 }}>
-        <div className="panel">
+        <div className="panel" data-mitra-id="state-planting-trend">
           <div className="phead"><h3>Cumulative Planting — Year 1</h3><span className="pnote">Lakh saplings · Jan–Jul 2026</span></div>
           <div className="pbody chartwrap"><CumulativePlantingChart /></div>
         </div>
-        <div className="panel">
+        <div className="panel" data-mitra-id="state-survival-trend">
           <div className="phead"><h3>Survival Rate Trend</h3><span className="pnote">Statewide monthly assessment vs 95% standard</span></div>
           <div className="pbody chartwrap"><SurvivalTrendChart /></div>
         </div>
@@ -245,7 +250,7 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
           {DISTRICTS.map(x => <option key={x.code} value={x.code}>{x.name}</option>)}
         </select>
       </div>
-      <div className="mkpis" style={{ marginBottom: 14 }}>
+      <div className="mkpis" style={{ marginBottom: 14 }} data-mitra-id="district-kpis">
         <div className="mkpi"><div className="l">Programme share</div><div className="v">{lakhToStr(d.alloc)}</div></div>
         <div className="mkpi"><div className="l">Year-1 target</div><div className="v">{lakhToStr(t)}</div></div>
         {/* key={d.code} remounts these on district change so the figures SNAP to
@@ -261,7 +266,7 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
       </div>
       <div className="split2">
         <div className="grid">
-          <div className="panel">
+          <div className="panel" data-mitra-id="district-land-split">
             <div className="phead"><h3>{d.name} — Allocation &amp; Land Split</h3><span className="pnote">Mock split</span></div>
             <div className="pbody donutwrap">
               <Donut gPct={gPct} />
@@ -277,14 +282,14 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
               </div>
             </div>
           </div>
-          <div className="panel">
+          <div className="panel" data-mitra-id="district-ngo-partners">
             <div className="phead"><h3>NGO Partners in {d.name}</h3><span className="pnote">Contract accountability</span></div>
             <div className="pbody" style={{ overflowX: "auto" }}>
               <table className="tbl">
                 <tbody>
                   <tr><th>Partner</th><th>Assigned scope</th><th>Onboarding</th><th>Contract</th><th className="num">Volunteers</th></tr>
                   {ngoRows.map((r, i) => (
-                    <tr key={i}><td className="b">{r[0]}</td><td>{r[1]}</td><td><OnboardPill s={r[2]} /></td><td><ContractPill c={r[3]} /></td><td className="num">{fmtIN(r[4])}</td></tr>
+                    <tr key={i} data-mitra-id={`stakeholder-${slug(r[0])}`}><td className="b">{r[0]}</td><td>{r[1]}</td><td><OnboardPill s={r[2]} /></td><td><ContractPill c={r[3]} /></td><td className="num">{fmtIN(r[4])}</td></tr>
                   ))}
                 </tbody>
               </table>
@@ -292,7 +297,7 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
           </div>
         </div>
         <div className="grid">
-          <div className="panel">
+          <div className="panel" data-mitra-id="district-timeline">
             <div className="phead"><h3>Monitoring Timeline — 2026</h3></div>
             <div className="pbody tline">
               {timeline.map(tt => (
@@ -300,7 +305,7 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
               ))}
             </div>
           </div>
-          <div className="panel">
+          <div className="panel" data-mitra-id="district-zone">
             <div className="phead"><h3>Agro-Climatic Zone</h3></div>
             <div className="pbody">
               <div className="tag" style={{ marginBottom: 5 }}>Zone</div>
@@ -316,8 +321,13 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
 }
 
 /* ============ FRAME 3 — LAND & OWNERSHIP ============ */
-export function Frame3() {
+export function Frame3({ voiceFilters }: { voiceFilters?: CommandCenterFilterSet }) {
   const [fd, setFd] = useState(""); const [ft, setFt] = useState(""); const [fs, setFs] = useState("");
+  useEffect(() => {
+    if (voiceFilters?.landDistrict !== undefined) setFd(voiceFilters.landDistrict ?? "");
+    if (voiceFilters?.landType !== undefined) setFt(voiceFilters.landType ?? "");
+    if (voiceFilters?.landStatus !== undefined) setFs(voiceFilters.landStatus ?? "");
+  }, [voiceFilters?.landDistrict, voiceFilters?.landStatus, voiceFilters?.landType]);
   const dnames = useMemo(() => Array.from(new Set(SITES.map(s => s[0]))).sort(), []);
   const rows = SITES.filter(s => (!fd || s[0] === fd) && (!ft || s[2] === ft) && (!fs || s[4] === fs));
   const statusPill = (st: string) => st === "Planted" ? <span className="pill g">Planted</span>
@@ -328,7 +338,7 @@ export function Frame3() {
         <h2>Land &amp; Ownership Registry</h2>
         <span className="fdesc">Planting sites, selection status &amp; post-plantation custody</span>
       </div>
-      <div className="panel">
+      <div className="panel" data-mitra-id="land-registry">
         <div className="pbody" style={{ paddingBottom: 8 }}>
           <div className="filters">
             <select value={fd} onChange={e => setFd(e.target.value)}>
@@ -352,7 +362,7 @@ export function Frame3() {
               {rows.length ? rows.map((s, i) => {
                 const dd = DISTRICTS.find(x => x.name === s[0])!;
                 return (
-                  <tr key={i}><td className="b">{s[1]}</td><td>{s[0]}</td><td>{s[2]}</td><td className="num">{s[3]}</td>
+                  <tr key={i} data-mitra-id={`site-${slug(s[1])}`}><td className="b">{s[1]}</td><td>{s[0]}</td><td>{s[2]}</td><td className="num">{s[3]}</td>
                     <td className="dim">{ZONES[dd.zone].name}</td><td>{statusPill(s[4])}</td><td className="dim">{s[5]}</td></tr>
                 );
               }) : <tr><td colSpan={7} className="dim" style={{ textAlign: "center", padding: 20 }}>No sites match these filters.</td></tr>}
@@ -378,17 +388,44 @@ const STK_LABELS: Record<string, string> = {
 };
 const initials = (n: string) => n.split(" ").filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
 
-export function Frame4() {
+export function Frame4({ voiceFilters }: { voiceFilters?: CommandCenterFilterSet }) {
   const [cur, setCur] = useState("All");
+  const [district, setDistrict] = useState("");
+  useEffect(() => {
+    if (voiceFilters?.stakeholderCategory) setCur(voiceFilters.stakeholderCategory);
+  }, [voiceFilters?.stakeholderCategory]);
+  useEffect(() => {
+    if (voiceFilters?.stakeholderDistrict !== undefined) setDistrict(voiceFilters.stakeholderDistrict ?? "");
+  }, [voiceFilters?.stakeholderDistrict]);
   const types = ["All", "NGO", "Government agency", "Volunteer network"];
-  const rows = STK.filter(s => cur === "All" || s[1] === cur);
-  const on = STK.filter(s => s[3] === "Onboarded").length;
+  const selectedDistrict = DISTRICTS.find(d => d.name === district);
+  const matchesDistrict = (s: (typeof STK)[number]) => {
+    if (!district) return true;
+    return s[2] === district || s[2] === "All districts";
+  };
+  const rows = STK.filter(s => (cur === "All" || s[1] === cur) && matchesDistrict(s));
+  const declaredNgos = STK.filter(s => s[1] === "NGO" && (!district || s[2] === district)).length;
+  const on = rows.filter(s => s[3] === "Onboarded").length;
+  const activeContracts = rows.filter(s => s[5] === "Active").length;
+  const volunteers = rows.reduce((a, s) => a + s[6], 0);
   return (
     <section className="frame on" aria-label="Stakeholders and Onboarding">
       <div className="frame-head">
         <h2>Stakeholder &amp; Onboarding</h2>
         <span className="fdesc">NGOs, agencies &amp; volunteer networks by district</span>
         <span className="spacer" />
+        <div className="stakeholder-filter">
+          <label htmlFor="stakeholder-district">District</label>
+          <select id="stakeholder-district" value={district} onChange={e => setDistrict(e.target.value)} aria-label="Filter stakeholders by district">
+            <option value="">All districts</option>
+            {DISTRICTS.map(d => <option key={d.code} value={d.name}>{d.name}</option>)}
+          </select>
+          <span>
+            {district
+              ? `${declaredNgos} declared NGO${declaredNgos === 1 ? "" : "s"}${selectedDistrict ? ` of ${selectedDistrict.ngos}` : ""}`
+              : `${declaredNgos} declared NGOs`}
+          </span>
+        </div>
         <div className="chipbtns">
           {types.map(t => (
             <button key={t} className={`chipbtn${cur === t ? " on" : ""}`} onClick={() => setCur(t)}>
@@ -398,16 +435,16 @@ export function Frame4() {
         </div>
       </div>
       <div className="mkpis" style={{ marginBottom: 14 }}>
-        <div className="mkpi"><div className="l">Total partners</div><div className="v">{STK.length}</div></div>
+        <div className="mkpi"><div className="l">Total partners</div><div className="v">{rows.length}</div></div>
         <div className="mkpi good"><div className="l">Onboarded</div><div className="v">{on}</div></div>
-        <div className="mkpi"><div className="l">Verifying</div><div className="v">{STK.filter(s => s[3] === "Verifying").length}</div></div>
-        <div className="mkpi"><div className="l">Invited</div><div className="v">{STK.filter(s => s[3] === "Invited").length}</div></div>
-        <div className="mkpi"><div className="l">Contracts active</div><div className="v">{STK.filter(s => s[5] === "Active").length}</div></div>
-        <div className="mkpi"><div className="l">Registered volunteers</div><div className="v">{fmtIN(STK.reduce((a, s) => a + s[6], 0))}</div></div>
+        <div className="mkpi"><div className="l">Verifying</div><div className="v">{rows.filter(s => s[3] === "Verifying").length}</div></div>
+        <div className="mkpi"><div className="l">Invited</div><div className="v">{rows.filter(s => s[3] === "Invited").length}</div></div>
+        <div className="mkpi"><div className="l">Contracts active</div><div className="v">{activeContracts}</div></div>
+        <div className="mkpi"><div className="l">Registered volunteers</div><div className="v">{fmtIN(volunteers)}</div></div>
       </div>
-      <div className="stkgrid">
-        {rows.map(s => (
-          <div key={s[0]} className="stkcard">
+      <div className="stkgrid" data-mitra-id="stakeholders">
+        {rows.length ? rows.map(s => (
+          <div key={s[0]} className="stkcard" data-mitra-id={`stakeholder-${slug(s[0])}`}>
             <div className="sh">
               <div className="savatar" style={{ background: STK_COLORS[s[1]] }}>{initials(s[0])}</div>
               <div><div className="sname">{s[0]}</div><div className="stype">{s[1]} · {s[2]}</div></div>
@@ -418,7 +455,11 @@ export function Frame4() {
             <div className="srow"><span>Job contract</span><ContractPill c={s[5]} /></div>
             {s[6] > 0 && <div className="srow"><span>Volunteers</span><b>{fmtIN(s[6])}</b></div>}
           </div>
-        ))}
+        )) : (
+          <div className="stakeholder-empty">
+            No stakeholder records match this district and category.
+          </div>
+        )}
       </div>
     </section>
   );
@@ -436,7 +477,7 @@ export function Frame5() {
         {ZONES.map((z, zi) => {
           const alloc = zoneAlloc(zi), dc = DISTRICTS.filter(d => d.zone === zi).length;
           return (
-            <div key={z.name} className="zonecard">
+            <div key={z.name} className="zonecard" data-mitra-id={`zone-${slug(z.name)}`}>
               <h4>{z.name}</h4>
               <div className="zmeta">{dc} district{dc > 1 ? "s" : ""} · allocation <b>{lakhToStr(alloc)}</b> of 5 Cr ({(alloc / TOT_ALLOC * 100).toFixed(1)}%)</div>
               <div className="zbar"><i style={{ width: `${(alloc / TOT_ALLOC * 100) / 0.15}%` }} /></div>
@@ -445,14 +486,14 @@ export function Frame5() {
           );
         })}
       </div>
-      <div className="panel" style={{ marginTop: 14 }}>
+      <div className="panel" style={{ marginTop: 14 }} data-mitra-id="nursery-mapping">
         <div className="phead"><h3>Nursery → Species Mapping</h3><span className="pnote">Sample of operational nurseries (mock)</span></div>
         <div className="pbody" style={{ overflowX: "auto" }}>
           <table className="tbl">
             <tbody>
               <tr><th>Nursery</th><th>District</th><th className="num">Capacity</th><th>Species raised</th><th>Status</th></tr>
               {NURSERIES.map(n => (
-                <tr key={n[0]}><td className="b">{n[0]}</td><td>{n[1]}</td><td className="num">{n[2]}</td><td className="dim">{n[3]}</td>
+                <tr key={n[0]} data-mitra-id={`nursery-${slug(n[0])}`}><td className="b">{n[0]}</td><td>{n[1]}</td><td className="num">{n[2]}</td><td className="dim">{n[3]}</td>
                   <td>{n[4] === "Operational" ? <span className="pill g">Operational</span> : <span className="pill a">Stocking</span>}</td></tr>
               ))}
             </tbody>
@@ -471,25 +512,25 @@ export function Frame6() {
         <h2>Monitoring &amp; Audit</h2>
         <span className="fdesc">Schedules, inspections, field entries &amp; issues</span>
       </div>
-      <div className="panel">
+      <div className="panel" data-mitra-id="monitoring-calendar">
         <div className="phead"><h3>Monitoring Calendar — 2026</h3><span className="pnote">Month-by-month cycle</span></div>
         <div className="pbody monthstrip">
           {MONTHS.map((m, i) => (
-            <div key={m} className={`mcell ${i < 6 ? "done" : i === 6 ? "now" : ""}`}>
+            <div key={m} className={`mcell ${i < 6 ? "done" : i === 6 ? "now" : ""}`} data-mitra-id={`month-${slug(m)}`}>
               <div className="mn">{m}</div><div className="mact">{MONTH_ACTS[i]}</div>
             </div>
           ))}
         </div>
       </div>
       <div className="split11" style={{ marginTop: 14 }}>
-        <div className="panel">
+        <div className="panel" data-mitra-id="audit-log">
           <div className="phead"><h3>Audit Log — Site &amp; Nursery Inspections</h3><span className="pnote">Incl. surprise visits</span></div>
           <div className="pbody" style={{ overflowX: "auto" }}>
             <table className="tbl">
               <tbody>
                 <tr><th>Date</th><th>Site</th><th>Type</th><th>Visit</th><th>Finding</th><th>Status</th></tr>
                 {AUDITS.map((a, i) => (
-                  <tr key={i}>
+                  <tr key={i} data-mitra-id={`audit-${slug(a[1])}`}>
                     <td className="dim" style={{ whiteSpace: "nowrap" }}>{a[0]}</td><td className="b">{a[1]}</td><td>{a[2]}</td>
                     <td>{a[3] === "Surprise" ? <span className="pill gold">Surprise</span> : <span className="pill n">Scheduled</span>}</td>
                     <td className="dim">{a[4]}</td>
@@ -501,11 +542,11 @@ export function Frame6() {
           </div>
         </div>
         <div>
-          <div className="panel">
+          <div className="panel" data-mitra-id="field-feed">
             <div className="phead"><h3>Field Data-Entry Feed</h3><span className="livechip" style={{ marginLeft: "auto" }}>Live entry</span></div>
             <div className="pbody">
               {FEED.map((f, i) => (
-                <div key={i} className="feeditem">
+                <div key={i} className="feeditem" data-mitra-id={`feed-${slug(`${f[1]}-${f[0]}`)}`}>
                   <span className="ftime">{f[0]}</span><span className="fdot" />
                   <div className="ftxt">
                     <div><b>{f[1]}</b> <span dangerouslySetInnerHTML={{ __html: f[2] }} /></div>
@@ -515,14 +556,14 @@ export function Frame6() {
               ))}
             </div>
           </div>
-          <div className="panel" style={{ marginTop: 14 }}>
+          <div className="panel" style={{ marginTop: 14 }} data-mitra-id="complaints">
             <div className="phead"><h3>Complaints &amp; Issues</h3><span className="pnote">Open + recently closed</span></div>
             <div className="pbody" style={{ overflowX: "auto" }}>
               <table className="tbl">
                 <tbody>
                   <tr><th>ID</th><th>District</th><th>Issue</th><th>Severity</th><th>Status</th></tr>
                   {ISSUES.map(iss => (
-                    <tr key={iss[0]}>
+                    <tr key={iss[0]} data-mitra-id={`issue-${slug(iss[0])}`}>
                       <td className="dim">{iss[0]}</td><td>{iss[1]}</td><td className="b">{iss[2]}</td>
                       <td>{iss[3] === "High" ? <span className="pill r">High</span> : iss[3] === "Medium" ? <span className="pill a">Medium</span> : <span className="pill n">Low</span>}</td>
                       <td>{iss[4] === "Open" ? <span className="pill r">Open</span> : iss[4] === "In progress" ? <span className="pill b">In progress</span> : <span className="pill g">Closed</span>}</td>

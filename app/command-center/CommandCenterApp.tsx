@@ -1,9 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Frame1, Frame2, Frame3, Frame4, Frame5, Frame6 } from "./components/frames";
 import { Frame7 } from "./components/financials";
+import PoshaneMitra from "./mitra/PoshaneMitra";
+import type {
+  CommandCenterFilterSet,
+  CommandCenterFrameId,
+  CommandCenterUiAction,
+} from "./mitra/types";
 
-type FrameId = "f1" | "f2" | "f3" | "f4" | "f5" | "f6" | "f7";
+type FrameId = CommandCenterFrameId;
 
 type CommandCenterAppProps = {
   adminEmail: string;
@@ -26,6 +32,8 @@ export default function CommandCenterApp({
 }: CommandCenterAppProps) {
   const [frame, setFrame] = useState<FrameId>("f1");
   const [district, setDistrict] = useState("BLG");
+  const [voiceFilters, setVoiceFilters] = useState<CommandCenterFilterSet>({});
+  const [voiceHighlight, setVoiceHighlight] = useState("");
   const initials = adminName
     .split(/\s+/)
     .filter(Boolean)
@@ -34,6 +42,26 @@ export default function CommandCenterApp({
     .join("");
 
   const goDistrict = (code: string) => { setDistrict(code); setFrame("f2"); };
+
+  const applyMitraAction = (action: CommandCenterUiAction) => {
+    if (action.frame) setFrame(action.frame);
+    if (action.districtCode) setDistrict(action.districtCode);
+    if (action.filters) setVoiceFilters((current) => ({ ...current, ...action.filters }));
+    if (action.highlightId) setVoiceHighlight(action.highlightId);
+  };
+
+  useEffect(() => {
+    if (!voiceHighlight) return;
+    const timeout = window.setTimeout(() => {
+      const target = document.querySelector<HTMLElement>(
+        `[data-mitra-id="${CSS.escape(voiceHighlight)}"]`
+      );
+      target?.scrollIntoView({ block: "center", behavior: "smooth" });
+      target?.classList.add("mitra-highlight");
+      window.setTimeout(() => target?.classList.remove("mitra-highlight"), 4200);
+    }, 80);
+    return () => window.clearTimeout(timeout);
+  }, [frame, district, voiceFilters, voiceHighlight]);
 
   return (
     <div className="pcc">
@@ -86,6 +114,15 @@ export default function CommandCenterApp({
             <button className={frame !== "f2" ? "on" : ""} onClick={() => setFrame("f1")}>State View</button>
             <button className={frame === "f2" ? "on" : ""} onClick={() => setFrame("f2")}>District View</button>
           </div>
+          <PoshaneMitra
+            onUiAction={applyMitraAction}
+            uiContext={{
+              frame,
+              districtCode: district,
+              filters: voiceFilters,
+              highlightId: voiceHighlight,
+            }}
+          />
           <div className="proto-flag" title="Illustrative prototype — mock data for demonstration. Not live operational data.">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><circle cx={12} cy={12} r={9} /><path d="M12 8v5M12 16.5v.01" /></svg>
             <span>Illustrative prototype — mock data for demonstration. Not live operational data.</span>
@@ -103,8 +140,8 @@ export default function CommandCenterApp({
         <main className="main">
           {frame === "f1" && <Frame1 onSelectDistrict={goDistrict} />}
           {frame === "f2" && <Frame2 code={district} onChange={setDistrict} />}
-          {frame === "f3" && <Frame3 />}
-          {frame === "f4" && <Frame4 />}
+          {frame === "f3" && <Frame3 voiceFilters={voiceFilters} />}
+          {frame === "f4" && <Frame4 voiceFilters={voiceFilters} />}
           {frame === "f5" && <Frame5 />}
           {frame === "f6" && <Frame6 />}
           {frame === "f7" && <Frame7 />}
