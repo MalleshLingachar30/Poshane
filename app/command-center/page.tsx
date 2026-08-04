@@ -31,8 +31,11 @@ export default async function CommandCenterPage({
 
   return (
     <div className="cc-auth-shell">
-      <CommandCenterApp adminEmail={session.email} adminName={session.name} />
-      <LogoutButton />
+      <CommandCenterApp
+        adminEmail={session.email}
+        adminName={session.name}
+        logoutSlot={<LogoutButton />}
+      />
     </div>
   );
 }

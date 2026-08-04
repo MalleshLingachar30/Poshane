@@ -14,6 +14,7 @@ type FrameId = CommandCenterFrameId;
 type CommandCenterAppProps = {
   adminEmail: string;
   adminName: string;
+  logoutSlot?: React.ReactNode;
 };
 
 const NAV: { id: FrameId; label: string; icon: React.ReactNode; secure?: boolean }[] = [
@@ -29,6 +30,7 @@ const NAV: { id: FrameId; label: string; icon: React.ReactNode; secure?: boolean
 export default function CommandCenterApp({
   adminEmail,
   adminName,
+  logoutSlot,
 }: CommandCenterAppProps) {
   const [frame, setFrame] = useState<FrameId>("f1");
   const [district, setDistrict] = useState("BLG");
@@ -108,6 +110,7 @@ export default function CommandCenterApp({
                 highlightId: voiceHighlight,
               }}
             />
+            {logoutSlot}
           </div>
 
           <div className="side-foot">
@@ -151,7 +154,6 @@ export default function CommandCenterApp({
         </main>
       </div>
 
-      <div className="protobadge"><b>Illustrative prototype</b> — mock data for demonstration. Not live operational data.</div>
     </div>
   );
 }

@@ -77,8 +77,8 @@
 .pcc .navbtn.active svg{opacity:1}
 .pcc .navbtn .lockchip{margin-left:auto;font-size:9px;letter-spacing:.06em;color:var(--gold-soft);
   border:1px solid rgba(230,204,133,.4);border-radius:99px;padding:1px 6px}
-.pcc .mitra-dock{flex:1;min-height:170px;display:flex;align-items:center;justify-content:center;
-  padding:20px 12px 18px}
+.pcc .mitra-dock{flex:1;min-height:220px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:16px;padding:20px 12px 18px}
 .pcc .side-foot{margin-top:auto;padding:14px 18px;border-top:1px solid var(--shell-line);
   font-size:10.5px;color:var(--shell-dim);line-height:1.55}
 .pcc .side-foot b{color:var(--shell-text);font-weight:600}
@@ -480,13 +480,6 @@
 .pcc .pinfoot{font-size:10px;color:#5E6C88;margin-top:16px;display:flex;align-items:center;gap:6px;justify-content:center}
 .pcc .pinfoot svg{width:11px;height:11px}
 
-/* ---------- FLOATING PROTOTYPE BADGE ---------- */
-.pcc .protobadge{position:fixed;right:16px;bottom:14px;z-index:80;background:rgba(13,21,36,.92);
-  border:1px solid rgba(230,204,133,.5);color:var(--gold-soft);font-size:10.5px;line-height:1.4;
-  border-radius:9px;padding:7px 12px;max-width:300px;backdrop-filter:blur(4px);
-  box-shadow:0 6px 20px rgba(0,0,0,.4)}
-.pcc .protobadge b{font-weight:700}
-
 /* ---------- MISC ---------- */
 .pcc .tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
 .pcc .split2{display:grid;grid-template-columns:2fr 1fr;gap:14px}
@@ -616,10 +609,9 @@
 }
 .cc-auth-shell{position:relative}
 .cc-logout{
-  position:fixed;
-  z-index:95;
-  right:18px;
-  bottom:62px;
+  width:100%;
+  display:flex;
+  justify-content:center;
 }
 .cc-logout button{
   border:1px solid rgba(230,204,133,.5);
@@ -629,7 +621,8 @@
   cursor:pointer;
   font:800 10.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   letter-spacing:.1em;
-  padding:10px 14px;
+  min-width:138px;
+  padding:11px 20px;
   text-transform:uppercase;
   box-shadow:0 8px 24px rgba(0,0,0,.32);
 }
@@ -738,6 +731,7 @@
   .pcc .mitra-dock{
     flex:0 0 auto;
     min-height:0;
+    gap:10px;
     padding:10px 12px 12px;
   }
   .pcc .mitra{
@@ -937,18 +931,6 @@
   }
   .pcc .pinmodal{
     padding:24px 18px 20px;
-  }
-  .pcc .protobadge{
-    position:static;
-    max-width:none;
-    margin:0 14px 14px;
-  }
-  .cc-logout{
-    position:static;
-    display:flex;
-    justify-content:flex-end;
-    padding:0 14px 14px;
-    background:#0D1524;
   }
 }
 
