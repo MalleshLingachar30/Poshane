@@ -15,6 +15,13 @@
 # debug
 npm-debug.log*
 
+# local agent/review artifacts
+/dogfood-output/
+/gg/agent-outputs/
+/tmp/
+/poshane-next/
+/kslsa.jpeg
+
 # env
 .env*.local
 
