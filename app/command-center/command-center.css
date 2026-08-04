@@ -77,9 +77,10 @@
 .pcc .navbtn.active svg{opacity:1}
 .pcc .navbtn .lockchip{margin-left:auto;font-size:9px;letter-spacing:.06em;color:var(--gold-soft);
   border:1px solid rgba(230,204,133,.4);border-radius:99px;padding:1px 6px}
-.pcc .mitra-dock{flex:1;min-height:220px;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:16px;padding:20px 12px 18px}
-.pcc .side-foot{margin-top:auto;padding:14px 18px;border-top:1px solid var(--shell-line);
+.pcc .mitra-dock{flex:1;min-height:220px;display:flex;align-items:center;justify-content:center;
+  padding:20px 12px 18px}
+.pcc .side-actions{padding:0 18px 18px}
+.pcc .side-foot{padding:14px 18px;border-top:1px solid var(--shell-line);
   font-size:10.5px;color:var(--shell-dim);line-height:1.55}
 .pcc .side-foot b{color:var(--shell-text);font-weight:600}
 
@@ -731,8 +732,10 @@
   .pcc .mitra-dock{
     flex:0 0 auto;
     min-height:0;
-    gap:10px;
     padding:10px 12px 12px;
+  }
+  .pcc .side-actions{
+    padding:0 12px 12px;
   }
   .pcc .mitra{
     max-width:210px;

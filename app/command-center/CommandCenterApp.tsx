@@ -110,6 +110,9 @@ export default function CommandCenterApp({
                 highlightId: voiceHighlight,
               }}
             />
+          </div>
+
+          <div className="side-actions">
             {logoutSlot}
           </div>
 
