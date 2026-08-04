@@ -32,15 +32,13 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /autoGainControl: true/);
   assert.match(client, /\/v1\/realtime\/calls/);
   assert.match(client, /output_audio_buffer\.clear/);
-  assert.match(client, /START_GREETING/);
-  assert.match(client, /Respected IAFT Chairman Sir, honorable members/);
-  assert.match(client, /I will assist IAFT today by answering questions on the five-crore sapling programme/);
+  assert.doesNotMatch(client, /START_GREETING/);
+  assert.doesNotMatch(client, /Respected IAFT Chairman Sir, honorable members/);
+  assert.doesNotMatch(client, /I will assist IAFT today by answering questions on the five-crore sapling programme/);
   assert.doesNotMatch(client, /My role is to support this review with clear, concise and source-based answers/);
-  assert.match(client, /MITRA_GREETING_TOKENS = 420/);
   assert.match(client, /document\.body\.appendChild\(audio\)/);
   assert.match(client, /keepRemoteAudioAlive/);
   assert.match(client, /audioOutputActiveRef/);
-  assert.match(client, /greetingInProgressRef/);
   assert.match(client, /setMicrophoneTracksEnabled/);
   assert.match(client, /resumeRemoteAudio/);
   assert.match(client, /MAX_RECONNECTS/);
