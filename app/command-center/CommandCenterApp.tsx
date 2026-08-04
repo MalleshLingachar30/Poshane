@@ -98,6 +98,18 @@ export default function CommandCenterApp({
             ))}
           </nav>
 
+          <div className="mitra-dock">
+            <PoshaneMitra
+              onUiAction={applyMitraAction}
+              uiContext={{
+                frame,
+                districtCode: district,
+                filters: voiceFilters,
+                highlightId: voiceHighlight,
+              }}
+            />
+          </div>
+
           <div className="side-foot">
             <b>IAFT</b> — Program Management &amp;<br />Principal Scientific Advisor<br />
             <span style={{ opacity: 0.75 }}>Programme window 2026–2034</span>
@@ -114,15 +126,6 @@ export default function CommandCenterApp({
             <button className={frame !== "f2" ? "on" : ""} onClick={() => setFrame("f1")}>State View</button>
             <button className={frame === "f2" ? "on" : ""} onClick={() => setFrame("f2")}>District View</button>
           </div>
-          <PoshaneMitra
-            onUiAction={applyMitraAction}
-            uiContext={{
-              frame,
-              districtCode: district,
-              filters: voiceFilters,
-              highlightId: voiceHighlight,
-            }}
-          />
           <div className="proto-flag" title="Illustrative prototype — mock data for demonstration. Not live operational data.">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><circle cx={12} cy={12} r={9} /><path d="M12 8v5M12 16.5v.01" /></svg>
             <span>Illustrative prototype — mock data for demonstration. Not live operational data.</span>

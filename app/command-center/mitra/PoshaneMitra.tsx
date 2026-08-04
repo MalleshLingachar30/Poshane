@@ -883,7 +883,15 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
           title={active ? "End Mitra" : "Start Mitra"}
           onClick={() => (active ? endSession() : void connect("start"))}
         >
-          <span className="mitra-dot" aria-hidden="true" />
+          <span className="mitra-wheel" aria-hidden="true">
+            <span className="mitra-ring mitra-ring-a" />
+            <span className="mitra-ring mitra-ring-b" />
+            <span className="mitra-ring mitra-ring-c" />
+            <span className="mitra-spokes" />
+            <span className="mitra-core">
+              <span className="mitra-dot" />
+            </span>
+          </span>
           <span className="mitra-label">
             <b>Mitra</b>
             <small>{statusSummary}</small>
