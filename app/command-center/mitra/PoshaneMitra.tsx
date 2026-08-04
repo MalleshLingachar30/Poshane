@@ -86,7 +86,7 @@ const TOOL_ENDPOINT = "/command-center/mitra/tool";
 const SESSION_ENDPOINT = "/command-center/mitra/session";
 const AUDIT_ENDPOINT = "/command-center/mitra/audit";
 const START_GREETING =
-  "Say exactly this, in a calm complete greeting: Namaskara, I am Mitra, your read-only voice assistant for the Poshane Command Center. I can answer programme questions, open the right view, select districts, show records, highlight alerts, and guide you through monitoring, nurseries, species, stakeholders, and land details.";
+  "Say exactly this, in a calm, respectful and complete opening remark: Namaskara. Respected IAFT Chairman Sir, honorable members, and distinguished participants, I am Mitra, the read-only voice assistant for the Poshane Command Center. I will assist IAFT today by answering questions on the five-crore sapling programme, opening the relevant views, selecting districts, highlighting records, and explaining monitoring, land, nursery, species, stakeholder and audit information from the authorised Command Center.";
 
 const STATUS_COPY: Record<PoshaneMitraStatus, string> = {
   idle: "Idle",

@@ -304,6 +304,36 @@
 .pcc .zonecard .zbar{height:6px;border-radius:99px;background:var(--paper-2);overflow:hidden;margin:8px 0 10px}
 .pcc .zonecard .zbar i{display:block;height:100%;background:var(--green-2)}
 
+/* ---------- SPECIES PLANNER ---------- */
+.pcc .splan-modes{display:flex;gap:6px;margin-bottom:11px;flex-wrap:wrap}
+.pcc .splan-tab{font:inherit;font-size:12px;font-weight:600;cursor:pointer;
+  border:1px solid var(--panel-line);background:var(--paper);color:var(--ink-dim);
+  border-radius:99px;padding:6px 14px;transition:all .15s}
+.pcc .splan-tab:hover{border-color:var(--green-2);color:var(--green-deep)}
+.pcc .splan-tab.on{background:var(--green-tint);border-color:var(--green-2);color:var(--green-deep)}
+.pcc .splan-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pcc .splan-input{flex:1 1 260px;min-width:0;font:inherit;font-size:12.5px;color:var(--ink);
+  border:1px solid var(--panel-line);border-radius:8px;padding:8px 12px;background:var(--paper)}
+.pcc .splan-input:focus{outline:none;border-color:var(--green-2);box-shadow:0 0 0 3px var(--green-tint)}
+.pcc .splan-sel{font:inherit;font-size:12px;color:var(--ink);cursor:pointer;
+  border:1px solid var(--panel-line);border-radius:8px;padding:8px 10px;background:var(--paper)}
+.pcc .splan-sel:focus{outline:none;border-color:var(--green-2)}
+.pcc .splan-sel:disabled{opacity:.45;cursor:not-allowed}
+.pcc .splan-clear{font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
+  border:1px solid var(--panel-line);background:var(--paper);color:var(--ink-dim);
+  border-radius:8px;padding:7px 12px}
+.pcc .splan-clear:hover{border-color:var(--green-2);color:var(--green-deep)}
+.pcc .splan-agro{margin:2px 0 11px;padding:9px 11px;border-radius:8px;background:var(--paper-2)}
+.pcc .splan-agrorow{font-size:11px;line-height:1.5}
+.pcc .splan-agrorow b{color:var(--green-deep);font-weight:650}
+.pcc .splan-agrorow span{margin-left:5px}
+.pcc .splan-model{padding-top:10px;margin-top:10px;border-top:1px solid var(--panel-line)}
+.pcc .splan-mhead{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pcc .splan-mname{font-size:12px;font-weight:650;color:var(--ink)}
+.pcc .splan-mmeta{font-size:10.5px;color:var(--ink-dim);margin:2px 0 7px}
+.pcc .splan-notes{margin:0;padding-left:18px}
+.pcc .splan-notes li{font-size:11.5px;color:var(--ink-dim);line-height:1.6;margin-bottom:6px}
+
 /* ---------- STAKEHOLDER CARDS ---------- */
 .pcc .stkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 .pcc .stakeholder-filter{display:flex;align-items:center;gap:8px;color:var(--shell-dim);font-size:11px}

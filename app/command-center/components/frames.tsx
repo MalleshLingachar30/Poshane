@@ -2,9 +2,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   DISTRICTS, ZONES, NGO_POOL, SITES, LAND_TYPES, STK, NURSERIES, AUDITS, FEED, ISSUES,
-  MONTHS, MONTH_ACTS, fmtIN, lakhToStr, lakhFix, y1Of, zoneAlloc,
+  MONTHS, MONTH_ACTS, fmtIN, lakhToStr, lakhFix, y1Of,
   TOT_ALLOC, TOT_Y1, TOT_NUR, UTIL_TOTAL,
 } from "../data";
+import {
+  SILVI_ZONES, MODELS, MODEL_BY_KEY, SPECIES_INDEX, SILVI_DISTRICTS, DATA_NOTES,
+} from "../silvi";
+import type { ModelKey, SpeciesRow } from "../silvi";
 import { useLiveSnapshot, useLiveTotal, useLiveWSurv, useLiveDistrict, liveProg } from "../live";
 import { LineChart, Donut, OnboardPill, ContractPill, Rolling } from "./charts";
 import type { CommandCenterFilterSet } from "../mitra/types";
@@ -467,24 +471,255 @@ export function Frame4({ voiceFilters }: { voiceFilters?: CommandCenterFilterSet
 
 /* ============ FRAME 5 — SPECIES PLANNING ============ */
 export function Frame5() {
+  const [mode, setMode] = useState<"plan" | "species">("plan");
+  const [q, setQ] = useState("");
+  const [zoneF, setZoneF] = useState("");
+  const [districtF, setDistrictF] = useState("");
+  const [talukF, setTalukF] = useState("");
+  const [modelF, setModelF] = useState("");
+  const [notesOpen, setNotesOpen] = useState(false);
+
+  const nq = q.trim().toLowerCase();
+
+  /* Taluks available for the current district selection. */
+  const talukOpts = useMemo(() => {
+    const out = new Set<string>();
+    for (const z of SILVI_ZONES)
+      for (const az of z.agroZones)
+        for (const d of az.districts)
+          if (!districtF || d.district === districtF)
+            d.taluks.forEach(t => out.add(t));
+    return [...out].sort();
+  }, [districtF]);
+
+  /* Districts available for the current zone selection. */
+  const districtOpts = useMemo(() => {
+    const out = new Set<string>();
+    for (const z of SILVI_ZONES) {
+      if (zoneF && z.key !== zoneF) continue;
+      for (const az of z.agroZones)
+        for (const d of az.districts) if (d.district) out.add(d.district);
+    }
+    return [...out].sort();
+  }, [zoneF]);
+
+  const reset = () => { setQ(""); setZoneF(""); setDistrictF(""); setTalukF(""); setModelF(""); };
+  const active = [zoneF, districtF, talukF, modelF].filter(Boolean).length + (nq ? 1 : 0);
+
+  /* ---- Plan-by-location results ---- */
+  const results = useMemo(() => {
+    const matchSpecies = ([b, l]: SpeciesRow) =>
+      !nq || b.toLowerCase().includes(nq) || l.toLowerCase().includes(nq);
+
+    return SILVI_ZONES.flatMap(z => {
+      if (zoneF && z.key !== zoneF) return [];
+      const agro = z.agroZones
+        .map(az => ({
+          name: az.name,
+          districts: az.districts.filter(
+            d =>
+              (!districtF || d.district === districtF) &&
+              (!talukF || d.taluks.includes(talukF))
+          ),
+        }))
+        .filter(az => az.districts.length > 0);
+      if ((districtF || talukF) && agro.length === 0) return [];
+
+      const models = MODELS
+        .filter(m => !modelF || m.key === modelF)
+        .map(m => ({ model: m, species: z.species[m.key].filter(matchSpecies) }))
+        .filter(x => x.species.length > 0);
+      if (models.length === 0) return [];
+
+      return [{ zone: z, agro, models }];
+    });
+  }, [nq, zoneF, districtF, talukF, modelF]);
+
+  const totalRows = results.reduce(
+    (s, r) => s + r.models.reduce((a, m) => a + m.species.length, 0), 0);
+
+  /* ---- Species reverse lookup ---- */
+  const speciesHits = useMemo(
+    () =>
+      SPECIES_INDEX.filter(s => {
+        if (nq && !s.botanical.toLowerCase().includes(nq) &&
+            !s.locals.some(l => l.toLowerCase().includes(nq))) return false;
+        if (districtF && !s.districts.includes(districtF)) return false;
+        if (modelF && !s.models.includes(modelF as ModelKey)) return false;
+        if (zoneF) {
+          const zn = SILVI_ZONES.find(z => z.key === zoneF)?.name;
+          if (zn && !s.zones.includes(zn)) return false;
+        }
+        return true;
+      }),
+    [nq, districtF, modelF, zoneF]
+  );
+
   return (
     <section className="frame on" aria-label="Species and Agro-Climatic Planning">
       <div className="frame-head">
         <h2>Species &amp; Agro-Climatic Planning</h2>
-        <span className="fdesc">Zone-wise native species &amp; allocation of the 5 crore</span>
+        <span className="fdesc">
+          KSLSA silvi-zone species statement — {SILVI_ZONES.length} silvi zones ·{" "}
+          {SILVI_DISTRICTS.length} districts · {SPECIES_INDEX.length} species · {MODELS.length} agroforestry models
+        </span>
       </div>
-      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))" }}>
-        {ZONES.map((z, zi) => {
-          const alloc = zoneAlloc(zi), dc = DISTRICTS.filter(d => d.zone === zi).length;
-          return (
-            <div key={z.name} className="zonecard" data-mitra-id={`zone-${slug(z.name)}`}>
-              <h4>{z.name}</h4>
-              <div className="zmeta">{dc} district{dc > 1 ? "s" : ""} · allocation <b>{lakhToStr(alloc)}</b> of 5 Cr ({(alloc / TOT_ALLOC * 100).toFixed(1)}%)</div>
-              <div className="zbar"><i style={{ width: `${(alloc / TOT_ALLOC * 100) / 0.15}%` }} /></div>
-              <div className="spchips">{z.species.map(sp => <span key={sp[0]} className="spchip">{sp[0]} <em>{sp[1]}</em></span>)}</div>
+
+      {/* ---------------- search & facets ---------------- */}
+      <div className="panel" data-mitra-id="species-search">
+        <div className="phead">
+          <h3>Species Planner</h3>
+          <span className="pnote">
+            {mode === "plan"
+              ? `${totalRows} recommendation${totalRows === 1 ? "" : "s"} across ${results.length} zone${results.length === 1 ? "" : "s"}`
+              : `${speciesHits.length} species`}
+          </span>
+        </div>
+        <div className="pbody">
+          <div className="splan-modes">
+            <button className={`splan-tab${mode === "plan" ? " on" : ""}`} onClick={() => setMode("plan")}>
+              Plan by location
+            </button>
+            <button className={`splan-tab${mode === "species" ? " on" : ""}`} onClick={() => setMode("species")}>
+              Species → where it grows
+            </button>
+          </div>
+
+          <div className="splan-filters">
+            <input
+              className="splan-input"
+              type="search"
+              placeholder="Search botanical or local name — e.g. Santalum, Honge, Teak"
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              aria-label="Search species"
+            />
+            <select className="splan-sel" value={zoneF} onChange={e => setZoneF(e.target.value)} aria-label="Silvi zone">
+              <option value="">All silvi zones</option>
+              {SILVI_ZONES.map(z => <option key={z.key} value={z.key}>{z.name}</option>)}
+            </select>
+            <select
+              className="splan-sel"
+              value={districtF}
+              onChange={e => { setDistrictF(e.target.value); setTalukF(""); }}
+              aria-label="District"
+            >
+              <option value="">All districts</option>
+              {districtOpts.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <select className="splan-sel" value={talukF} onChange={e => setTalukF(e.target.value)} aria-label="Taluk" disabled={mode === "species"}>
+              <option value="">All taluks</option>
+              {talukOpts.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <select className="splan-sel" value={modelF} onChange={e => setModelF(e.target.value)} aria-label="Agroforestry model">
+              <option value="">All models</option>
+              {MODELS.map(m => <option key={m.key} value={m.key}>{m.short}</option>)}
+            </select>
+            {active > 0 && (
+              <button className="splan-clear" onClick={reset}>Clear ({active})</button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------- results ---------------- */}
+      {mode === "plan" ? (
+        results.length === 0 ? (
+          <div className="panel" style={{ marginTop: 14 }}>
+            <div className="pbody dim" style={{ padding: 18 }}>
+              No species in the KSLSA statement match these filters.
             </div>
-          );
-        })}
+          </div>
+        ) : (
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(340px,1fr))", marginTop: 14 }}>
+            {results.map(({ zone, agro, models }) => (
+              <div key={zone.key} className="zonecard" data-mitra-id={`silvi-zone-${slug(zone.name)}`}>
+                <h4>{zone.name}</h4>
+                <div className="zmeta">
+                  Sheet {zone.sheet} · {agro.length} agro-climatic zone{agro.length === 1 ? "" : "s"} ·{" "}
+                  {new Set(agro.flatMap(a => a.districts.map(d => d.district))).size} district
+                  {new Set(agro.flatMap(a => a.districts.map(d => d.district))).size === 1 ? "" : "s"}
+                </div>
+                <div className="splan-agro">
+                  {agro.map(az => (
+                    <div key={az.name} className="splan-agrorow">
+                      <b>{az.name}</b>
+                      <span className="dim">
+                        {az.districts.map(d =>
+                          d.taluks.length ? `${d.district} (${d.taluks.join(", ")})` : d.district
+                        ).join(" · ")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {models.map(({ model, species }) => (
+                  <div key={model.key} className="splan-model">
+                    <div className="splan-mhead">
+                      <span className="splan-mname">{model.name}</span>
+                      {model.commonLand && <span className="pill">Common land</span>}
+                    </div>
+                    <div className="splan-mmeta">
+                      {model.speciesType} · {model.seedling} · {model.spacing}
+                    </div>
+                    <div className="spchips">
+                      {species.map(([b, l]) => (
+                        <span key={`${model.key}-${b}`} className="spchip">{l} <em>{b}</em></span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )
+      ) : speciesHits.length === 0 ? (
+        <div className="panel" style={{ marginTop: 14 }}>
+          <div className="pbody dim" style={{ padding: 18 }}>No species match these filters.</div>
+        </div>
+      ) : (
+        <div className="panel" style={{ marginTop: 14 }} data-mitra-id="species-lookup">
+          <div className="pbody" style={{ overflowX: "auto" }}>
+            <table className="tbl">
+              <tbody>
+                <tr>
+                  <th>Botanical name</th><th>Local name</th><th>Silvi zones</th>
+                  <th>Agroforestry models</th><th className="num">Districts</th>
+                </tr>
+                {speciesHits.map(s => (
+                  <tr key={s.botanical} data-mitra-id={`species-${slug(s.botanical)}`}>
+                    <td className="b"><em>{s.botanical}</em></td>
+                    <td>{s.locals.join(" / ")}</td>
+                    <td className="dim">{s.zones.join(", ")}</td>
+                    <td className="dim">{s.models.map(m => MODEL_BY_KEY[m].short).join(", ")}</td>
+                    <td className="num">{s.districts.length}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ---------------- source provenance ---------------- */}
+      <div className="panel" style={{ marginTop: 14 }} data-mitra-id="silvi-source-notes">
+        <div className="phead">
+          <h3>Source &amp; Data Notes</h3>
+          <button className="splan-clear" onClick={() => setNotesOpen(o => !o)}>
+            {notesOpen ? "Hide" : `Show (${DATA_NOTES.length})`}
+          </button>
+        </div>
+        {notesOpen && (
+          <div className="pbody">
+            <p className="dim" style={{ marginTop: 0 }}>
+              Transcribed from the KSLSA statement <i>&ldquo;List of Forest Species suitable for different
+              Silvi Zones (Model wise) in Karnataka&rdquo;</i> — 10 agro-climatic zones regrouped into 4 silvi
+              zones covering all districts &amp; taluks. Botanical names appear exactly as printed in the source.
+            </p>
+            <ul className="splan-notes">
+              {DATA_NOTES.map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          </div>
+        )}
       </div>
       <div className="panel" style={{ marginTop: 14 }} data-mitra-id="nursery-mapping">
         <div className="phead"><h3>Nursery → Species Mapping</h3><span className="pnote">Sample of operational nurseries (mock)</span></div>
