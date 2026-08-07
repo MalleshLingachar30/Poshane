@@ -55,9 +55,12 @@ const SHEETS = [
   },
 ];
 
-/* The step-through animation is already a single self-contained document with
-   its own controls and language toggle. It is copied, not split. */
-const STANDALONE = [{ file: "poshane-data-flow-animation-v3.html", id: "flow" }];
+/* The step-through animation and the GIS annex are already self-contained
+   documents with their own layout. They are copied, not split. */
+const STANDALONE = [
+  { file: "poshane-data-flow-animation-v3.html", id: "flow" },
+  { file: "poshane-gis-schematics-g1-g6.html", id: "gis" },
+];
 
 /* Reports height to the viewer so the iframe can be sized to its content and
    never shows an inner scrollbar — the diagrams run to 1955 units tall and a

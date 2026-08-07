@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Frame1, Frame2, Frame3, Frame4, Frame5, Frame6 } from "./components/frames";
 import { Frame7 } from "./components/financials";
 import { Frame8 } from "./components/schematics";
+import type { SchematicSectionId } from "./schematics";
 import { TalukFrame } from "./components/taluk-frame";
 import { TALUKS, TALUKS_BY_DISTRICT, firstTalukCode } from "./taluks";
 import PoshaneMitra from "./mitra/PoshaneMitra";
@@ -20,6 +21,13 @@ type CommandCenterAppProps = {
   logoutSlot?: React.ReactNode;
 };
 
+const ARCHITECTURE_SUBNAV: { id: SchematicSectionId; label: string }[] = [
+  { id: "walkthrough", label: "Walkthrough" },
+  { id: "data-flow", label: "Data Flow" },
+  { id: "controls", label: "Controls" },
+  { id: "gis", label: "GIS" },
+];
+
 const NAV: { id: FrameId; label: string; icon: React.ReactNode; secure?: boolean }[] = [
   { id: "f1", label: "State Overview", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><rect x={3} y={3} width={7.5} height={7.5} rx={1.5} /><rect x={13.5} y={3} width={7.5} height={7.5} rx={1.5} /><rect x={3} y={13.5} width={7.5} height={7.5} rx={1.5} /><rect x={13.5} y={13.5} width={7.5} height={7.5} rx={1.5} /></svg> },
   { id: "f2", label: "District Drill-Down", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><path d="M12 21s-7-5.4-7-11a7 7 0 1 1 14 0c0 5.6-7 11-7 11Z" /><circle cx={12} cy={10} r={2.6} /></svg> },
@@ -28,7 +36,7 @@ const NAV: { id: FrameId; label: string; icon: React.ReactNode; secure?: boolean
   { id: "f4", label: "Stakeholders", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><circle cx={8.5} cy={9} r={3} /><circle cx={16.5} cy={10.5} r={2.4} /><path d="M3.5 19c.5-3 2.6-4.6 5-4.6s4.5 1.6 5 4.6M13.8 18.6c.4-2.2 1.7-3.4 3.4-3.4 1.6 0 2.9 1 3.3 3.1" /></svg> },
   { id: "f5", label: "Species Planning", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><path d="M12 21V10M12 10c0-4 2.8-6.5 7-7-.3 4.4-2.6 7-7 7ZM12 13c0-3-2.1-5-5.3-5.3.2 3.4 2 5.3 5.3 5.3Z" /></svg> },
   { id: "f6", label: "Monitoring & Audit", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><circle cx={11} cy={11} r={6.5} /><path d="m20 20-4-4M8.5 11l1.8 1.8 3.4-3.6" /></svg> },
-  { id: "f8", label: "Data Flow Schematics", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><rect x={3} y={3} width={6.5} height={5} rx={1.2} /><rect x={14.5} y={3} width={6.5} height={5} rx={1.2} /><rect x={8.75} y={16} width={6.5} height={5} rx={1.2} /><path d="M6.25 8v3.5h11.5V8M12 11.5V16" strokeLinecap="round" strokeLinejoin="round" /></svg> },
+  { id: "f8", label: "System Architecture", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><rect x={3} y={3} width={6.5} height={5} rx={1.2} /><rect x={14.5} y={3} width={6.5} height={5} rx={1.2} /><rect x={8.75} y={16} width={6.5} height={5} rx={1.2} /><path d="M6.25 8v3.5h11.5V8M12 11.5V16" strokeLinecap="round" strokeLinejoin="round" /></svg> },
   { id: "f7", label: "Financials", secure: true, icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><rect x={4.5} y={10} width={15} height={10} rx={2} /><path d="M8 10V7.5a4 4 0 0 1 8 0V10" /><circle cx={12} cy={15} r={1.4} /></svg> },
 ];
 
@@ -38,6 +46,7 @@ export default function CommandCenterApp({
   logoutSlot,
 }: CommandCenterAppProps) {
   const [frame, setFrame] = useState<FrameId>("f1");
+  const [architectureSection, setArchitectureSection] = useState<SchematicSectionId>("walkthrough");
   const [district, setDistrict] = useState("BLG");
   const [taluk, setTaluk] = useState(() => firstTalukCode("BLG"));
   const [voiceFilters, setVoiceFilters] = useState<CommandCenterFilterSet>({});
@@ -61,6 +70,10 @@ export default function CommandCenterApp({
       setTaluk(firstTalukCode(district));
     }
     setFrame("f9");
+  };
+  const openSystemArchitecture = (section: SchematicSectionId) => {
+    setArchitectureSection(section);
+    setFrame("f8");
   };
 
   const applyMitraAction = (action: CommandCenterUiAction) => {
@@ -105,9 +118,33 @@ export default function CommandCenterApp({
           <nav className="navgroup" aria-label="Operations">
             <div className="glabel">Operations</div>
             {NAV.filter(n => !n.secure).map(n => (
-              <button key={n.id} className={`navbtn${frame === n.id ? " active" : ""}`} onClick={() => setFrame(n.id)}>
-                {n.icon}{n.label}
-              </button>
+              n.id === "f8" ? (
+                <div className="navitem-stack" key={n.id}>
+                  <button
+                    className={`navbtn${frame === n.id ? " active" : ""}`}
+                    onClick={() => openSystemArchitecture(architectureSection)}
+                  >
+                    {n.icon}{n.label}
+                  </button>
+                  <div className="navsublist" aria-label="System Architecture sections">
+                    {ARCHITECTURE_SUBNAV.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`navsubbtn${frame === "f8" && architectureSection === item.id ? " active" : ""}`}
+                        onClick={() => openSystemArchitecture(item.id)}
+                      >
+                        <span className="navsubdot" />
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <button key={n.id} className={`navbtn${frame === n.id ? " active" : ""}`} onClick={() => setFrame(n.id)}>
+                  {n.icon}{n.label}
+                </button>
+              )
             ))}
           </nav>
           <nav className="navgroup" aria-label="Restricted">
@@ -192,7 +229,12 @@ export default function CommandCenterApp({
           {frame === "f5" && <Frame5 />}
           {frame === "f6" && <Frame6 />}
           {frame === "f7" && <Frame7 />}
-          {frame === "f8" && <Frame8 />}
+          {frame === "f8" && (
+            <Frame8
+              requestedSection={architectureSection}
+              onSectionChange={setArchitectureSection}
+            />
+          )}
         </main>
       </div>
 

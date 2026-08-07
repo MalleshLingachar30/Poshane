@@ -287,7 +287,7 @@ export const POSHANE_MITRA_TOOL_DEFINITIONS: RealtimeToolDefinition[] = [
     type: "function",
     name: "poshane_navigate_command_center",
     description:
-      "Navigate the existing command-center UI to a module, district, or taluk. Use immediately when the user says open, show, display, go to, take me to, or asks about a module such as Monitoring and Audit. Use taluk_drill_down for taluk-level records and data_flow_schematics for architecture diagrams or system data flow. Read-only; never modifies records.",
+      "Navigate the existing command-center UI to a module, district, or taluk. Use immediately when the user says open, show, display, go to, take me to, or asks about a module such as Monitoring and Audit. Use taluk_drill_down for taluk-level records and data_flow_schematics for System Architecture, GIS diagrams, or system data flow. Read-only; never modifies records.",
     parameters: {
       type: "object",
       properties: {

@@ -106,7 +106,7 @@ const MODULE_LABELS: Record<string, string> = {
   species_planning: "Species and Agro-Climatic Planning",
   monitoring_audit: "Monitoring and Audit",
   financials: "Restricted Financials",
-  data_flow_schematics: "Data Flow Schematics",
+  data_flow_schematics: "System Architecture",
 };
 
 function meta(tool: PoshaneMitraToolName): ToolResultMeta {

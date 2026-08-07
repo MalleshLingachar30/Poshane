@@ -1,12 +1,18 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { SCHEMATICS, SCHEMATIC_GROUPS, schematicSrc } from "../schematics";
+import {
+  SCHEMATICS,
+  SCHEMATIC_SECTIONS,
+  firstSchematicIdForSection,
+  schematicSrc,
+  type SchematicSectionId,
+} from "../schematics";
 
 /* ============================================================================
-   FRAME 8 — DATA FLOW SCHEMATICS
+   FRAME 8 — SYSTEM ARCHITECTURE
 
-   A presenter's frame. The sixteen documents in public/schematics are shown one
-   at a time in a horizontal strip above an iframe.
+   A presenter's frame. The architecture documents in public/schematics are
+   shown one at a time in an iframe, with a section rail above it.
 
    Why an iframe rather than inline SVG: the diagrams are ~350 KB of hand-drawn
    markup carrying their own type scale and their own <marker> ids. Inlined,
@@ -24,8 +30,13 @@ import { SCHEMATICS, SCHEMATIC_GROUPS, schematicSrc } from "../schematics";
 
 const FALLBACK_HEIGHT = 900;
 
-export function Frame8() {
-  const [activeId, setActiveId] = useState(SCHEMATICS[0].id);
+type Frame8Props = {
+  requestedSection?: SchematicSectionId;
+  onSectionChange?: (section: SchematicSectionId) => void;
+};
+
+export function Frame8({ requestedSection = "walkthrough", onSectionChange }: Frame8Props) {
+  const [activeId, setActiveId] = useState(() => firstSchematicIdForSection(requestedSection));
   /* Heights are cached per diagram. Without this, stepping back to a diagram
      already seen would collapse the frame to the fallback height and bounce the
      page until the reporter fires again. */
@@ -44,6 +55,7 @@ export function Frame8() {
 
   const index = SCHEMATICS.findIndex((s) => s.id === activeId);
   const active = SCHEMATICS[index] ?? SCHEMATICS[0];
+  const sectionItems = SCHEMATICS.filter((item) => item.section === active.section);
 
   const select = useCallback((id: string) => {
     setActiveId((current) => {
@@ -60,6 +72,23 @@ export function Frame8() {
     },
     [index, select]
   );
+
+  const selectSection = useCallback(
+    (section: SchematicSectionId) => {
+      const nextId = firstSchematicIdForSection(section);
+      select(nextId);
+    },
+    [select]
+  );
+
+  useEffect(() => {
+    if (active.section === requestedSection) return;
+    selectSection(requestedSection);
+  }, [active.section, requestedSection, selectSection]);
+
+  useEffect(() => {
+    onSectionChange?.(active.section);
+  }, [active.section, onSectionChange]);
 
   /* Height handshake with the embedded document. The reporter injected by
      scripts/split-schematics.mjs posts on load, on resize and on any observed
@@ -122,42 +151,57 @@ export function Frame8() {
   const height = heights[activeId] ?? FALLBACK_HEIGHT;
 
   return (
-    <section className="frame on" aria-label="Data Flow Schematics">
+    <section className="frame on" aria-label="System Architecture">
       <div className="frame-head">
-        <h2>Data Flow Schematics</h2>
+        <h2>System Architecture</h2>
         <span className="fdesc">
-          System architecture baseline v0.9 — {SCHEMATICS.length} diagrams · use ← → to step, F for fullscreen
+          System architecture baseline v0.9 — {SCHEMATICS.length} documents · use ← → to step, F for fullscreen
         </span>
       </div>
 
-      {/* ---------- horizontal diagram menu ---------- */}
-      <div className="schematic-strip" ref={stripRef} role="tablist" aria-label="Schematic diagrams">
-        {SCHEMATIC_GROUPS.map((group) => {
-          const items = SCHEMATICS.filter((s) => s.group === group);
-          if (!items.length) return null;
-          return (
-            <div className="sgroup" key={group}>
-              <div className="sglabel">{group}</div>
-              <div className="sgitems">
-                {items.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    role="tab"
-                    data-schematic={s.id}
-                    aria-selected={s.id === activeId}
-                    className={`schip${s.id === activeId ? " active" : ""}${s.id === "flow" ? " anim" : ""}`}
-                    onClick={() => select(s.id)}
-                    title={s.title}
-                  >
-                    <span className="sno">{s.no}</span>
-                    <span className="slabel">{s.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+      {/* ---------- section menu plus active section chips ---------- */}
+      <div className="schematic-strip">
+        <div className="schematic-sections" aria-label="System architecture sections">
+          {SCHEMATIC_SECTIONS.map((section) => (
+            <button
+              key={section.id}
+              type="button"
+              className={`ssection${section.id === active.section ? " active" : ""}`}
+              aria-pressed={section.id === active.section}
+              onClick={() => selectSection(section.id)}
+              title={section.blurb}
+            >
+              <span>{section.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="schematic-strip-note">
+          <span className="sglabel">
+            {SCHEMATIC_SECTIONS.find((section) => section.id === active.section)?.label}
+          </span>
+          <span className="sgmeta">
+            {SCHEMATIC_SECTIONS.find((section) => section.id === active.section)?.blurb}
+          </span>
+        </div>
+
+        <div className="sgitems" ref={stripRef} role="tablist" aria-label="Architecture documents">
+          {sectionItems.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              role="tab"
+              data-schematic={s.id}
+              aria-selected={s.id === activeId}
+              className={`schip${s.id === activeId ? " active" : ""}${s.id === "flow" ? " anim" : ""}`}
+              onClick={() => select(s.id)}
+              title={s.title}
+            >
+              <span className="sno">{s.no}</span>
+              <span className="slabel">{s.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ---------- selected diagram ---------- */}

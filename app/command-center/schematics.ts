@@ -7,14 +7,20 @@
 
    Ordering is deliberate and is NOT the diagram numbering. The numbering is the
    specification's, which groups by section (§2, §3 …); a room being walked
-   through the system for the first time needs the narrative instead. So the
-   animation opens — it is the whole story in nine steps with no jargon — then
-   structure, then identity, then the four data flows, then the controls that
-   sit around them. `no` keeps the specification's label visible so anyone
-   holding the written spec can still follow along.
+   through the system for the first time needs the narrative instead. The UI
+   now groups those documents into four room-friendly buckets: a walkthrough
+   section that carries the orienting material, then the operational data
+   flows, then the controls, then the GIS annex. `no` keeps the specification's
+   label visible so anyone holding the written spec can still follow along.
    ==========================================================================*/
 
-export type SchematicGroup = "Walkthrough" | "Structure" | "Identity" | "Data Flows" | "Controls";
+export type SchematicSectionId = "walkthrough" | "data-flow" | "controls" | "gis";
+
+export interface SchematicSection {
+  id: SchematicSectionId;
+  label: string;
+  blurb: string;
+}
 
 export interface Schematic {
   id: string;
@@ -28,8 +34,31 @@ export interface Schematic {
   ref: string;
   /** One line on what the diagram answers — the presenter's cue. */
   cue: string;
-  group: SchematicGroup;
+  section: SchematicSectionId;
 }
+
+export const SCHEMATIC_SECTIONS: readonly SchematicSection[] = [
+  {
+    id: "walkthrough",
+    label: "Walkthrough",
+    blurb: "Orientation, structure and identity.",
+  },
+  {
+    id: "data-flow",
+    label: "Data Flow",
+    blurb: "Operational movement from field action to evidence.",
+  },
+  {
+    id: "controls",
+    label: "Controls",
+    blurb: "Access, finance, audit and operating boundaries.",
+  },
+  {
+    id: "gis",
+    label: "GIS",
+    blurb: "Spatial data, polygon controls and remote sensing.",
+  },
+] as const;
 
 export const SCHEMATICS: Schematic[] = [
   {
@@ -39,7 +68,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "How a parcel becomes evidence",
     ref: "Animated walkthrough · 9 steps · English / ಕನ್ನಡ",
     cue: "The whole data flow in nine plain-language steps — from an officer walking a boundary to a number nobody can dispute. Use the Play button, or the arrow keys inside the frame.",
-    group: "Walkthrough",
+    section: "walkthrough",
   },
 
   {
@@ -49,7 +78,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "System Context",
     ref: "Specification §2",
     cue: "Who sits outside the platform boundary, and what crosses it.",
-    group: "Structure",
+    section: "walkthrough",
   },
   {
     id: "d2",
@@ -58,7 +87,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Layered Architecture",
     ref: "Specification §3",
     cue: "The stack from field device to data store, and what each layer is responsible for.",
-    group: "Structure",
+    section: "walkthrough",
   },
   {
     id: "d3",
@@ -67,7 +96,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Command Hierarchy & Escalation",
     ref: "Specification §4",
     cue: "Who reports to whom, and the path an unresolved issue takes upward.",
-    group: "Structure",
+    section: "walkthrough",
   },
 
   {
@@ -77,7 +106,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Parcel Identity & the Tag Lifecycle",
     ref: "Specification §5",
     cue: "Location ID as the durable identity of a place; Batch ID as a planting event at it.",
-    group: "Identity",
+    section: "walkthrough",
   },
   {
     id: "d5",
@@ -86,7 +115,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Land Parcel Lifecycle & the Approval Gate",
     ref: "Specification §6",
     cue: "The state machine. Nothing can be planted against a parcel that has not cleared state 8.",
-    group: "Identity",
+    section: "walkthrough",
   },
   {
     id: "d6",
@@ -95,7 +124,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Data Entry Points & the Two-Cadre Segregation",
     ref: "Specification §7",
     cue: "All fifteen ways data enters, and the two separately constituted cadres that keep entry honest.",
-    group: "Identity",
+    section: "walkthrough",
   },
 
   {
@@ -105,7 +134,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Flow A — Land identification to planting approval",
     ref: "Specification §8.1",
     cue: "How a candidate site travels from identification to a sanctioned, plantable parcel.",
-    group: "Data Flows",
+    section: "data-flow",
   },
   {
     id: "d8",
@@ -114,7 +143,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Flow B — Planting to survival assurance",
     ref: "Specification §8.2",
     cue: "From the planting event to an authoritative survival census carrying an audit co-signature.",
-    group: "Data Flows",
+    section: "data-flow",
   },
   {
     id: "d9",
@@ -123,7 +152,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Flow C — Audit & rectification · Flow D — Remote-sensing corroboration",
     ref: "Specification §8.3 · §8.4",
     cue: "How a finding becomes a rectification, and how satellite imagery corroborates without ever overriding the ground count.",
-    group: "Data Flows",
+    section: "data-flow",
   },
   {
     id: "d12",
@@ -132,7 +161,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Offline-first field operation",
     ref: "Specification §11",
     cue: "What the field device does with no network, and how it reconciles when the network returns.",
-    group: "Data Flows",
+    section: "data-flow",
   },
 
   {
@@ -142,7 +171,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Role-Based Access Control — Two Axes, One Permission",
     ref: "Specification §9",
     cue: "Permission as role × scope × record state, and the six rules that make self-approval structurally impossible.",
-    group: "Controls",
+    section: "controls",
   },
   {
     id: "d11",
@@ -151,7 +180,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "The Financial Boundary — No Funds Transit the Platform",
     ref: "Specification §10",
     cue: "What sits inside the platform and what deliberately does not. No money moves through it.",
-    group: "Controls",
+    section: "controls",
   },
   {
     id: "d13",
@@ -160,7 +189,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Audit Log & the Evidential Chain",
     ref: "Specification §12",
     cue: "Write-once records and the chain that makes an entry defensible years later.",
-    group: "Controls",
+    section: "controls",
   },
   {
     id: "d14",
@@ -169,7 +198,7 @@ export const SCHEMATICS: Schematic[] = [
     title: "Deployment, Hosting & Data Ownership",
     ref: "Specification §13",
     cue: "Where the data lives, who owns it, and what happens at the end of the engagement.",
-    group: "Controls",
+    section: "controls",
   },
   {
     id: "d15",
@@ -178,16 +207,21 @@ export const SCHEMATICS: Schematic[] = [
     title: "Conceptual Data Model — Parcel and Location ID as the Spine",
     ref: "Specification §14",
     cue: "The entities and their cardinalities, hung off Location ID.",
-    group: "Controls",
+    section: "controls",
+  },
+  {
+    id: "gis",
+    no: "G1–G6",
+    label: "Spatial & Remote Sensing",
+    title: "Spatial Data & Remote Sensing",
+    ref: "Schematics G1–G6 · Spatial annex",
+    cue: "The spatial stack in one annex — parcel ownership boundaries, polygon lifecycle, overlap controls, cadastre alignment and remote-sensing corroboration.",
+    section: "gis",
   },
 ];
 
-export const SCHEMATIC_GROUPS: SchematicGroup[] = [
-  "Walkthrough",
-  "Structure",
-  "Identity",
-  "Data Flows",
-  "Controls",
-];
+export function firstSchematicIdForSection(sectionId: SchematicSectionId) {
+  return SCHEMATICS.find((item) => item.section === sectionId)?.id ?? SCHEMATICS[0].id;
+}
 
 export const schematicSrc = (id: string) => `/schematics/${id}.html`;

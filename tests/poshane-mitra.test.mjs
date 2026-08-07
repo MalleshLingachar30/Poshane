@@ -103,6 +103,7 @@ test("assistant understands Poshane and routes monitoring audit requests", () =>
   assert.match(definitions, /Monitoring and Audit audit questions/);
   assert.match(provider, /MODULE_LABELS/);
   assert.match(provider, /opening \$\{MODULE_LABELS\[targetModule\]\}/);
+  assert.match(provider, /data_flow_schematics: "System Architecture"/);
   assert.match(provider, /highlightId: targetModule === "monitoring_audit" \? "monitoring-calendar"/);
 });
 
@@ -156,6 +157,12 @@ test("all required Poshane Mitra tool definitions are present", () => {
 test("assistant is embedded in the existing command-center shell and can target real UI elements", () => {
   assert.match(appShell, /<PoshaneMitra/);
   assert.match(appShell, /uiContext=\{\{/);
+  assert.match(appShell, /label: "System Architecture"/);
+  assert.match(appShell, /aria-label="System Architecture sections"/);
+  assert.match(appShell, /label: "Walkthrough"/);
+  assert.match(appShell, /label: "Data Flow"/);
+  assert.match(appShell, /label: "Controls"/);
+  assert.match(appShell, /label: "GIS"/);
   assert.match(appShell, /setFrame\(action\.frame\)/);
   assert.match(appShell, /setDistrict\(action\.districtCode\)/);
   assert.match(appShell, /CSS\.escape\(voiceHighlight\)/);

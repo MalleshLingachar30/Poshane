@@ -75,6 +75,16 @@
 .pcc .navbtn:hover{background:rgba(255,255,255,.05)}
 .pcc .navbtn.active{background:var(--green);color:#fff}
 .pcc .navbtn.active svg{opacity:1}
+.pcc .navitem-stack{display:grid;gap:4px}
+.pcc .navsublist{display:grid;gap:2px;margin:0 0 8px 34px;padding-left:12px;
+  border-left:1px solid rgba(255,255,255,.09)}
+.pcc .navsubbtn{display:flex;align-items:center;gap:8px;border:none;background:transparent;
+  color:var(--shell-dim);font-size:11.5px;font-weight:600;padding:5px 8px;border-radius:7px;
+  text-align:left;transition:background .15s,color .15s}
+.pcc .navsubbtn:hover{background:rgba(255,255,255,.04);color:var(--shell-text)}
+.pcc .navsubbtn.active{background:rgba(28,90,51,.28);color:#F2EDDF}
+.pcc .navsubdot{width:6px;height:6px;border-radius:50%;background:rgba(230,204,133,.5);flex:none}
+.pcc .navsubbtn.active .navsubdot{background:var(--gold-soft)}
 .pcc .navbtn .lockchip{margin-left:auto;font-size:9px;letter-spacing:.06em;color:var(--gold-soft);
   border:1px solid rgba(230,204,133,.4);border-radius:99px;padding:1px 6px}
 .pcc .mitra-dock{flex:1;min-height:220px;display:flex;align-items:center;justify-content:center;
@@ -550,10 +560,11 @@
 }
 
 /* ---------- DATA FLOW SCHEMATICS (FRAME 8) ---------- */
-/* The strip is the frame's whole navigation, so it stays pinned while a 1900px
-   diagram scrolls past underneath it — a presenter mid-sentence should never
-   have to scroll back up to reach the next diagram. */
-.pcc .schematic-strip{position:sticky;top:0;z-index:6;display:flex;gap:18px;flex-wrap:wrap;
+/* The architecture rail stays pinned while a long document scrolls past
+   underneath it. The top row chooses a section; the row beneath carries only
+   that section's documents so the presenter is not looking at the whole set at
+   once. */
+.pcc .schematic-strip{position:sticky;top:0;z-index:6;display:grid;gap:12px;
   background:var(--navy-2);border:1px solid var(--shell-line);border-radius:12px;
   padding:12px 14px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
 /* .main pins the strip at its own padding edge, leaving a 22px band above
@@ -561,9 +572,16 @@
    the frame's side padding — so the pinned strip reads as one solid bar. */
 .pcc .schematic-strip::before{content:"";position:absolute;left:-25px;right:-25px;top:-23px;
   height:23px;background:var(--navy)}
-.pcc .sgroup{display:flex;flex-direction:column;gap:7px;min-width:0}
+.pcc .schematic-sections{display:flex;gap:8px;flex-wrap:wrap}
+.pcc .ssection{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid var(--shell-line);
+  border-radius:999px;background:rgba(255,255,255,.03);color:var(--shell-text);padding:7px 12px;
+  font-size:12px;font-weight:700;transition:background .15s,border-color .15s,color .15s}
+.pcc .ssection:hover{background:#22355A;border-color:#33456B;color:#F2EDDF}
+.pcc .ssection.active{background:#1B2B48;border-color:rgba(230,204,133,.28);color:#FFF7E2}
+.pcc .schematic-strip-note{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .pcc .sglabel{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--shell-dim);
   font-weight:700}
+.pcc .sgmeta{font-size:11.5px;color:#AAB7CF}
 .pcc .sgitems{display:flex;gap:6px;flex-wrap:wrap}
 .pcc .schip{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
   background:var(--navy-3);color:var(--shell-text);border:1px solid var(--shell-line);
@@ -618,6 +636,7 @@
 
 @media (max-width:980px){
   .pcc .schematic-strip{position:static;gap:12px}
+  .pcc .schematic-sections{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
   .pcc .sv-head{padding:12px}
   .pcc .sv-tools{width:100%}
   .pcc .sv-cue{padding:10px 12px 0;font-size:12.3px}
@@ -860,6 +879,24 @@
     border:1px solid rgba(255,255,255,.08);
     background:rgba(255,255,255,.025);
   }
+  .pcc .navitem-stack{
+    flex:0 0 auto;
+  }
+  .pcc .navsublist{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin:0;
+    padding:0 0 0 6px;
+    border-left:none;
+  }
+  .pcc .navsubbtn{
+    flex:0 0 auto;
+    white-space:nowrap;
+    padding:6px 9px;
+    border:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.02);
+  }
   .pcc .navbtn.active{
     border-color:rgba(230,204,133,.25);
   }
@@ -984,6 +1021,12 @@
   .pcc .navgroup{
     padding:10px 10px;
   }
+  .pcc .navitem-stack{
+    gap:6px;
+  }
+  .pcc .navsublist{
+    padding:0;
+  }
   .pcc .navgroup .glabel{
     display:none;
   }
@@ -994,6 +1037,10 @@
   .pcc .navbtn svg{
     width:15px;
     height:15px;
+  }
+  .pcc .navsubbtn{
+    font-size:11px;
+    padding:5px 8px;
   }
   .pcc .frame-head{
     gap:6px;

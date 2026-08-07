@@ -14,6 +14,18 @@ const shellSource = readFileSync(
   new URL("../app/command-center/CommandCenterApp.tsx", import.meta.url),
   "utf8"
 );
+const schematicSource = readFileSync(
+  new URL("../app/command-center/schematics.ts", import.meta.url),
+  "utf8"
+);
+const schematicFrameSource = readFileSync(
+  new URL("../app/command-center/components/schematics.tsx", import.meta.url),
+  "utf8"
+);
+const schematicScriptSource = readFileSync(
+  new URL("../scripts/split-schematics.mjs", import.meta.url),
+  "utf8"
+);
 
 function configuredTalukRoster() {
   const match = talukSource.match(
@@ -86,4 +98,18 @@ test("taluk view is a third scope with full parameter search and district drill-
   ]) {
     assert.match(frameSource, new RegExp(`value="${parameter}"`));
   }
+});
+
+test("system architecture uses sectioned navigation and includes the GIS annex", () => {
+  assert.match(shellSource, /label: "System Architecture"/);
+  assert.match(shellSource, /aria-label="System Architecture sections"/);
+  assert.match(shellSource, /label: "GIS"/);
+  assert.match(schematicSource, /id: "walkthrough"/);
+  assert.match(schematicSource, /id: "data-flow"/);
+  assert.match(schematicSource, /id: "controls"/);
+  assert.match(schematicSource, /id: "gis"/);
+  assert.match(schematicSource, /id: "gis"[\s\S]*no: "G1–G6"/);
+  assert.match(schematicFrameSource, /<h2>System Architecture<\/h2>/);
+  assert.match(schematicFrameSource, /Architecture documents/);
+  assert.match(schematicScriptSource, /poshane-gis-schematics-g1-g6\.html/);
 });
