@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · G5</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --line:#DDD6C6;
+    --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC; --red:#9C2F2F;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px;}
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+  <div class="dnum">Schematic G5</div>
+  <h2>What the imagery can and cannot resolve</h2>
+  <div class="specref">The limits stated plainly, so no expectation is set that the system cannot meet</div>
+
+  <svg viewBox="0 0 1580 820" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Resolution limits">
+    <!-- pixel grids -->
+    <text x="330" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">2 ha parcel on 10 m pixels</text>
+    <path d="M90 70V250 M126 70V250 M162 70V250 M198 70V250 M234 70V250 M270 70V250 M306 70V250 M342 70V250 M378 70V250 M414 70V250 M450 70V250 M486 70V250 M522 70V250 M558 70V250 M90 70H570 M90 106H570 M90 142H570 M90 178H570 M90 214H570 M90 250H570" fill="none" stroke="#DDD6C6" stroke-width="1"/>
+    <rect x="126" y="106" width="396" height="108" fill="#1C5A33" fill-opacity="0.25" stroke="#1C5A33" stroke-width="0.5"/>
+    <rect x="90" y="70" width="480" height="180" fill="none" stroke="#1C5A33" stroke-width="2.4"/>
+    <text x="330" y="286" text-anchor="middle" class="serif" font-size="20" fill="#1C5A33">≈150 clean pixels</text>
+    <text x="330" y="310" text-anchor="middle" font-size="11.5" fill="#1F2430">solid measurement</text>
+
+    <text x="900" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#C09A3E">0.5 ha parcel</text>
+    <path d="M780 70V250 M816 70V250 M852 70V250 M888 70V250 M924 70V250 M960 70V250 M996 70V250 M1020 70V250 M780 70H1020 M780 106H1020 M780 142H1020 M780 178H1020 M780 214H1020 M780 250H1020" fill="none" stroke="#DDD6C6" stroke-width="1"/>
+    <rect x="816" y="106" width="168" height="72" fill="#C09A3E" fill-opacity="0.3" stroke="#C09A3E" stroke-width="0.5"/>
+    <rect x="780" y="70" width="240" height="144" fill="none" stroke="#C09A3E" stroke-width="2.4"/>
+    <text x="900" y="286" text-anchor="middle" class="serif" font-size="20" fill="#C09A3E">≈24 clean pixels</text>
+    <text x="900" y="310" text-anchor="middle" font-size="11.5" fill="#1F2430">marginal — roughly the floor</text>
+
+    <text x="1340" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#9C2F2F">5 m roadside strip</text>
+    <path d="M1160 70V250 M1196 70V250 M1232 70V250 M1268 70V250 M1304 70V250 M1340 70V250 M1376 70V250 M1412 70V250 M1448 70V250 M1484 70V250 M1520 70V250 M1160 70H1520 M1160 106H1520 M1160 142H1520 M1160 178H1520 M1160 214H1520 M1160 250H1520" fill="none" stroke="#DDD6C6" stroke-width="1"/>
+    <rect x="1160" y="152" width="360" height="18" fill="#9C2F2F" fill-opacity="0.75"/>
+    <text x="1340" y="286" text-anchor="middle" class="serif" font-size="20" fill="#9C2F2F">no clean pixels</text>
+    <text x="1340" y="310" text-anchor="middle" font-size="11.5" fill="#1F2430">narrower than a single pixel</text>
+
+    <!-- edge rule -->
+    <rect x="90" y="350" width="700" height="120" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1"/>
+    <text x="116" y="380" font-size="13" font-weight="700" fill="#1C5A33">Every pixel touching the boundary is mixed</text>
+    <text x="116" y="406" font-size="11.5" fill="#1F2430">Part your parcel, part the neighbouring field, part the road. Including them</text>
+    <text x="116" y="428" font-size="11.5" fill="#1F2430">means measuring somebody else's land.</text>
+    <text x="116" y="454" font-size="11.5" font-weight="700" fill="#1C5A33">The working geometry is the boundary pulled inward by one pixel.</text>
+
+    <rect x="820" y="350" width="700" height="120" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+    <text x="846" y="380" font-size="13" font-weight="700" fill="#8A6D1C">Parcels below the floor are marked, not silently scored</text>
+    <text x="846" y="406" font-size="11.5" fill="#1F2430">Below roughly half a hectare the sample is too small to defend. Such parcels</text>
+    <text x="846" y="428" font-size="11.5" fill="#1F2430">are flagged not remotely assessable rather than returned with a number</text>
+    <text x="846" y="450" font-size="11.5" fill="#1F2430">nobody should trust. The clean pixel count is stored with every indicator.</text>
+
+    <!-- what no satellite can do -->
+    <rect x="90" y="502" width="1430" height="160" fill="#27467A"/>
+    <text x="805" y="540" text-anchor="middle" class="serif" font-size="19" fill="#FFFFFF">No satellite ever built can see a one-year-old sapling.</text>
+    <text x="805" y="576" text-anchor="middle" font-size="12.5" fill="#EAEEF5">It is knee-high and has no canopy. Not at 10 m, not at 3 m, not at the 25 cm of Cartosat-3. Sub-metre imagery does not solve this problem at any price.</text>
+    <text x="805" y="606" text-anchor="middle" font-size="12.5" fill="#EAEEF5">Survival in years one to three is proven on the ground — the tag tap, the GPS fix, the in-app photograph, the audit cadre's independent count.</text>
+    <text x="805" y="636" text-anchor="middle" font-size="12.5" font-weight="700" fill="#F6EEDC">Linear plantings along roads and canal banks are excluded from remote corroboration entirely, and assured by ground evidence alone.</text>
+
+    <text x="790" y="798" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">Resolution, revisit frequency and cost form a triangle in which only two can be had at once. What the
+  programme needs is not sharpness but a consistent, comparable time series over the same polygon, which is a frequency
+  problem — and the free tier solves it. Stating the limits in the specification is deliberate: an expectation that satellites
+  will verify first-year survival, once formed in a meeting, is far more damaging than the limitation itself.</p>
+</section>
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

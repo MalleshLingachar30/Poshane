@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · G6</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --line:#DDD6C6;
+    --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC; --red:#9C2F2F;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px;}
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+  <div class="dnum">Schematic G6</div>
+  <h2>Sources, residency and substitutability</h2>
+  <div class="specref">§13 · which layer comes from where, what crosses the India boundary, and what replaces it if withdrawn</div>
+
+  <svg viewBox="0 0 1580 840" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Source and residency map">
+    <!-- India region -->
+    <rect x="60" y="60" width="880" height="620" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="86" y="92" font-size="11" letter-spacing="2.5" fill="#1C5A33" font-weight="700">INDIA REGION — STORED AND PROCESSED WITHIN THE COUNTRY</text>
+
+    <rect x="90" y="112" width="820" height="104" fill="#1C5A33"/>
+    <text x="500" y="146" text-anchor="middle" class="serif" font-size="19" fill="#FFFFFF">PostGIS — parcel geometry, the system of record</text>
+    <text x="500" y="172" text-anchor="middle" font-size="11.5" fill="#F6EEDC">Owned by KSLSA · operated by Grobet as Technology Partner · exportable in open formats at any time</text>
+    <text x="500" y="196" text-anchor="middle" font-size="11" fill="#F6EEDC">Overlap gate, area reconciliation and every stored survival and canopy figure run here</text>
+
+    <rect x="90" y="236" width="400" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+    <text x="290" y="266" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">KSRSAC · K-GIS</text>
+    <text x="290" y="290" text-anchor="middle" font-size="11" fill="#1F2430">basemap, terrain, thematic and forest layers</text>
+    <text x="290" y="310" text-anchor="middle" font-size="11" fill="#1F2430">offline tile packs for the field devices</text>
+    <text x="290" y="334" text-anchor="middle" font-size="10.5" fill="#6B6F7B">state nodal agency · WMS · under MoU</text>
+    <text x="290" y="354" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8A6D1C">reference, not legal record</text>
+
+    <rect x="510" y="236" width="400" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+    <text x="710" y="266" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">Bhoomi · departmental records</text>
+    <text x="710" y="290" text-anchor="middle" font-size="11" fill="#1F2430">RTC extent, ownership, custody</text>
+    <text x="710" y="314" text-anchor="middle" font-size="10.5" fill="#6B6F7B">read-only · the platform references</text>
+    <text x="710" y="334" text-anchor="middle" font-size="10.5" fill="#6B6F7B">and never writes into departmental systems</text>
+
+    <rect x="90" y="386" width="400" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+    <text x="290" y="416" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">Bhoonidhi · NRSC</text>
+    <text x="290" y="440" text-anchor="middle" font-size="11" fill="#1F2430">Cartosat sub-metre archive scenes</text>
+    <text x="290" y="460" text-anchor="middle" font-size="11" fill="#1F2430">baseline and boundary verification at approval</text>
+    <text x="290" y="484" text-anchor="middle" font-size="10.5" fill="#6B6F7B">one-time per parcel cluster, not a subscription</text>
+    <text x="290" y="504" text-anchor="middle" font-size="10.5" fill="#6B6F7B">ISRO-sourced · institutionally strong in this setting</text>
+
+    <rect x="510" y="386" width="400" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+    <text x="710" y="416" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">Evidence store</text>
+    <text x="710" y="440" text-anchor="middle" font-size="11" fill="#1F2430">field photographs, clipped scenes,</text>
+    <text x="710" y="460" text-anchor="middle" font-size="11" fill="#1F2430">indicators and their provenance</text>
+    <text x="710" y="484" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8A6D1C">write-once</text>
+
+    <rect x="90" y="536" width="820" height="118" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+    <text x="500" y="566" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8A6D1C">Regulatory position</text>
+    <text x="500" y="592" text-anchor="middle" font-size="11.5" fill="#1F2430">Geospatial data finer than the prescribed threshold may be created and owned only by Indian entities,</text>
+    <text x="500" y="614" text-anchor="middle" font-size="11.5" fill="#1F2430">and must be stored and processed in India. Grobet is an Indian entity; the parcel register sits in the India region.</text>
+    <text x="500" y="640" text-anchor="middle" font-size="11" fill="#6B6F7B">The accuracy classification of handset-walked boundaries is a question for counsel, to be settled before §13 is issued.</text>
+
+    <!-- boundary -->
+    <line x1="970" y1="60" x2="970" y2="680" stroke="#27467A" stroke-width="2.4" stroke-dasharray="10 6"/>
+    <text x="984" y="372" font-size="11" fill="#27467A" font-weight="700" letter-spacing="2" transform="rotate(90 984 372)" text-anchor="middle">RESIDENCY BOUNDARY</text>
+
+    <!-- outside -->
+    <rect x="1010" y="60" width="510" height="620" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6" stroke-dasharray="6 4"/>
+    <text x="1036" y="92" font-size="11" letter-spacing="2.5" fill="#27467A" font-weight="700">OUTSIDE INDIA — VIEWING AND COMPUTE ONLY</text>
+
+    <rect x="1040" y="112" width="450" height="150" fill="#EAEEF5" stroke="#27467A" stroke-width="1.2"/>
+    <text x="1265" y="144" text-anchor="middle" font-size="13" font-weight="700" fill="#27467A">ESA Copernicus — Sentinel-2</text>
+    <text x="1265" y="168" text-anchor="middle" font-size="11" fill="#1F2430">the imagery itself · free and open</text>
+    <text x="1265" y="188" text-anchor="middle" font-size="11" fill="#1F2430">10 m, revisiting every five days</text>
+    <text x="1265" y="212" text-anchor="middle" font-size="10.5" fill="#6B6F7B">not a vendor relationship — a public archive</text>
+    <text x="1265" y="238" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1C5A33">this is what makes the corroboration unfalsifiable</text>
+
+    <rect x="1040" y="286" width="450" height="150" fill="#EAEEF5" stroke="#27467A" stroke-width="1.2"/>
+    <text x="1265" y="318" text-anchor="middle" font-size="13" font-weight="700" fill="#27467A">Google Earth Engine</text>
+    <text x="1265" y="342" text-anchor="middle" font-size="11" fill="#1F2430">compute beside the archive</text>
+    <text x="1265" y="362" text-anchor="middle" font-size="11" fill="#1F2430">a polygon goes out, a number comes back</text>
+    <text x="1265" y="388" text-anchor="middle" font-size="10.5" fill="#8A6D1C">commercially licensed · processing occurs abroad</text>
+    <text x="1265" y="412" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1C5A33">substitute: Copernicus direct, or Bhoonidhi</text>
+
+    <rect x="1040" y="460" width="450" height="132" fill="#EAEEF5" stroke="#27467A" stroke-width="1.2"/>
+    <text x="1265" y="492" text-anchor="middle" font-size="13" font-weight="700" fill="#27467A">Google Maps Platform</text>
+    <text x="1265" y="516" text-anchor="middle" font-size="11" fill="#1F2430">console backdrop, elevation, routing</text>
+    <text x="1265" y="540" text-anchor="middle" font-size="10.5" fill="#6B6F7B">fallback where a K-GIS layer is stale for a district</text>
+    <text x="1265" y="566" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1C5A33">substitute: swap the tile source in configuration</text>
+
+    <text x="1265" y="634" text-anchor="middle" font-size="11.5" font-weight="700" fill="#27467A">Every commercial dependency here is a</text>
+    <text x="1265" y="656" text-anchor="middle" font-size="11.5" font-weight="700" fill="#27467A">viewing or compute step, and each has a named substitute.</text>
+
+    <text x="790" y="720" text-anchor="middle" class="serif" font-size="17" fill="#1C5A33">Layer sources are held in configuration, not in code — K-GIS preferred, commercial fallback, with no dependency on the critical path to go-live.</text>
+
+    <text x="790" y="818" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">The dashed line is the only boundary that matters to a residency question. Everything to its left is
+  stored and processed in India and owned by KSLSA; everything to its right supplies either a picture to look at or a
+  computation to run, and each has a named replacement. Google is not selling the imagery — Sentinel-2 belongs to ESA and is
+  free to anyone — which is precisely why the corroboration is defensible: the evidence is publicly retrievable and
+  independently verifiable, rather than being whatever a supplier chose to provide.</p>
+</section>
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

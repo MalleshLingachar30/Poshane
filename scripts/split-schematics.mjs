@@ -53,13 +53,17 @@ const SHEETS = [
     wrapper: null,
     panels: ["d10", "d11", "d13", "d14", "d15"],
   },
+  {
+    file: "poshane-gis-schematics-g1-g6.html",
+    wrapper: "wrap",
+    panels: ["g1", "g2", "g3", "g4", "g5", "g6"],
+  },
 ];
 
-/* The step-through animation and the GIS annex are already self-contained
-   documents with their own layout. They are copied, not split. */
+/* The step-through animation is already a self-contained document with its own
+   layout. It is copied, not split. */
 const STANDALONE = [
   { file: "poshane-data-flow-animation-v3.html", id: "flow" },
-  { file: "poshane-gis-schematics-g1-g6.html", id: "gis" },
 ];
 
 /* Reports height to the viewer so the iframe can be sized to its content and

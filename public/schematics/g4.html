@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · G4</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --line:#DDD6C6;
+    --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC; --red:#9C2F2F;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px;}
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+  <div class="dnum">Schematic G4</div>
+  <h2>Remote-sensing corroboration — how a polygon becomes an indicator</h2>
+  <div class="specref">§8.4 Flow D · the archive already exists; the polygon selects from it</div>
+
+  <svg viewBox="0 0 1580 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Remote sensing corroboration">
+    <defs>
+      <marker id="a-g4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="a-n4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+    </defs>
+
+    <!-- independent band -->
+    <rect x="60" y="60" width="1460" height="170" fill="#EAEEF5" stroke="#27467A" stroke-width="1.2"/>
+    <text x="86" y="90" font-size="11" letter-spacing="2.5" fill="#27467A" font-weight="700">HAPPENS REGARDLESS OF THE PROGRAMME</text>
+
+    <rect x="96" y="106" width="300" height="100" fill="#FFFFFF" stroke="#27467A" stroke-width="1.2"/>
+    <text x="246" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#27467A">Sentinel-2</text>
+    <text x="246" y="163" text-anchor="middle" font-size="11" fill="#1F2430">photographs the entire land surface</text>
+    <text x="246" y="181" text-anchor="middle" font-size="11" fill="#1F2430">every five days, since 2015</text>
+    <text x="246" y="199" text-anchor="middle" font-size="10.5" fill="#6B6F7B">nothing is sent up; nothing is requested</text>
+
+    <line x1="396" y1="156" x2="450" y2="156" stroke="#27467A" stroke-width="1.8" marker-end="url(#a-n4)"/>
+
+    <rect x="456" y="106" width="320" height="100" fill="#FFFFFF" stroke="#27467A" stroke-width="1.2"/>
+    <text x="616" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#27467A">ESA Copernicus archive</text>
+    <text x="616" y="163" text-anchor="middle" font-size="11" fill="#1F2430">source of record · free and open</text>
+    <text x="616" y="181" text-anchor="middle" font-size="11" fill="#1F2430">independently retrievable by anyone</text>
+    <text x="616" y="199" text-anchor="middle" font-size="10.5" fill="#6B6F7B">held outside India</text>
+
+    <line x1="776" y1="156" x2="830" y2="156" stroke="#27467A" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a-n4)"/>
+
+    <rect x="836" y="106" width="300" height="100" fill="#FFFFFF" stroke="#27467A" stroke-width="1.2" stroke-dasharray="5 4"/>
+    <text x="986" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#27467A">Google mirror</text>
+    <text x="986" y="163" text-anchor="middle" font-size="11" fill="#1F2430">the same pixels, pre-indexed</text>
+    <text x="986" y="181" text-anchor="middle" font-size="11" fill="#6B6F7B">a convenience, not a licence to the data</text>
+    <text x="986" y="199" text-anchor="middle" font-size="10.5" fill="#6B6F7B">substitutable: Copernicus direct, or Bhoonidhi</text>
+
+    <text x="1180" y="140" font-size="11.5" fill="#27467A" font-weight="700">Because the capture predates</text>
+    <text x="1180" y="160" font-size="11.5" fill="#27467A" font-weight="700">the claim and is held by a third</text>
+    <text x="1180" y="180" font-size="11.5" fill="#27467A" font-weight="700">party, nobody in the programme</text>
+    <text x="1180" y="200" font-size="11.5" fill="#27467A" font-weight="700">can alter what it shows.</text>
+
+    <!-- request cycle -->
+    <text x="60" y="284" font-size="11" letter-spacing="2.5" fill="#1C5A33" font-weight="700">WHAT THE PLATFORM DOES</text>
+
+    <rect x="60" y="300" width="250" height="104" fill="#1C5A33"/>
+    <text x="185" y="336" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">Working polygon</text>
+    <text x="185" y="358" text-anchor="middle" font-size="10.5" fill="#F6EEDC">sent out as GeoJSON</text>
+    <text x="185" y="378" text-anchor="middle" font-size="10.5" fill="#F6EEDC">inward-buffered by one pixel</text>
+
+    <line x1="310" y1="352" x2="366" y2="352" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g4)"/>
+
+    <rect x="372" y="300" width="260" height="104" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.6"/>
+    <text x="502" y="330" text-anchor="middle" font-size="13" font-weight="700" fill="#1F2430">Filter the catalog</text>
+    <text x="502" y="352" text-anchor="middle" font-size="10.5" fill="#6B6F7B">scenes intersecting the polygon,</text>
+    <text x="502" y="368" text-anchor="middle" font-size="10.5" fill="#6B6F7B">within a date window,</text>
+    <text x="502" y="384" text-anchor="middle" font-size="10.5" fill="#6B6F7B">below a cloud threshold</text>
+
+    <line x1="632" y1="352" x2="688" y2="352" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g4)"/>
+
+    <rect x="694" y="300" width="260" height="104" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.6"/>
+    <text x="824" y="330" text-anchor="middle" font-size="13" font-weight="700" fill="#1F2430">Clip and reduce</text>
+    <text x="824" y="352" text-anchor="middle" font-size="10.5" fill="#6B6F7B">pixels inside the shape only —</text>
+    <text x="824" y="368" text-anchor="middle" font-size="10.5" fill="#6B6F7B">a cookie cutter on an existing scene</text>
+    <text x="824" y="386" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8A6D1C">mean · stdDev · pixel count</text>
+
+    <line x1="954" y1="352" x2="1010" y2="352" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g4)"/>
+
+    <rect x="1016" y="300" width="260" height="104" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.4"/>
+    <text x="1146" y="330" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">Returned</text>
+    <text x="1146" y="354" text-anchor="middle" font-size="10.5" fill="#1F2430">one indicator value,</text>
+    <text x="1146" y="372" text-anchor="middle" font-size="10.5" fill="#1F2430">plus the clipped scene</text>
+
+    <line x1="1276" y1="352" x2="1332" y2="352" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g4)"/>
+
+    <rect x="1338" y="300" width="182" height="104" fill="#1C5A33"/>
+    <text x="1429" y="336" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Evidence store</text>
+    <text x="1429" y="358" text-anchor="middle" font-size="10.5" fill="#F6EEDC">write-once, India</text>
+    <text x="1429" y="378" text-anchor="middle" font-size="10.5" fill="#F6EEDC">no re-query needed later</text>
+
+    <!-- provenance -->
+    <text x="60" y="452" font-size="11" letter-spacing="2.5" fill="#1C5A33" font-weight="700">STORED WITH THE NUMBER, NOT INSTEAD OF IT</text>
+    <rect x="60" y="468" width="1000" height="104" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1"/>
+    <g font-size="11.5" fill="#1F2430">
+      <text x="86" y="498">· scene identifier and sensor</text>
+      <text x="86" y="522">· capture date and processing baseline</text>
+      <text x="86" y="546">· cloud fraction at capture</text>
+      <text x="560" y="498">· index and algorithm version</text>
+      <text x="560" y="522">· clean pixel count after inward buffer</text>
+      <text x="560" y="546">· geometry version the value was computed over</text>
+    </g>
+    <rect x="1080" y="468" width="440" height="104" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+    <text x="1300" y="500" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8A6D1C">Why provenance, not a bare number</text>
+    <text x="1300" y="524" text-anchor="middle" font-size="11" fill="#1F2430">ESA reprocesses the archive as calibration</text>
+    <text x="1300" y="544" text-anchor="middle" font-size="11" fill="#1F2430">improves. A value recomputed in 2032 may differ</text>
+    <text x="1300" y="562" text-anchor="middle" font-size="11" fill="#1F2430">slightly. Provenance makes that explainable.</text>
+
+    <!-- standing rule -->
+    <rect x="60" y="612" width="1460" height="132" fill="#27467A"/>
+    <text x="790" y="648" text-anchor="middle" class="serif" font-size="19" fill="#FFFFFF">The indicator is derived. It annotates and flags; it never originates, approves, or alters a record of fact.</text>
+    <text x="790" y="682" text-anchor="middle" font-size="12.5" fill="#EAEEF5">Where the indicator diverges from the reported survival figure, the divergence raises an audit task for a human under Flow D.</text>
+    <text x="790" y="708" text-anchor="middle" font-size="12.5" fill="#EAEEF5">It does not adjust the survival figure. Survival remains established by the tag-anchored ground count and the two-signature census.</text>
+    <text x="790" y="732" text-anchor="middle" font-size="11.5" font-style="italic" fill="#F6EEDC">Satellite corroboration becomes meaningful from roughly year three, as crowns begin to close.</text>
+
+    <text x="790" y="878" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">Nothing is transmitted to the satellite. Sentinel-2 has been photographing that ground on a fixed schedule
+  since 2015, whether or not the programme exists; the polygon is a crop applied to a scene that already sits in the catalog.
+  That is precisely why the corroboration carries weight — the capture predates the claim, and is held by ESA rather than by
+  anyone with an interest in the outcome. The platform exports both the indicator and the clipped scene into its own evidence
+  store, so an officer in 2032 is served from Indian infrastructure rather than from a live query to a commercial supplier.</p>
+</section>
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

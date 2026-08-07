@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · G2</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --line:#DDD6C6;
+    --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC; --red:#9C2F2F;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px;}
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+  <div class="dnum">Schematic G2</div>
+  <h2>Polygon lifecycle — from a walked boundary to a Location ID</h2>
+  <div class="specref">§6 approval gate · the geometry must clear four checks before an identity is issued</div>
+
+  <svg viewBox="0 0 1580 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Polygon lifecycle">
+    <defs>
+      <marker id="a-g2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="a-r2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9C2F2F"/></marker>
+    </defs>
+
+    <!-- main spine -->
+    <g font-size="12.5">
+      <rect x="50" y="120" width="200" height="96" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="150" y="152" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Boundary walk</text>
+      <text x="150" y="174" text-anchor="middle" font-size="10.5" fill="#6B6F7B">a few hundred vertices,</text>
+      <text x="150" y="188" text-anchor="middle" font-size="10.5" fill="#6B6F7B">GPS noise on every one</text>
+      <text x="150" y="207" text-anchor="middle" font-size="10.5" fill="#1C5A33">offline capable</text>
+
+      <line x1="250" y1="168" x2="298" y2="168" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g2)"/>
+
+      <rect x="304" y="120" width="200" height="96" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="404" y="152" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Validate</text>
+      <text x="404" y="174" text-anchor="middle" font-size="10.5" fill="#6B6F7B">ST_IsValid — closed ring,</text>
+      <text x="404" y="188" text-anchor="middle" font-size="10.5" fill="#6B6F7B">no self-intersection</text>
+      <text x="404" y="207" text-anchor="middle" font-size="10.5" fill="#6B6F7B">longitude, latitude order</text>
+
+      <line x1="504" y1="168" x2="552" y2="168" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g2)"/>
+
+      <rect x="558" y="120" width="200" height="96" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="658" y="152" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Simplify</text>
+      <text x="658" y="174" text-anchor="middle" font-size="10.5" fill="#6B6F7B">tolerance near GPS error,</text>
+      <text x="658" y="188" text-anchor="middle" font-size="10.5" fill="#6B6F7B">topology preserved</text>
+      <text x="658" y="207" text-anchor="middle" font-size="10.5" fill="#6B6F7B">raw track kept as evidence</text>
+
+      <line x1="758" y1="168" x2="806" y2="168" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g2)"/>
+
+      <rect x="812" y="120" width="200" height="96" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="912" y="152" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Area reconcile</text>
+      <text x="912" y="174" text-anchor="middle" font-size="10.5" fill="#6B6F7B">walked extent against</text>
+      <text x="912" y="188" text-anchor="middle" font-size="10.5" fill="#6B6F7B">the RTC record</text>
+
+      <line x1="1012" y1="168" x2="1060" y2="168" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g2)"/>
+
+      <!-- gate -->
+      <rect x="1066" y="112" width="212" height="112" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.2"/>
+      <text x="1172" y="146" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1F2430">Overlap gate</text>
+      <text x="1172" y="168" text-anchor="middle" font-size="10.5" fill="#6B6F7B">tested against every parcel</text>
+      <text x="1172" y="182" text-anchor="middle" font-size="10.5" fill="#6B6F7B">already in the register</text>
+      <text x="1172" y="204" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8A6D1C">blocking — see G3</text>
+
+      <line x1="1278" y1="168" x2="1326" y2="168" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#a-g2)"/>
+
+      <rect x="1332" y="120" width="196" height="96" fill="#1C5A33"/>
+      <text x="1430" y="156" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Location ID</text>
+      <text x="1430" y="180" text-anchor="middle" font-size="10.5" fill="#F6EEDC">issued only here</text>
+      <text x="1430" y="200" text-anchor="middle" font-size="10.5" fill="#F6EEDC">tag bound to the parcel</text>
+    </g>
+
+    <!-- rejection paths -->
+    <path d="M404,216 V288 H150 V226" fill="none" stroke="#9C2F2F" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a-r2)"/>
+    <text x="290" y="308" text-anchor="middle" font-size="11" fill="#9C2F2F">invalid geometry — returns to the field</text>
+
+    <path d="M1172,224 V340 H150 V226" fill="none" stroke="#9C2F2F" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a-r2)"/>
+    <text x="700" y="360" text-anchor="middle" font-size="11" fill="#9C2F2F">material overlap — no Location ID; twice-rejected parcels flagged for district review (§6.3)</text>
+
+    <!-- what is stored -->
+    <text x="60" y="424" font-size="11" letter-spacing="2.5" fill="#1C5A33" font-weight="700">WHAT IS STORED, AND WHY BOTH</text>
+    <rect x="60" y="440" width="700" height="130" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1"/>
+    <text x="86" y="472" font-size="13.5" font-weight="700" fill="#1C5A33">Raw walked track</text>
+    <text x="86" y="497" font-size="11.5" fill="#1F2430">Every vertex the handset recorded, unaltered, written once.</text>
+    <text x="86" y="519" font-size="11.5" fill="#1F2430">Evidence of what the officer actually walked.</text>
+    <text x="86" y="548" font-size="11" fill="#6B6F7B">Produced once. Never edited. Retrieved only if a boundary is disputed.</text>
+
+    <rect x="800" y="440" width="720" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1"/>
+    <text x="826" y="472" font-size="13.5" font-weight="700" fill="#1C5A33">Working polygon</text>
+    <text x="826" y="497" font-size="11.5" fill="#1F2430">Simplified, validated, versioned. The geometry every check runs against,</text>
+    <text x="826" y="519" font-size="11.5" fill="#1F2430">and the shape sent for canopy corroboration.</text>
+    <text x="826" y="548" font-size="11" fill="#6B6F7B">If a boundary is later corrected the version increments; indicators are pinned to the version used.</text>
+
+    <!-- caution band -->
+    <rect x="60" y="600" width="1460" height="74" fill="#27467A"/>
+    <text x="790" y="632" text-anchor="middle" font-size="13.5" fill="#FFFFFF">The polygon is created at verification, before anything is planted — the overlap and area checks both require geometry.</text>
+    <text x="790" y="656" text-anchor="middle" font-size="12" fill="#EAEEF5">A representative point is stored alongside it for the physical tag position and for map pinning, never instead of it.</text>
+
+    <text x="790" y="738" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">A Location ID is an assertion that this piece of ground is distinct, is what the land record says it is,
+  and is not already claimed. The four checks establish exactly that, and the identity is issued only once they clear. Both
+  the raw track and the simplified working polygon are retained: the first is evidence, the second is the geometry the system
+  operates on, and conflating them would mean either slow checks or a disputed boundary with no original to appeal to.</p>
+</section>
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

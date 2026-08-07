@@ -107,9 +107,13 @@ test("system architecture uses sectioned navigation and includes the GIS annex",
   assert.match(schematicSource, /id: "walkthrough"/);
   assert.match(schematicSource, /id: "data-flow"/);
   assert.match(schematicSource, /id: "controls"/);
-  assert.match(schematicSource, /id: "gis"/);
-  assert.match(schematicSource, /id: "gis"[\s\S]*no: "G1–G6"/);
+  for (const id of ["g1", "g2", "g3", "g4", "g5", "g6"]) {
+    assert.match(schematicSource, new RegExp(`id: "${id}"`));
+  }
+  assert.match(schematicSource, /id: "g1"[\s\S]*no: "G1"/);
+  assert.match(schematicSource, /id: "g6"[\s\S]*no: "G6"/);
   assert.match(schematicFrameSource, /<h2>System Architecture<\/h2>/);
   assert.match(schematicFrameSource, /Architecture documents/);
   assert.match(schematicScriptSource, /poshane-gis-schematics-g1-g6\.html/);
+  assert.match(schematicScriptSource, /panels: \["g1", "g2", "g3", "g4", "g5", "g6"\]/);
 });

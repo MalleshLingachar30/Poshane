@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · G3</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --line:#DDD6C6;
+    --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC; --red:#9C2F2F;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px;}
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+  <div class="dnum">Schematic G3</div>
+  <h2>The overlap gate — three verdicts from one check</h2>
+  <div class="specref">§6.3 · thresholds held in reference data, tunable by KSLSA without redeployment</div>
+
+  <svg viewBox="0 0 1580 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Overlap typology">
+    <!-- panel 1: sliver -->
+    <text x="270" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">Adjacency</text>
+    <text x="270" y="72" text-anchor="middle" font-size="11" fill="#6B6F7B">two officers walking a shared edge</text>
+    <rect x="90" y="100" width="240" height="130" fill="#1C5A33" fill-opacity="0.16" stroke="#1C5A33" stroke-width="1.8"/>
+    <rect x="326" y="100" width="150" height="130" fill="#27467A" fill-opacity="0.16" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4"/>
+    <rect x="326" y="100" width="5" height="130" fill="#C09A3E"/>
+    <text x="270" y="262" text-anchor="middle" class="serif" font-size="22" fill="#1C5A33">2%</text>
+    <text x="270" y="286" text-anchor="middle" font-size="11.5" fill="#1F2430">of the smaller parcel</text>
+    <rect x="90" y="310" width="386" height="86" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1"/>
+    <text x="283" y="338" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">Auto-tolerate</text>
+    <text x="283" y="360" text-anchor="middle" font-size="11" fill="#1F2430">Within GPS error. Logged; shared edge snapped.</text>
+    <text x="283" y="380" text-anchor="middle" font-size="11" fill="#6B6F7B">Location ID issued.</text>
+
+    <!-- panel 2: material -->
+    <text x="790" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#C09A3E">Material overlap</text>
+    <text x="790" y="72" text-anchor="middle" font-size="11" fill="#6B6F7B">partial claim on planted ground</text>
+    <rect x="610" y="100" width="240" height="130" fill="#1C5A33" fill-opacity="0.16" stroke="#1C5A33" stroke-width="1.8"/>
+    <rect x="770" y="126" width="220" height="130" fill="#C09A3E" fill-opacity="0.22" stroke="#C09A3E" stroke-width="1.8" stroke-dasharray="6 4"/>
+    <text x="790" y="292" text-anchor="middle" class="serif" font-size="22" fill="#C09A3E">18%</text>
+    <text x="790" y="316" text-anchor="middle" font-size="11.5" fill="#1F2430">of the smaller parcel</text>
+    <rect x="610" y="340" width="380" height="86" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+    <text x="800" y="368" text-anchor="middle" font-size="13" font-weight="700" fill="#8A6D1C">District review</text>
+    <text x="800" y="390" text-anchor="middle" font-size="11" fill="#1F2430">May be enrichment planting on part-planted land.</text>
+    <text x="800" y="410" text-anchor="middle" font-size="11" fill="#6B6F7B">A human decides; the system does not.</text>
+
+    <!-- panel 3: containment -->
+    <text x="1310" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#9C2F2F">Duplicate submission</text>
+    <text x="1310" y="72" text-anchor="middle" font-size="11" fill="#6B6F7B">the same ground, filed twice</text>
+    <rect x="1130" y="100" width="240" height="130" fill="#1C5A33" fill-opacity="0.16" stroke="#1C5A33" stroke-width="1.8"/>
+    <rect x="1166" y="120" width="240" height="130" fill="#9C2F2F" fill-opacity="0.2" stroke="#9C2F2F" stroke-width="1.8" stroke-dasharray="6 4"/>
+    <text x="1310" y="286" text-anchor="middle" class="serif" font-size="22" fill="#9C2F2F">72%</text>
+    <text x="1310" y="310" text-anchor="middle" font-size="11.5" fill="#1F2430">of the smaller parcel</text>
+    <rect x="1120" y="334" width="390" height="86" fill="#FFFFFF" stroke="#9C2F2F" stroke-width="1.6"/>
+    <text x="1315" y="362" text-anchor="middle" font-size="13" font-weight="700" fill="#9C2F2F">Hard block</text>
+    <text x="1315" y="384" text-anchor="middle" font-size="11" fill="#1F2430">No Location ID. Submission returns to the field.</text>
+    <text x="1315" y="404" text-anchor="middle" font-size="11" fill="#6B6F7B">Never reaches a human queue.</text>
+
+    <!-- what this catches -->
+    <rect x="90" y="460" width="1420" height="140" fill="#EAEEF5" stroke="#27467A" stroke-width="1"/>
+    <text x="116" y="490" font-size="11" letter-spacing="2.5" fill="#27467A" font-weight="700">WHAT THE GEOMETRY CATCHES THAT PAPERWORK CANNOT</text>
+    <text x="116" y="522" font-size="12.5" fill="#1F2430">· The same degraded patch handed to two agencies by two different offices</text>
+    <text x="116" y="546" font-size="12.5" fill="#1F2430">· A parcel that failed survival, quietly resubmitted as a fresh site with the clock reset and its rectification history detached</text>
+    <text x="116" y="570" font-size="12.5" fill="#1F2430">· The same land claimed in two districts because it sits near a boundary</text>
+    <text x="816" y="522" font-size="12.5" font-weight="700" fill="#27467A">In each case the survey number, the agency and the taluk office all differ.</text>
+    <text x="816" y="546" font-size="12.5" fill="#1F2430">Only the geometry connects the two submissions — which is why the check</text>
+    <text x="816" y="570" font-size="12.5" fill="#1F2430">runs on shape, not on identifiers.</text>
+
+    <text x="790" y="678" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">Overlap cannot be a yes or no. Consumer handsets are accurate to three to five metres, so two officers
+  walking a genuinely shared boundary will produce polygons that intersect slightly, every time — reject on any intersection
+  and the cadre will start gaming the walk. The check therefore classifies: slivers are tolerated and logged, material overlaps
+  go to a human at district level, and near-identity is blocked outright. Percentages are always taken against the smaller
+  parcel, because a small duplicate inside a large parent is invisible any other way.</p>
+</section>
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>
