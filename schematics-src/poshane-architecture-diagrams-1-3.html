@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane — Command &amp; Control Center · Architecture Diagrams 1–3</title>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  /* Document masthead */
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; color:var(--ink); margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid #DDD6C6; border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; color:var(--ink); margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid #DDD6C6; padding-top:14px;}
+
+  /* SVG shared text styling */
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Architecture Baseline · Version 0.9 · Issued for Review</div>
+  <h1>Poshane — Command &amp; Control Center</h1>
+  <div class="sub">KSLSA Five Crore Sapling Plantation &amp; Lake Rejuvenation Programme · System Architecture — Diagrams 1–3</div>
+  <div class="meta">Prepared for: Karnataka State Legal Services Authority · Institution of Agroforestry Farmers and Technologists —
+  Principal Scientific Advisory Body and Program Management Unit</div>
+</header>
+
+<!-- ============================================================= -->
+<!-- DIAGRAM 1 — SYSTEM CONTEXT (§2)                                -->
+<!-- ============================================================= -->
+<section class="panel">
+  <div class="dnum">Diagram 1</div>
+  <h2>System Context</h2>
+  <div class="specref">Specification §2 — external actors and what flows across the platform boundary</div>
+
+  <svg viewBox="0 0 1580 1120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="System context diagram">
+    <defs>
+      <marker id="ah-g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="ah-n1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="ah-au1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- Legend (top-left) -->
+    <g font-size="10.5" fill="#1F2430">
+      <rect x="30" y="42" width="410" height="140" fill="#FFFFFF" stroke="#DDD6C6"/>
+      <text x="48" y="68" font-size="10" letter-spacing="2" fill="#6B6F7B" font-weight="700">READING THE ARROWS</text>
+      <line x1="48" y1="90" x2="98" y2="90" stroke="#1C5A33" stroke-width="2.2" marker-end="url(#ah-g1)"/>
+      <text x="108" y="94">entry — authenticated, scoped, logged (§2.2)</text>
+      <line x1="48" y1="118" x2="98" y2="118" stroke="#27467A" stroke-width="2.2" marker-end="url(#ah-n1)"/>
+      <text x="108" y="122">consumption — scoped view, export, or public disclosure</text>
+      <line x1="48" y1="146" x2="98" y2="146" stroke="#C09A3E" stroke-width="2.4" stroke-dasharray="7 5" marker-end="url(#ah-au1)"/>
+      <text x="108" y="150">funds — direct, outside platform (§10)</text>
+    </g>
+
+    <!-- ===== PLATFORM (centre) ===== -->
+    <rect x="590" y="400" width="400" height="200" fill="#1C5A33"/>
+    <text x="790" y="452" text-anchor="middle" class="serif" font-size="30" fill="#FFFFFF" font-weight="600">Poshane</text>
+    <text x="790" y="478" text-anchor="middle" font-size="12.5" fill="#FFFFFF" letter-spacing="1.5">COMMAND &amp; CONTROL CENTER</text>
+    <line x1="660" y1="498" x2="920" y2="498" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1"/>
+    <text x="790" y="527" text-anchor="middle" font-size="11" fill="#FFFFFF" fill-opacity=".92">Single system of record for the programme</text>
+    <text x="790" y="548" text-anchor="middle" font-size="11" fill="#FFFFFF" fill-opacity=".92">35 districts · 240 taluks · 2026–2034</text>
+    <text x="790" y="577" text-anchor="middle" font-size="10" fill="#F6EEDC">holds no funds · issues no statutory approvals</text>
+
+    <!-- ===== GOVERNANCE (top) ===== -->
+    <g>
+      <rect x="540" y="40" width="500" height="170" fill="none" stroke="#27467A" stroke-width="1.2"/>
+      <text x="560" y="66" font-size="10.5" letter-spacing="2.5" fill="#27467A" font-weight="700">GOVERNANCE</text>
+      <rect x="560" y="82" width="220" height="108" fill="#FFFFFF" stroke="#27467A" stroke-width="1.4"/>
+      <text x="670" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#27467A">KSLSA</text>
+      <text x="670" y="132" text-anchor="middle" font-size="9.5" fill="#1F2430">Programme owner</text>
+      <text x="670" y="147" text-anchor="middle" font-size="9.5" fill="#1F2430">Owns the data record</text>
+      <text x="670" y="168" text-anchor="middle" font-size="9" fill="#6B6F7B">State-level command · reporting</text>
+      <rect x="800" y="82" width="220" height="108" fill="#FFFFFF" stroke="#27467A" stroke-width="1.4"/>
+      <text x="910" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#27467A">IAFT</text>
+      <text x="910" y="126" text-anchor="middle" font-size="8.8" fill="#1F2430">Institution of Agroforestry</text>
+      <text x="910" y="139" text-anchor="middle" font-size="8.8" fill="#1F2430">Farmers and Technologists</text>
+      <text x="910" y="157" text-anchor="middle" font-size="8.8" fill="#6B6F7B">Principal Scientific Advisory Body</text>
+      <text x="910" y="170" text-anchor="middle" font-size="8.8" fill="#6B6F7B">and Program Management Unit</text>
+    </g>
+    <!-- Governance arrows -->
+    <line x1="640" y1="190" x2="640" y2="396" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="628" y="240" text-anchor="end" font-size="10" fill="#1C5A33">policy thresholds</text>
+    <line x1="700" y1="400" x2="700" y2="194" stroke="#27467A" stroke-width="2" marker-end="url(#ah-n1)"/>
+    <text x="712" y="234" font-size="10" fill="#27467A">state command view</text>
+    <text x="712" y="248" font-size="10" fill="#27467A">reporting</text>
+    <line x1="860" y1="190" x2="860" y2="396" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="848" y="300" text-anchor="end" font-size="10" fill="#1C5A33">certified scope</text>
+    <text x="848" y="314" text-anchor="end" font-size="10" fill="#1C5A33">species &amp; zone standards</text>
+    <line x1="920" y1="400" x2="920" y2="194" stroke="#27467A" stroke-width="2" marker-end="url(#ah-n1)"/>
+    <text x="932" y="234" font-size="10" fill="#27467A">programme</text>
+    <text x="932" y="248" font-size="10" fill="#27467A">management views</text>
+
+    <!-- ===== DEPARTMENTAL (left) ===== -->
+    <g>
+      <rect x="30" y="300" width="400" height="320" fill="none" stroke="#27467A" stroke-width="1.2"/>
+      <text x="50" y="326" font-size="10.5" letter-spacing="2.5" fill="#27467A" font-weight="700">DEPARTMENTAL</text>
+      <rect x="50" y="340" width="360" height="110" fill="#FFFFFF" stroke="#27467A" stroke-width="1.4"/>
+      <text x="230" y="372" text-anchor="middle" font-size="12.5" font-weight="700" fill="#27467A">Karnataka Forest Department</text>
+      <text x="230" y="394" text-anchor="middle" font-size="9.5" fill="#1F2430">Land identification · technical sanction</text>
+      <text x="230" y="410" text-anchor="middle" font-size="9.5" fill="#1F2430">Species verification · departmental review</text>
+      <rect x="50" y="480" width="360" height="110" fill="#FFFFFF" stroke="#27467A" stroke-width="1.4"/>
+      <text x="230" y="516" text-anchor="middle" font-size="12.5" font-weight="700" fill="#27467A">District Administration</text>
+      <text x="230" y="540" text-anchor="middle" font-size="9.5" fill="#1F2430">District-level programme oversight</text>
+    </g>
+    <!-- Departmental arrows -->
+    <line x1="410" y1="420" x2="586" y2="420" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="500" y="384" text-anchor="middle" font-size="9.6" fill="#1C5A33">land identification</text>
+    <text x="500" y="397" text-anchor="middle" font-size="9.6" fill="#1C5A33">technical sanction</text>
+    <text x="500" y="410" text-anchor="middle" font-size="9.6" fill="#1C5A33">handover acceptance</text>
+    <line x1="590" y1="515" x2="414" y2="515" stroke="#27467A" stroke-width="2" marker-end="url(#ah-n1)"/>
+    <text x="500" y="491" text-anchor="middle" font-size="9.6" fill="#27467A">district command view</text>
+    <text x="500" y="504" text-anchor="middle" font-size="9.6" fill="#27467A">escalations</text>
+    <line x1="410" y1="555" x2="586" y2="555" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="500" y="571" text-anchor="middle" font-size="9.6" fill="#1C5A33">escalation acceptance</text>
+
+    <!-- ===== MACHINE SOURCES (lower-left) ===== -->
+    <g>
+      <rect x="30" y="650" width="400" height="130" fill="none" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="50" y="676" font-size="10.5" letter-spacing="2.5" fill="#1C5A33" font-weight="700">MACHINE SOURCES</text>
+      <rect x="50" y="690" width="360" height="72" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="230" y="716" text-anchor="middle" font-size="12" font-weight="700" fill="#1C5A33">External Data Providers</text>
+      <text x="230" y="736" text-anchor="middle" font-size="9" fill="#1F2430">remote sensing · weather · departmental systems</text>
+      <text x="230" y="750" text-anchor="middle" font-size="9" fill="#6B6F7B">machine-to-machine ingestion</text>
+    </g>
+    <path d="M410,726 H520 V589 H586" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="465" y="713" text-anchor="middle" font-size="9.4" fill="#1C5A33">canopy change indicators</text>
+    <text x="465" y="744" text-anchor="middle" font-size="9.4" fill="#1C5A33">land-record corroboration</text>
+
+    <!-- ===== FIELD (bottom) ===== -->
+    <g>
+      <rect x="110" y="800" width="1090" height="240" fill="none" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="130" y="826" font-size="10.5" letter-spacing="2.5" fill="#1C5A33" font-weight="700">FIELD</text>
+      <!-- two-cadre segregation note -->
+      <text x="330" y="850" text-anchor="middle" font-size="9.6" fill="#C09A3E" font-weight="700">TWO INDEPENDENT CADRES — mutually exclusive roles, enforced at parcel level (§7.3)</text>
+      <rect x="130" y="860" width="200" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="230" y="886" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C5A33">Verification Cadre</text>
+      <text x="230" y="905" text-anchor="middle" font-size="8.8" fill="#1F2430">RFO / DRFO — ~480 retired</text>
+      <text x="230" y="918" text-anchor="middle" font-size="8.8" fill="#1F2430">officers, 2 per taluk</text>
+      <text x="230" y="938" text-anchor="middle" font-size="8.6" fill="#6B6F7B">verifies department-identified</text>
+      <text x="230" y="951" text-anchor="middle" font-size="8.6" fill="#6B6F7B">land · blocking decision</text>
+      <text x="230" y="971" text-anchor="middle" font-size="8.6" fill="#C09A3E">no audit capability</text>
+      <line x1="340" y1="860" x2="340" y2="990" stroke="#C09A3E" stroke-width="1.6" stroke-dasharray="5 5"/>
+      <rect x="350" y="860" width="200" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="450" y="886" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C5A33">Audit Cadre</text>
+      <text x="450" y="905" text-anchor="middle" font-size="8.8" fill="#1F2430">separately constituted team</text>
+      <text x="450" y="918" text-anchor="middle" font-size="8.8" fill="#1F2430">independently assigned</text>
+      <text x="450" y="938" text-anchor="middle" font-size="8.6" fill="#6B6F7B">inspects verified land, planting,</text>
+      <text x="450" y="951" text-anchor="middle" font-size="8.6" fill="#6B6F7B">maintenance &amp; survival claims</text>
+      <text x="450" y="971" text-anchor="middle" font-size="8.6" fill="#C09A3E">never the verifier of the same parcel</text>
+      <rect x="570" y="860" width="200" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="670" y="892" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C5A33">Implementing Agencies</text>
+      <text x="670" y="912" text-anchor="middle" font-size="8.8" fill="#1F2430">NGOs</text>
+      <text x="670" y="934" text-anchor="middle" font-size="8.6" fill="#6B6F7B">planting and maintenance</text>
+      <text x="670" y="947" text-anchor="middle" font-size="8.6" fill="#6B6F7B">execution · field data capture</text>
+      <rect x="790" y="860" width="200" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="890" y="892" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C5A33">Nurseries</text>
+      <text x="890" y="914" text-anchor="middle" font-size="8.8" fill="#1F2430">seedling supply</text>
+      <text x="890" y="936" text-anchor="middle" font-size="8.6" fill="#6B6F7B">stock, grading, dispatch</text>
+      <text x="890" y="949" text-anchor="middle" font-size="8.6" fill="#6B6F7B">species provenance</text>
+      <rect x="1010" y="860" width="170" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <text x="1095" y="892" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1C5A33">Volunteer Networks</text>
+      <text x="1095" y="914" text-anchor="middle" font-size="8.8" fill="#1F2430">planting-day mobilisation</text>
+      <text x="1095" y="927" text-anchor="middle" font-size="8.8" fill="#1F2430">monitoring walks</text>
+      <text x="1095" y="949" text-anchor="middle" font-size="8.6" fill="#6B6F7B">constrained capture</text>
+    </g>
+    <!-- Field arrows (entry) -->
+    <path d="M230,860 V790 H625 V604" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="430" y="782" text-anchor="middle" font-size="9.6" fill="#1C5A33">verified land parameters · verification decision</text>
+    <path d="M450,860 V815 H650 V604" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="525" y="807" text-anchor="middle" font-size="9.6" fill="#1C5A33">independent inspection findings · census co-signature</text>
+    <line x1="670" y1="860" x2="670" y2="604" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="678" y="700" font-size="9.6" fill="#1C5A33">planting &amp; maintenance records</text>
+    <line x1="890" y1="860" x2="890" y2="604" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="898" y="660" font-size="9.6" fill="#1C5A33">stock &amp; dispatch · species provenance</text>
+    <path d="M1095,860 V700 H950 V604" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g1)"/>
+    <text x="1085" y="745" text-anchor="end" font-size="9.6" fill="#1C5A33">photos &amp; observations</text>
+    <text x="1085" y="759" text-anchor="end" font-size="9.6" fill="#1C5A33">advisory only — never authoritative</text>
+
+    <!-- ===== FUNDING (right) ===== -->
+    <g>
+      <rect x="1240" y="240" width="310" height="230" fill="none" stroke="#1F2430" stroke-width="1" stroke-opacity=".55"/>
+      <text x="1260" y="266" font-size="10.5" letter-spacing="2.5" fill="#6B6F7B" font-weight="700">FUNDING</text>
+      <rect x="1260" y="320" width="270" height="120" fill="#FFFFFF" stroke="#1F2430" stroke-width="1.2" stroke-opacity=".7"/>
+      <text x="1395" y="352" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1F2430">CSR Donors &amp;</text>
+      <text x="1395" y="368" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1F2430">Funding Agencies</text>
+      <text x="1395" y="392" text-anchor="middle" font-size="8.8" fill="#6B6F7B">fund the certified scope —</text>
+      <text x="1395" y="405" text-anchor="middle" font-size="8.8" fill="#6B6F7B">money does not transit the platform</text>
+    </g>
+    <line x1="990" y1="420" x2="1256" y2="420" stroke="#27467A" stroke-width="2" marker-end="url(#ah-n1)"/>
+    <text x="1123" y="394" text-anchor="middle" font-size="9.6" fill="#27467A">assurance dashboard</text>
+    <text x="1123" y="408" text-anchor="middle" font-size="9.6" fill="#27467A">certified scope · utilisation evidence</text>
+
+    <!-- ===== PUBLIC (right) ===== -->
+    <g>
+      <rect x="1240" y="520" width="310" height="160" fill="none" stroke="#1F2430" stroke-width="1" stroke-opacity=".55"/>
+      <text x="1260" y="546" font-size="10.5" letter-spacing="2.5" fill="#6B6F7B" font-weight="700">PUBLIC</text>
+      <rect x="1260" y="562" width="270" height="98" fill="#FFFFFF" stroke="#1F2430" stroke-width="1.2" stroke-opacity=".7"/>
+      <text x="1395" y="596" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1F2430">Citizens / Public</text>
+      <text x="1395" y="618" text-anchor="middle" font-size="8.8" fill="#6B6F7B">transparency consumers</text>
+      <text x="1395" y="632" text-anchor="middle" font-size="8.8" fill="#6B6F7B">scan of a parcel tag</text>
+    </g>
+    <line x1="990" y1="585" x2="1256" y2="585" stroke="#27467A" stroke-width="2" marker-end="url(#ah-n1)"/>
+    <text x="1123" y="559" text-anchor="middle" font-size="9.6" fill="#27467A">public disclosure</text>
+    <text x="1123" y="573" text-anchor="middle" font-size="9.6" fill="#27467A">tag scan page · published dashboard</text>
+
+    <!-- ===== FUNDS BYPASS (gold, dashed, avoids platform entirely) ===== -->
+    <path d="M1395,440 V480 H1562 V1065 H670 V996" fill="none" stroke="#C09A3E" stroke-width="2.6" stroke-dasharray="8 6" marker-end="url(#ah-au1)"/>
+    <text x="1115" y="1055" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C09A3E">funds — direct, outside platform</text>
+    <text x="1115" y="1071" text-anchor="middle" font-size="9" fill="#C09A3E">donor to agency, through their own banking channels — no payment rail passes through Poshane</text>
+
+    <!-- Footer -->
+    <text x="790" y="1108" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">The platform sits between the field, where physical work happens and evidence originates, and the command
+  levels that direct and assure that work. Every green arrow is an entry point that must be authenticated, scoped, and logged;
+  every navy arrow out is a scoped view, an export, or a public disclosure. The verification cadre and the audit cadre enter
+  data as two separately constituted teams — the auditor is never the verifier of the same parcel. Funds never transit the
+  platform: donors pay implementing agencies directly (gold dashed line), while Poshane records only the IAFT-certified scope
+  and the tag-anchored evidence of utilisation.</p>
+</section>
+
+<!-- ============================================================= -->
+<!-- DIAGRAM 2 — LAYERED ARCHITECTURE (§3)                          -->
+<!-- ============================================================= -->
+<section class="panel">
+  <div class="dnum">Diagram 2</div>
+  <h2>Layered Architecture</h2>
+  <div class="specref">Specification §3 — six layers; each layer may call only the layer beneath it</div>
+
+  <svg viewBox="0 0 1580 1160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layered architecture diagram">
+    <defs>
+      <marker id="ah-n2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+    </defs>
+
+    <!-- Downward-call rail -->
+    <line x1="70" y1="60" x2="70" y2="1096" stroke="#27467A" stroke-width="2.4" marker-end="url(#ah-n2)"/>
+    <text x="54" y="580" font-size="11.5" fill="#27467A" font-weight="700" letter-spacing="2.5" transform="rotate(-90 54 580)" text-anchor="middle">LAYERS CALL ONLY DOWNWARD</text>
+
+    <!-- Inter-band arrows -->
+    <line x1="790" y1="194" x2="790" y2="218" stroke="#27467A" stroke-width="1.6" marker-end="url(#ah-n2)"/>
+    <line x1="790" y1="358" x2="790" y2="382" stroke="#27467A" stroke-width="1.6" marker-end="url(#ah-n2)"/>
+    <line x1="790" y1="644" x2="790" y2="668" stroke="#27467A" stroke-width="1.6" marker-end="url(#ah-n2)"/>
+    <line x1="790" y1="834" x2="790" y2="858" stroke="#27467A" stroke-width="1.6" marker-end="url(#ah-n2)"/>
+    <line x1="790" y1="1004" x2="790" y2="1028" stroke="#27467A" stroke-width="1.6" marker-end="url(#ah-n2)"/>
+
+    <!-- ===== LAYER 1 — CAPTURE & PRESENTATION ===== -->
+    <rect x="110" y="40" width="1430" height="150" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+    <text x="128" y="66" font-size="11" letter-spacing="2" fill="#1C5A33" font-weight="700">LAYER 1 — CAPTURE &amp; PRESENTATION</text>
+    <g font-size="10.5">
+      <rect x="128"  y="80" width="188" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="222" y="102" text-anchor="middle" font-weight="700" fill="#1C5A33">Field Mobile App</text>
+      <text x="222" y="122" text-anchor="middle" font-size="8.6" fill="#1F2430">offline-first · Android-first</text>
+      <text x="222" y="136" text-anchor="middle" font-size="8.6" fill="#6B6F7B">implementing agencies,</text>
+      <text x="222" y="149" text-anchor="middle" font-size="8.6" fill="#6B6F7B">nursery staff</text>
+      <rect x="332"  y="80" width="188" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="426" y="102" text-anchor="middle" font-weight="700" fill="#1C5A33">Verification App</text>
+      <text x="426" y="122" text-anchor="middle" font-size="8.6" fill="#1F2430">offline-first</text>
+      <text x="426" y="136" text-anchor="middle" font-size="8.6" fill="#6B6F7B">verification cadre (RFO/DRFO) —</text>
+      <text x="426" y="149" text-anchor="middle" font-size="8.6" fill="#6B6F7B">land verification, parameter entry</text>
+      <rect x="536"  y="80" width="188" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="630" y="102" text-anchor="middle" font-weight="700" fill="#1C5A33">Audit App</text>
+      <text x="630" y="122" text-anchor="middle" font-size="8.6" fill="#1F2430">offline-first · tag-tap-gated</text>
+      <text x="630" y="136" text-anchor="middle" font-size="8.6" fill="#6B6F7B">audit cadre — independent of the</text>
+      <text x="630" y="149" text-anchor="middle" font-size="8.6" fill="#6B6F7B">verification app and its data</text>
+      <rect x="740"  y="80" width="188" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="834" y="102" text-anchor="middle" font-weight="700" fill="#1C5A33">Command Console</text>
+      <text x="834" y="122" text-anchor="middle" font-size="8.6" fill="#1F2430">web</text>
+      <text x="834" y="136" text-anchor="middle" font-size="8.6" fill="#6B6F7B">state, district, taluk</text>
+      <text x="834" y="149" text-anchor="middle" font-size="8.6" fill="#6B6F7B">command views</text>
+      <rect x="944"  y="80" width="188" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="1038" y="102" text-anchor="middle" font-weight="700" fill="#1C5A33">Department Portal</text>
+      <text x="1038" y="122" text-anchor="middle" font-size="8.6" fill="#1F2430">web</text>
+      <text x="1038" y="136" text-anchor="middle" font-size="8.6" fill="#6B6F7B">land identification entry, bulk</text>
+      <text x="1038" y="149" text-anchor="middle" font-size="8.6" fill="#6B6F7B">upload, departmental review</text>
+      <rect x="1148" y="80" width="188" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="1242" y="97" text-anchor="middle" font-weight="700" fill="#1C5A33">Public Portal &amp;</text>
+      <text x="1242" y="111" text-anchor="middle" font-weight="700" fill="#1C5A33">Tag Landing</text>
+      <text x="1242" y="131" text-anchor="middle" font-size="8.6" fill="#1F2430">read-only disclosure</text>
+      <text x="1242" y="145" text-anchor="middle" font-size="8.6" fill="#6B6F7B">the page a citizen reaches by</text>
+      <text x="1242" y="158" text-anchor="middle" font-size="8.6" fill="#6B6F7B">scanning a parcel tag</text>
+      <rect x="1352" y="80" width="170" height="94" fill="#EAF1EB" stroke="#1C5A33"/>
+      <text x="1437" y="102" text-anchor="middle" font-weight="700" fill="#1C5A33">Machine Interfaces</text>
+      <text x="1437" y="122" text-anchor="middle" font-size="8.6" fill="#1F2430">API &amp; file ingestion</text>
+      <text x="1437" y="136" text-anchor="middle" font-size="8.6" fill="#6B6F7B">remote sensing and</text>
+      <text x="1437" y="149" text-anchor="middle" font-size="8.6" fill="#6B6F7B">departmental systems</text>
+    </g>
+
+    <!-- ===== LAYER 2 — ACCESS & IDENTITY ===== -->
+    <rect x="110" y="224" width="1430" height="130" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+    <text x="128" y="250" font-size="11" letter-spacing="2" fill="#1C5A33" font-weight="700">LAYER 2 — ACCESS &amp; IDENTITY</text>
+    <g font-size="10.5" font-weight="600">
+      <rect x="128" y="266" width="340" height="70" fill="#EAEEF5" stroke="#27467A"/>
+      <text x="298" y="296" text-anchor="middle" fill="#27467A">Authentication, session &amp;</text>
+      <text x="298" y="313" text-anchor="middle" fill="#27467A">device registration</text>
+      <rect x="486" y="266" width="340" height="70" fill="#EAEEF5" stroke="#27467A"/>
+      <text x="656" y="296" text-anchor="middle" fill="#27467A">Role &amp; geographic scope</text>
+      <text x="656" y="313" text-anchor="middle" fill="#27467A">resolution (§9)</text>
+      <rect x="844" y="266" width="340" height="70" fill="#EAEEF5" stroke="#27467A"/>
+      <text x="1014" y="296" text-anchor="middle" fill="#27467A">Step-up authorisation for</text>
+      <text x="1014" y="313" text-anchor="middle" fill="#27467A">restricted modules</text>
+      <rect x="1202" y="266" width="320" height="70" fill="#EAEEF5" stroke="#27467A"/>
+      <text x="1362" y="296" text-anchor="middle" fill="#27467A">API gateway · rate limiting ·</text>
+      <text x="1362" y="313" text-anchor="middle" fill="#27467A">request audit</text>
+    </g>
+
+    <!-- ===== LAYER 3 — DOMAIN SERVICES ===== -->
+    <rect x="110" y="388" width="1430" height="256" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+    <text x="128" y="414" font-size="11" letter-spacing="2" fill="#1C5A33" font-weight="700">LAYER 3 — DOMAIN SERVICES</text>
+    <text x="1522" y="414" text-anchor="end" font-size="9" fill="#6B6F7B" font-style="italic">each module owns its data and exposes services</text>
+    <g>
+      <!-- Row 1 -->
+      <rect x="128" y="428" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="240" y="450" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Land &amp; Parcel Registry</text>
+      <text x="240" y="470" text-anchor="middle" font-size="8.4" fill="#6B6F7B">parcel identity, geometry, land type,</text>
+      <text x="240" y="483" text-anchor="middle" font-size="8.4" fill="#6B6F7B">ownership and custody model</text>
+      <rect x="364" y="428" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="476" y="450" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">PlantSure Identity Service</text>
+      <text x="476" y="470" text-anchor="middle" font-size="8.4" fill="#6B6F7B">tag issuance, binding and verification</text>
+      <text x="476" y="483" text-anchor="middle" font-size="8.4" fill="#6B6F7B">Location ID / Batch ID model</text>
+      <rect x="600" y="428" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="712" y="450" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Verification &amp; Approval</text>
+      <text x="712" y="470" text-anchor="middle" font-size="8.4" fill="#6B6F7B">the gating workflow · cadre decisions</text>
+      <text x="712" y="483" text-anchor="middle" font-size="8.4" fill="#6B6F7B">approval state machine</text>
+      <rect x="836" y="428" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="948" y="450" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Plantation Records</text>
+      <text x="948" y="470" text-anchor="middle" font-size="8.4" fill="#6B6F7B">planting events, species composition,</text>
+      <text x="948" y="483" text-anchor="middle" font-size="8.4" fill="#6B6F7B">counts, batch linkage</text>
+      <rect x="1072" y="428" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="1184" y="450" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Survival &amp; Monitoring</text>
+      <text x="1184" y="470" text-anchor="middle" font-size="8.4" fill="#6B6F7B">census cycles, survival computation,</text>
+      <text x="1184" y="483" text-anchor="middle" font-size="8.4" fill="#6B6F7B">casualty and replacement tracking</text>
+      <rect x="1308" y="428" width="214" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="1415" y="450" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Audit &amp; Inspection</text>
+      <text x="1415" y="470" text-anchor="middle" font-size="8.4" fill="#6B6F7B">independent cadre · surprise inspections</text>
+      <text x="1415" y="483" text-anchor="middle" font-size="8.4" fill="#6B6F7B">rectification loops · segregation</text>
+      <!-- Row 2 -->
+      <rect x="128" y="538" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="240" y="560" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Stakeholder &amp; Onboarding</text>
+      <text x="240" y="580" text-anchor="middle" font-size="8.4" fill="#6B6F7B">agencies, cadre, volunteers</text>
+      <text x="240" y="593" text-anchor="middle" font-size="8.4" fill="#6B6F7B">contracts and scope assignment</text>
+      <rect x="364" y="538" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="476" y="560" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Species &amp; Zone Planning</text>
+      <text x="476" y="580" text-anchor="middle" font-size="8.4" fill="#6B6F7B">agro-climatic zone standards</text>
+      <text x="476" y="593" text-anchor="middle" font-size="8.4" fill="#6B6F7B">species eligibility · allocation</text>
+      <rect x="600" y="538" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="712" y="560" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Nursery &amp; Supply</text>
+      <text x="712" y="580" text-anchor="middle" font-size="8.4" fill="#6B6F7B">stock, provenance, dispatch</text>
+      <text x="712" y="593" text-anchor="middle" font-size="8.4" fill="#6B6F7B">traceability to planting batch</text>
+      <!-- Restricted module: gold + lock -->
+      <rect x="836" y="538" width="224" height="94" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2"/>
+      <g stroke="#C09A3E" fill="none" stroke-width="2">
+        <path d="M1032,552 v-5 a7,7 0 0 1 14,0 v5"/>
+        <rect x="1029" y="552" width="20" height="15" fill="#C09A3E" stroke="none" rx="2"/>
+      </g>
+      <text x="936" y="560" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1F2430">Scope Certification</text>
+      <text x="936" y="574" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1F2430">&amp; Utilisation</text>
+      <text x="948" y="594" text-anchor="middle" font-size="8.4" fill="#6B6F7B">IAFT certification of scope · utilisation</text>
+      <text x="948" y="607" text-anchor="middle" font-size="8.4" fill="#6B6F7B">evidence — no funds</text>
+      <text x="948" y="623" text-anchor="middle" font-size="8.2" font-weight="700" fill="#C09A3E">restricted — step-up authorisation</text>
+      <rect x="1072" y="538" width="224" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="1184" y="560" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Issue &amp; Grievance</text>
+      <text x="1184" y="580" text-anchor="middle" font-size="8.4" fill="#6B6F7B">complaints, field issues,</text>
+      <text x="1184" y="593" text-anchor="middle" font-size="8.4" fill="#6B6F7B">escalation</text>
+      <rect x="1308" y="538" width="214" height="94" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.2"/>
+      <text x="1415" y="560" text-anchor="middle" font-size="10.8" font-weight="700" fill="#1C5A33">Notification &amp; Escalation</text>
+      <text x="1415" y="580" text-anchor="middle" font-size="8.4" fill="#6B6F7B">threshold breaches · alerts</text>
+      <text x="1415" y="593" text-anchor="middle" font-size="8.4" fill="#6B6F7B">routing to command levels</text>
+    </g>
+
+    <!-- ===== LAYER 4 — ANALYTICS & INTELLIGENCE (advisory) ===== -->
+    <rect x="110" y="678" width="1430" height="156" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6" stroke-dasharray="8 5"/>
+    <text x="128" y="704" font-size="11" letter-spacing="2" fill="#27467A" font-weight="700">LAYER 4 — ANALYTICS &amp; INTELLIGENCE SERVICES</text>
+    <rect x="590" y="688" width="230" height="22" fill="#C09A3E"/>
+    <text x="705" y="703" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF" letter-spacing="1.5">ADVISORY — DERIVED</text>
+    <g font-size="9.4" fill="#1F2430">
+      <rect x="128" y="720" width="224" height="66" fill="#EAEEF5" stroke="#27467A" stroke-dasharray="4 3"/>
+      <text x="240" y="746" text-anchor="middle">Survival trend &amp; risk scoring</text>
+      <text x="240" y="761" text-anchor="middle" fill="#6B6F7B">by parcel, taluk, district, zone</text>
+      <rect x="364" y="720" width="224" height="66" fill="#EAEEF5" stroke="#27467A" stroke-dasharray="4 3"/>
+      <text x="476" y="741" text-anchor="middle">Anomaly detection on capture patterns</text>
+      <text x="476" y="756" text-anchor="middle" fill="#6B6F7B">implausible sequences, duplicate</text>
+      <text x="476" y="769" text-anchor="middle" fill="#6B6F7B">imagery, timing outliers</text>
+      <rect x="600" y="720" width="224" height="66" fill="#EAEEF5" stroke="#27467A" stroke-dasharray="4 3"/>
+      <text x="712" y="741" text-anchor="middle">Remote-sensing corroboration</text>
+      <text x="712" y="756" text-anchor="middle" fill="#6B6F7B">reported planting vs observed</text>
+      <text x="712" y="769" text-anchor="middle" fill="#6B6F7B">canopy change</text>
+      <rect x="836" y="720" width="224" height="66" fill="#EAEEF5" stroke="#27467A" stroke-dasharray="4 3"/>
+      <text x="948" y="746" text-anchor="middle">Species-to-zone suitability advisory</text>
+      <rect x="1072" y="720" width="224" height="66" fill="#EAEEF5" stroke="#27467A" stroke-dasharray="4 3"/>
+      <text x="1184" y="741" text-anchor="middle">Natural-language query &amp;</text>
+      <text x="1184" y="756" text-anchor="middle">narrative reporting</text>
+      <text x="1184" y="769" text-anchor="middle" fill="#6B6F7B">for command levels</text>
+      <rect x="1308" y="720" width="214" height="66" fill="#EAEEF5" stroke="#27467A" stroke-dasharray="4 3"/>
+      <text x="1415" y="741" text-anchor="middle">Casualty replacement forecasting</text>
+      <text x="1415" y="756" text-anchor="middle" fill="#6B6F7B">against nursery stock</text>
+    </g>
+    <text x="825" y="818" text-anchor="middle" font-size="10.5" font-weight="700" fill="#C09A3E">Standing rule — annotates and flags; never originates, approves, or alters a record of fact. A flag raised here becomes a task for a human in Layer 3.</text>
+
+    <!-- ===== LAYER 5 — DATA ===== -->
+    <rect x="110" y="868" width="1430" height="136" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+    <text x="128" y="894" font-size="11" letter-spacing="2" fill="#1C5A33" font-weight="700">LAYER 5 — DATA</text>
+    <g>
+      <!-- Six store cylinders -->
+      <g font-size="10" text-anchor="middle">
+        <path d="M138,916 a102,10 0 0 1 204,0 v58 a102,10 0 0 1 -204,0 z" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <ellipse cx="240" cy="916" rx="102" ry="10" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <text x="240" y="948" font-weight="700" fill="#1C5A33">Operational store</text>
+        <text x="240" y="964" font-size="8.2" fill="#6B6F7B">parcels, events, workflow state</text>
+        <path d="M374,916 a102,10 0 0 1 204,0 v58 a102,10 0 0 1 -204,0 z" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <ellipse cx="476" cy="916" rx="102" ry="10" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <text x="476" y="948" font-weight="700" fill="#1C5A33">Spatial store</text>
+        <text x="476" y="964" font-size="8.2" fill="#6B6F7B">geometry, boundaries, zone overlays</text>
+        <path d="M610,916 a102,10 0 0 1 204,0 v58 a102,10 0 0 1 -204,0 z" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <ellipse cx="712" cy="916" rx="102" ry="10" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <text x="712" y="948" font-weight="700" fill="#1C5A33">Evidence store</text>
+        <text x="712" y="964" font-size="8.2" fill="#6B6F7B">photos, documents, signed payloads</text>
+        <text x="712" y="977" font-size="8.2" font-weight="700" fill="#C09A3E">write-once</text>
+        <path d="M846,916 a102,10 0 0 1 204,0 v58 a102,10 0 0 1 -204,0 z" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <ellipse cx="948" cy="916" rx="102" ry="10" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <text x="948" y="948" font-weight="700" fill="#1C5A33">Immutable audit log</text>
+        <text x="948" y="964" font-size="8.2" fill="#6B6F7B">every state transition</text>
+        <text x="948" y="977" font-size="8.2" font-weight="700" fill="#C09A3E">append-only</text>
+        <path d="M1082,916 a102,10 0 0 1 204,0 v58 a102,10 0 0 1 -204,0 z" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <ellipse cx="1184" cy="916" rx="102" ry="10" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <text x="1184" y="948" font-weight="700" fill="#1C5A33">Analytical store</text>
+        <text x="1184" y="964" font-size="8.2" fill="#6B6F7B">read-optimised copies for dashboards</text>
+        <path d="M1318,916 a98,10 0 0 1 196,0 v58 a98,10 0 0 1 -196,0 z" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <ellipse cx="1416" cy="916" rx="98" ry="10" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+        <text x="1416" y="948" font-weight="700" fill="#1C5A33">Reference data</text>
+        <text x="1416" y="964" font-size="8.2" fill="#6B6F7B">admin hierarchy, species master,</text>
+        <text x="1416" y="977" font-size="8.2" fill="#6B6F7B">zone definitions, thresholds</text>
+      </g>
+    </g>
+
+    <!-- ===== LAYER 6 — PLATFORM & INFRASTRUCTURE ===== -->
+    <rect x="110" y="1038" width="1430" height="76" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+    <text x="128" y="1064" font-size="11" letter-spacing="2" fill="#1C5A33" font-weight="700">LAYER 6 — PLATFORM &amp; INFRASTRUCTURE</text>
+    <g font-size="9.8" fill="#1F2430" text-anchor="middle">
+      <rect x="490"  y="1052" width="150" height="34" rx="17" fill="#F7F3E9" stroke="#1C5A33" stroke-opacity=".6"/><text x="565"  y="1073">Hosting</text>
+      <rect x="656"  y="1052" width="170" height="34" rx="17" fill="#F7F3E9" stroke="#1C5A33" stroke-opacity=".6"/><text x="741"  y="1073">Sync infrastructure</text>
+      <rect x="842"  y="1052" width="220" height="34" rx="17" fill="#F7F3E9" stroke="#1C5A33" stroke-opacity=".6"/><text x="952"  y="1073">Encryption &amp; key management</text>
+      <rect x="1078" y="1052" width="200" height="34" rx="17" fill="#F7F3E9" stroke="#1C5A33" stroke-opacity=".6"/><text x="1178" y="1073">Backup &amp; disaster recovery</text>
+      <rect x="1294" y="1052" width="130" height="34" rx="17" fill="#F7F3E9" stroke="#1C5A33" stroke-opacity=".6"/><text x="1359" y="1073">Observability</text>
+      <rect x="1440" y="1052" width="82"  height="34" rx="17" fill="#F7F3E9" stroke="#1C5A33" stroke-opacity=".6"/><text x="1481" y="1069" font-size="8.6">Deployment</text><text x="1481" y="1080" font-size="8.6">topology</text>
+    </g>
+
+    <!-- Footer -->
+    <text x="790" y="1148" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">Six layers, and each layer may call only the layer beneath it. Layer 1 holds the six human-facing capture
+  surfaces plus the machine interfaces for remote-sensing and departmental ingestion; every request passes through Access &amp;
+  Identity, where role and geographic scope are resolved before any query reaches the store. The twelve domain modules of
+  Layer 3 own the record of fact. Analytics &amp; Intelligence is deliberately drawn apart, dashed: it is derived and
+  non-authoritative — it annotates and flags, and a flag becomes a task for a human in Layer 3, never a change to the record.
+  The Scope Certification &amp; Utilisation module is restricted (gold, locked): it sits behind step-up authorisation and holds
+  certification and utilisation evidence only — no funds.</p>
+</section>
+
+<!-- ============================================================= -->
+<!-- DIAGRAM 3 — COMMAND HIERARCHY & ESCALATION (§4)                -->
+<!-- ============================================================= -->
+<section class="panel">
+  <div class="dnum">Diagram 3</div>
+  <h2>Command Hierarchy &amp; Escalation</h2>
+  <div class="specref">Specification §4 — the geographic backbone, three command levels, and the two recorded flows between them</div>
+
+  <svg viewBox="0 0 1580 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Command hierarchy and escalation diagram">
+    <defs>
+      <marker id="ah-g3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="ah-n3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8.5" markerHeight="8.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="ah-au3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8.5" markerHeight="8.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- ===== LEFT: GEOGRAPHIC BACKBONE ===== -->
+    <text x="270" y="56" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#1C5A33" font-weight="700">GEOGRAPHIC BACKBONE</text>
+    <text x="270" y="74" text-anchor="middle" font-size="9.5" fill="#6B6F7B" font-style="italic">the backbone of both navigation and authority</text>
+
+    <rect x="120" y="90" width="300" height="82" fill="#1C5A33"/>
+    <text x="270" y="124" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">State</text>
+    <text x="270" y="146" text-anchor="middle" font-size="9.5" fill="#FFFFFF" fill-opacity=".85">Karnataka</text>
+    <line x1="270" y1="172" x2="270" y2="212" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+    <text x="286" y="197" font-size="10" font-weight="700" fill="#1C5A33">× 35</text>
+
+    <rect x="120" y="216" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="250" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">District</text>
+    <text x="270" y="272" text-anchor="middle" font-size="9.5" fill="#6B6F7B">35 districts</text>
+    <line x1="270" y1="298" x2="270" y2="338" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+    <text x="286" y="323" font-size="10" font-weight="700" fill="#1C5A33">× 240</text>
+
+    <rect x="120" y="342" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="376" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Taluk</text>
+    <text x="270" y="398" text-anchor="middle" font-size="9.5" fill="#6B6F7B">240 taluks</text>
+    <line x1="270" y1="424" x2="270" y2="464" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+
+    <rect x="120" y="468" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="502" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Site / Parcel</text>
+    <text x="270" y="524" text-anchor="middle" font-size="9.5" fill="#6B6F7B">the unit of physical work</text>
+    <line x1="270" y1="550" x2="270" y2="590" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+
+    <rect x="120" y="594" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="628" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Batch</text>
+    <text x="270" y="650" text-anchor="middle" font-size="9.5" fill="#6B6F7B">a planting event within a parcel</text>
+    <line x1="270" y1="676" x2="270" y2="708" stroke="#1C5A33" stroke-width="1.4" stroke-dasharray="4 4"/>
+    <rect x="130" y="712" width="280" height="52" fill="none" stroke="#1C5A33" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="270" y="734" text-anchor="middle" font-size="9.5" fill="#1F2430">Sapling population</text>
+    <text x="270" y="750" text-anchor="middle" font-size="8.6" fill="#6B6F7B">counted, sampled — not individually tagged</text>
+
+    <!-- ===== MIDDLE: THE TWO RECORDED FLOWS ===== -->
+    <!-- Escalation (gold, upward) -->
+    <line x1="700" y1="790" x2="700" y2="106" stroke="#C09A3E" stroke-width="3.4" marker-end="url(#ah-au3)"/>
+    <text x="672" y="448" font-size="12" font-weight="700" fill="#C09A3E" letter-spacing="2.5" transform="rotate(-90 672 448)" text-anchor="middle">ESCALATION — UPWARD ON THRESHOLD BREACH</text>
+    <!-- Trigger ticks on the escalation arrow -->
+    <g stroke="#C09A3E" stroke-width="2.4">
+      <line x1="688" y1="300" x2="712" y2="300"/>
+      <line x1="688" y1="420" x2="712" y2="420"/>
+      <line x1="688" y1="540" x2="712" y2="540"/>
+    </g>
+    <g font-size="10" fill="#1F2430" text-anchor="end">
+      <text x="660" y="296">survival below threshold at census</text>
+      <text x="660" y="310" fill="#6B6F7B" font-size="8.8">casualty replacement raised (§8.2)</text>
+      <text x="660" y="416">repeated audit flags</text>
+      <text x="660" y="430" fill="#6B6F7B" font-size="8.8">not cleared on re-inspection → district; repeat breach → state (§8.3)</text>
+      <text x="660" y="536">rectification unresolved past deadline</text>
+      <text x="660" y="550" fill="#6B6F7B" font-size="8.8">carries a named owner and a deadline</text>
+    </g>
+
+    <!-- Direction (navy, downward) -->
+    <line x1="850" y1="106" x2="850" y2="790" stroke="#27467A" stroke-width="3.4" marker-end="url(#ah-n3)"/>
+    <text x="878" y="448" font-size="12" font-weight="700" fill="#27467A" letter-spacing="2.5" transform="rotate(90 878 448)" text-anchor="middle">DIRECTION &amp; INSTRUCTION — DOWNWARD</text>
+
+    <text x="775" y="828" text-anchor="middle" font-size="10.5" font-style="italic" fill="#1F2430">both flows are recorded</text>
+
+    <!-- ===== RIGHT: THREE COMMAND LEVELS ===== -->
+    <text x="1260" y="56" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#27467A" font-weight="700">COMMAND LEVELS</text>
+
+    <!-- State Command -->
+    <g>
+      <rect x="980" y="80" width="560" height="200" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6"/>
+      <rect x="980" y="80" width="560" height="46" fill="#27467A"/>
+      <text x="1000" y="109" font-size="13" font-weight="700" fill="#FFFFFF">STATE COMMAND</text>
+      <text x="1520" y="109" text-anchor="end" font-size="10" fill="#FFFFFF" fill-opacity=".85">KSLSA · IAFT PMU</text>
+      <text x="1000" y="156" font-size="10" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1060" y="156" font-size="10.5" fill="#1F2430">all 35 districts, aggregated · drill to any parcel</text>
+      <text x="1000" y="192" font-size="10" font-weight="700" fill="#C09A3E">ACTS ON</text>
+      <text x="1078" y="192" font-size="10.5" fill="#1F2430">policy thresholds · statewide exceptions</text>
+      <text x="1078" y="210" font-size="10.5" fill="#1F2430">programme-level decisions</text>
+      <text x="1000" y="252" font-size="9" fill="#6B6F7B" font-style="italic">receives repeat-breach escalations from district command</text>
+    </g>
+
+    <!-- District Command -->
+    <g>
+      <rect x="980" y="330" width="560" height="200" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6"/>
+      <rect x="980" y="330" width="560" height="46" fill="#27467A"/>
+      <text x="1000" y="359" font-size="13" font-weight="700" fill="#FFFFFF">DISTRICT COMMAND</text>
+      <text x="1520" y="359" text-anchor="end" font-size="10" fill="#FFFFFF" fill-opacity=".85">District administration · DFO-level</text>
+      <text x="1000" y="406" font-size="10" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1060" y="406" font-size="10.5" fill="#1F2430">one district · all its taluks and parcels</text>
+      <text x="1000" y="442" font-size="10" font-weight="700" fill="#C09A3E">ACTS ON</text>
+      <text x="1078" y="442" font-size="10.5" fill="#1F2430">district exceptions · resource reallocation</text>
+      <text x="1078" y="460" font-size="10.5" fill="#1F2430">escalation acceptance</text>
+      <text x="1000" y="502" font-size="9" fill="#6B6F7B" font-style="italic">also receives twice-rejected parcels flagged for district review (§6.3)</text>
+    </g>
+
+    <!-- Taluk / Field Command -->
+    <g>
+      <rect x="980" y="580" width="560" height="200" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6"/>
+      <rect x="980" y="580" width="560" height="46" fill="#27467A"/>
+      <text x="1000" y="609" font-size="13" font-weight="700" fill="#FFFFFF">TALUK / FIELD COMMAND</text>
+      <text x="1520" y="609" text-anchor="end" font-size="9.4" fill="#FFFFFF" fill-opacity=".85">Taluk officers · verification cadre · implementing agencies</text>
+      <text x="1000" y="656" font-size="10" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1060" y="656" font-size="10.5" fill="#1F2430">one taluk · assigned parcels</text>
+      <text x="1000" y="692" font-size="10" font-weight="700" fill="#C09A3E">ACTS ON</text>
+      <text x="1078" y="692" font-size="10.5" fill="#1F2430">field execution · verification · rectification</text>
+      <text x="1000" y="734" font-size="9" fill="#6B6F7B" font-style="italic">scope is enforced at the data layer — a taluk user cannot see the adjacent taluk (§9)</text>
+    </g>
+
+    <!-- Footer -->
+    <text x="790" y="878" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">The programme's geography — State, 35 districts, 240 taluks, then the parcel as the unit of physical work
+  and the batch as a planting event within it — is the backbone of both navigation and authority. Three command levels operate
+  on that backbone with strictly scoped visibility: state sees everything aggregated and can drill to any parcel, a district
+  sees only its own taluks and parcels, and a taluk sees only assigned parcels. Between them run two recorded flows: escalation
+  moves upward on threshold breach — survival falling below threshold at census, audit flags not cleared on re-inspection, or a
+  rectification left unresolved past its deadline — while direction and instruction move downward. Repeat breaches escalate
+  from district to state command.</p>
+</section>
+
+<footer class="docfoot">
+  Prepared by Grobet India Agrotech Pvt Ltd as Technology Partner. Architecture baseline issued for review by KSLSA and the
+  Institution of Agroforestry Farmers and Technologists. · Native SVG · no external libraries · prints on A3 landscape.
+</footer>
+
+</div>
+</body>
+</html>

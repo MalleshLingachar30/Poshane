@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D14</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --paper:#F7F3E9; --ink:#1F2430;
+    --green-tint:#E8F0EA; --navy-tint:#E9EDF5; --gold-tint:#F7EFDC; --line:#D8D2C2; --card:#FFFDF8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    padding:28px 34px; line-height:1.45; font-size:15px;
+  }
+  .doc-head{max-width:1560px; margin:0 auto 26px auto; border-bottom:3px solid var(--green); padding-bottom:16px;}
+  .doc-head h1{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:30px; font-weight:700; letter-spacing:0.2px;}
+  .doc-head .sub{color:var(--navy); font-size:15px; margin-top:4px; font-weight:600;}
+  .doc-head .meta{color:#5A5F6B; font-size:12.5px; margin-top:6px;}
+  .panel{
+    max-width:1560px; margin:0 auto 40px auto; background:var(--card);
+    border:1px solid var(--line); border-top:5px solid var(--green);
+    padding:26px 30px 18px 30px; page-break-after:always; break-after:page;
+  }
+  .panel:last-of-type{page-break-after:auto; break-after:auto;}
+  .panel.gov{border-top-color:var(--navy);}
+  .eyebrow{font-size:11.5px; letter-spacing:2.2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:24px; font-weight:700; margin-bottom:6px;}
+  .panel.gov h2{color:var(--navy);}
+  .panel .lede{font-size:14.5px; color:#3A3F4A; max-width:1150px; margin-bottom:18px;}
+  .panel h3{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--navy); font-size:17px; margin:22px 0 8px 0;}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;}
+  .serif{font-family:Fraunces,Georgia,"Times New Roman",serif;}
+  .foot{
+    border-top:1px solid var(--line); margin-top:18px; padding-top:8px;
+    font-size:11px; color:#6A6F7A; display:flex; justify-content:space-between; gap:16px;
+  }
+  /* ---------- permission matrix ---------- */
+  .matrix-wrap{overflow-x:auto; margin-top:10px;}
+  table.pmatrix{border-collapse:collapse; width:100%; font-size:12px;}
+  table.pmatrix thead th{
+    background:var(--navy); color:#FFFFFF; padding:8px 4px; vertical-align:bottom;
+    border:1px solid #1E3760; font-weight:600; font-size:11px;
+  }
+  table.pmatrix thead th span{display:inline-block; writing-mode:vertical-rl; transform:rotate(180deg); max-height:118px; line-height:1.1;}
+  table.pmatrix thead th.corner{text-align:left; vertical-align:middle; min-width:260px;}
+  table.pmatrix thead th.corner .axis, table.pmatrix thead th.corner .axis2{writing-mode:horizontal-tb; transform:none; display:block; font-size:10px; font-weight:400; color:#C9D4E8;}
+  table.pmatrix tbody th{
+    text-align:left; padding:5px 10px; border:1px solid var(--line); background:var(--green-tint);
+    font-weight:600; color:var(--ink); white-space:nowrap;
+  }
+  table.pmatrix tbody th .rname{display:block; font-size:12px;}
+  table.pmatrix tbody th .rscope{display:block; font-size:10px; font-weight:400; color:#55604F;}
+  table.pmatrix tbody td{border:1px solid var(--line); text-align:center; padding:4px 2px; min-width:44px; background:#FFFFFF;}
+  table.pmatrix tbody tr:nth-child(even) td{background:#FBF8F0;}
+  .cell{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; position:relative;}
+  .cell.full{background:var(--green);}
+  .cell.scoped{background:linear-gradient(135deg, var(--green) 50%, #FFFFFF 50%); border:1.5px solid var(--green);}
+  .cell.ro{background:#FFFFFF; border:2px solid var(--navy); border-radius:50%; width:12px; height:12px;}
+  .cell.none{background:#DDD8CB; width:6px; height:6px; border-radius:50%;}
+  .cell.stepup::after{content:"▲"; position:absolute; top:-9px; right:-9px; font-size:9px; color:var(--gold);}
+  .legend{display:flex; flex-wrap:wrap; gap:22px; align-items:center; margin:10px 0 4px 0; font-size:12px; color:#3A3F4A;}
+  .legend .cell{margin-right:6px;}
+  /* ---------- separation-of-duties panel ---------- */
+  .sod{
+    border:2px solid var(--gold); background:var(--gold-tint); border-radius:6px;
+    padding:16px 20px; margin-top:20px;
+  }
+  .sod h3{margin:0 0 10px 0; color:var(--ink); font-size:17px;}
+  .sod h3 .tag{color:var(--gold);}
+  .sod-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px 18px;}
+  .sod-item{background:#FFFDF6; border:1px solid #E0CE9E; border-radius:5px; padding:10px 12px; font-size:12.5px;}
+  .sod-item b{display:block; color:var(--navy); font-size:12.5px; margin-bottom:3px;}
+  .sod-item.key{border:2px solid var(--gold); background:#FFF9E8;}
+  .sod-item.key b{color:var(--green);}
+  .stepup-strip{
+    margin-top:14px; border-left:5px solid var(--gold); background:#FFFDF6; padding:10px 16px; font-size:13px;
+  }
+  .stepup-strip b{color:var(--navy);}
+  /* ---------- boundary + generic tables ---------- */
+  table.spec{border-collapse:collapse; width:100%; font-size:13px; margin-top:8px;}
+  table.spec th{background:var(--green); color:#fff; text-align:left; padding:8px 12px; border:1px solid #164628; font-weight:600;}
+  table.spec.navy th{background:var(--navy); border-color:#1E3760;}
+  table.spec td{border:1px solid var(--line); padding:7px 12px; background:#FFFFFF; vertical-align:top;}
+  table.spec tr:nth-child(even) td{background:#FBF8F0;}
+  table.spec td.inplat{color:var(--green); font-weight:700;}
+  table.spec td.outplat{color:var(--navy); font-weight:700;}
+  table.spec td.never{color:#8A2F2A; font-weight:700;}
+  .callout{
+    margin-top:16px; border:2px solid var(--navy); background:var(--navy-tint); border-radius:6px;
+    padding:14px 20px; font-size:14.5px; color:var(--ink);
+  }
+  .callout .q{font-family:Fraunces,Georgia,serif; font-style:italic; color:var(--navy); font-size:16px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  @media (max-width:900px){ .sod-grid{grid-template-columns:1fr;} .two-col{grid-template-columns:1fr;} }
+  @page{size:A3 landscape; margin:12mm;}
+  @media print{
+    body{padding:0; background:#FFFFFF;}
+    .panel{border:1px solid var(--line); box-shadow:none; margin-bottom:0;}
+    .matrix-wrap{overflow:visible;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel gov">
+  <div class="eyebrow">Diagram 14 · Specification §13</div>
+  <h2>Deployment, Hosting &amp; Data Ownership</h2>
+  <p class="lede">The ownership position is unambiguous: KSLSA owns the programme record in full; Grobet India
+  Agrotech hosts and operates the platform as Technology Partner; the data is resident in India; and KSLSA may
+  export the complete record — including the audit log — in open formats, at any time and on exit. Departmental
+  and remote-sensing sources feed the platform through read-only machine interfaces: the platform reads, and
+  does not write into, departmental systems of record.</p>
+
+  <svg viewBox="0 0 1500 740" role="img" aria-label="Hosting topology, ownership, interfaces and public surface">
+    <defs>
+      <marker id="arrN4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="arrG4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+    </defs>
+
+    <!-- KSLSA ownership banner -->
+    <rect x="380" y="20" width="740" height="88" rx="10" fill="#27467A"/>
+    <text x="750" y="52" text-anchor="middle" fill="#FFFFFF" font-size="19" font-weight="700" font-family="Georgia,serif">KSLSA OWNS THE PROGRAMME RECORD IN FULL</text>
+    <text x="750" y="74" text-anchor="middle" fill="#C9D4E8" font-size="12.5">Karnataka State Legal Services Authority — data owner</text>
+    <text x="750" y="92" text-anchor="middle" fill="#C9D4E8" font-size="12.5">Defined exit: on termination, the full record and its audit log transfer to KSLSA</text>
+
+    <!-- export arrow up from platform to KSLSA -->
+    <path d="M 690 216 L 690 116" stroke="#27467A" stroke-width="3" marker-end="url(#arrN4)"/>
+    <text x="676" y="170" text-anchor="end" fill="#27467A" font-size="12" font-weight="700">FULL EXPORT RIGHTS</text>
+    <text x="676" y="186" text-anchor="end" fill="#3A3F4A" font-size="11">complete record incl. audit log ·</text>
+    <text x="676" y="200" text-anchor="end" fill="#3A3F4A" font-size="11">open formats · at any time and on exit</text>
+    <path d="M 810 116 L 810 216" stroke="#27467A" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrN4)"/>
+    <text x="824" y="170" fill="#27467A" font-size="12" font-weight="700">governance &amp; policy</text>
+    <text x="824" y="186" fill="#3A3F4A" font-size="11">no lock-in through</text>
+    <text x="824" y="200" fill="#3A3F4A" font-size="11">proprietary formats</text>
+
+    <!-- platform centre -->
+    <rect x="440" y="224" width="620" height="256" rx="12" fill="#F2F7F3" stroke="#1C5A33" stroke-width="4"/>
+    <rect x="440" y="224" width="620" height="44" rx="12" fill="#1C5A33"/>
+    <rect x="440" y="248" width="620" height="20" fill="#1C5A33"/>
+    <text x="750" y="252" text-anchor="middle" fill="#FFFFFF" font-size="16" font-weight="700" font-family="Georgia,serif">POSHANE PLATFORM — SYSTEM OF RECORD</text>
+
+    <rect x="464" y="284" width="572" height="52" rx="6" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2"/>
+    <text x="750" y="306" text-anchor="middle" fill="#1F2430" font-size="13" font-weight="700">DATA RESIDENCY — INDIA REGION</text>
+    <text x="750" y="324" text-anchor="middle" fill="#5A5F6B" font-size="11.5">The programme record does not leave Indian jurisdiction</text>
+
+    <rect x="464" y="348" width="572" height="52" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="750" y="370" text-anchor="middle" fill="#1C5A33" font-size="13" font-weight="700">HOSTED &amp; OPERATED BY GROBET INDIA AGROTECH — TECHNOLOGY PARTNER</text>
+    <text x="750" y="388" text-anchor="middle" fill="#5A5F6B" font-size="11.5">Operates the platform; owns none of the record</text>
+
+    <rect x="464" y="412" width="572" height="52" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="750" y="434" text-anchor="middle" fill="#1C5A33" font-size="13" font-weight="700">SEGREGATED ENVIRONMENTS</text>
+    <text x="750" y="452" text-anchor="middle" fill="#5A5F6B" font-size="11.5">No production data in test environments · access logging retained independently of the operational store</text>
+
+    <!-- departmental sources left -->
+    <rect x="40" y="240" width="330" height="110" rx="8" fill="#FFFFFF" stroke="#27467A" stroke-width="2.5"/>
+    <text x="205" y="268" text-anchor="middle" fill="#27467A" font-size="14" font-weight="700">DEPARTMENTAL SYSTEMS OF RECORD</text>
+    <text x="205" y="290" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Authoritative land records — survey numbers,</text>
+    <text x="205" y="305" text-anchor="middle" fill="#3A3F4A" font-size="11.5">RTC / Bhoomi — referenced, never replaced</text>
+    <text x="205" y="328" text-anchor="middle" fill="#8A2F2A" font-size="11" font-weight="700">The platform never writes into these systems</text>
+
+    <rect x="40" y="374" width="330" height="86" rx="8" fill="#FFFFFF" stroke="#27467A" stroke-width="2.5"/>
+    <text x="205" y="402" text-anchor="middle" fill="#27467A" font-size="14" font-weight="700">REMOTE-SENSING SOURCES</text>
+    <text x="205" y="424" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Machine interfaces for corroboration</text>
+    <text x="205" y="440" text-anchor="middle" fill="#3A3F4A" font-size="11.5">of the field record</text>
+
+    <path d="M 370 295 L 432 295" stroke="#1C5A33" stroke-width="3" marker-end="url(#arrG4)"/>
+    <path d="M 370 415 L 432 415" stroke="#1C5A33" stroke-width="3" marker-end="url(#arrG4)"/>
+    <text x="403" y="356" text-anchor="middle" fill="#1C5A33" font-size="10.5" font-weight="700">READ-ONLY</text>
+    <text x="403" y="370" text-anchor="middle" fill="#1C5A33" font-size="10" font-weight="700">one way in</text>
+
+    <!-- public surface right -->
+    <rect x="1130" y="240" width="340" height="240" rx="8" fill="#F2F0EA" stroke="#9AA0AC" stroke-width="1.5"/>
+    <text x="1300" y="268" text-anchor="middle" fill="#1F2430" font-size="14" font-weight="700" font-family="Georgia,serif">PUBLIC DISCLOSURE SURFACE</text>
+    <text x="1300" y="285" text-anchor="middle" fill="#5A5F6B" font-size="11">Deliberately narrow · read-only (§13.3)</text>
+    <g font-size="11.5">
+      <rect x="1148" y="298" width="304" height="48" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="1160" y="316" fill="#1C5A33" font-weight="700">Tag landing page</text>
+      <text x="1160" y="332" fill="#3A3F4A">Parcel location · species · planting date ·</text>
+      <text x="1160" y="344" fill="#3A3F4A" font-size="10.5">current survival status · custodian body</text>
+      <rect x="1148" y="354" width="304" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="1160" y="372" fill="#1C5A33" font-weight="700">Published programme dashboard</text>
+      <text x="1160" y="388" fill="#3A3F4A">Aggregate progress by district and zone</text>
+      <rect x="1148" y="402" width="304" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="1160" y="420" fill="#1C5A33" font-weight="700">Information request channel</text>
+      <text x="1160" y="436" fill="#3A3F4A">For data beyond the published surface</text>
+    </g>
+    <text x="1300" y="466" text-anchor="middle" fill="#8A2F2A" font-size="10.5" font-weight="700">Institutional custody shown — never individual identity</text>
+
+    <path d="M 1068 340 L 1122 340" stroke="#27467A" stroke-width="2.5" marker-end="url(#arrN4)"/>
+    <text x="1095" y="330" text-anchor="middle" fill="#27467A" font-size="10.5" font-weight="600">publishes</text>
+
+    <!-- personal data note -->
+    <rect x="1130" y="494" width="340" height="60" rx="8" fill="#FDF3F2" stroke="#8A2F2A" stroke-width="2"/>
+    <text x="1300" y="518" text-anchor="middle" fill="#8A2F2A" font-size="12" font-weight="700">PERSONAL DATA — NEVER PUBLICLY EXPOSED</text>
+    <text x="1300" y="536" text-anchor="middle" fill="#8A2F2A" font-size="11">Field workers, verifiers and volunteers are not</text>
+    <text x="1300" y="549" text-anchor="middle" fill="#8A2F2A" font-size="11">identifiable on any public view</text>
+
+    <!-- security posture strip -->
+    <rect x="40" y="580" width="1430" height="140" rx="10" fill="#E9EDF5" stroke="#27467A" stroke-width="2"/>
+    <text x="60" y="608" fill="#27467A" font-size="15" font-weight="700" font-family="Georgia,serif">SECURITY POSTURE (§13.2)</text>
+    <g font-size="11.5" fill="#1F2430">
+      <rect x="60" y="622" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="72" y="639" font-weight="700" fill="#27467A">Encryption in transit and at rest</text>
+      <text x="72" y="654">Including the on-device local store</text>
+
+      <rect x="408" y="620" width="336" height="44" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="420" y="635" font-weight="700" fill="#27467A">Tag cryptography</text>
+      <text x="420" y="648" font-size="10.5">NTAG 424 DNA · AES-128 SUN/SDM ·</text>
+      <text x="420" y="660" font-size="10.5">per-tap unique cryptograms · clone detection</text>
+
+      <rect x="756" y="622" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="768" y="639" font-weight="700" fill="#27467A">Device registration and binding</text>
+      <text x="768" y="654">Lost-device revocation</text>
+
+      <rect x="1104" y="622" width="346" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="1116" y="639" font-weight="700" fill="#27467A">Step-up authorisation</text>
+      <text x="1116" y="654">On restricted modules, independent of session</text>
+
+      <rect x="60" y="670" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="72" y="687" font-weight="700" fill="#27467A">Role and scope enforcement</text>
+      <text x="72" y="702">Applied at the data layer, not the interface</text>
+
+      <rect x="408" y="670" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="420" y="687" font-weight="700" fill="#27467A">Full request and access logging</text>
+      <text x="420" y="702">Retained independently of the operational store</text>
+
+      <rect x="756" y="670" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="768" y="687" font-weight="700" fill="#27467A">Segregated environments</text>
+      <text x="768" y="702">No production data in test environments</text>
+
+      <rect x="1104" y="670" width="346" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="1116" y="687" font-weight="700" fill="#27467A">Backup with defined RPO / RTO</text>
+      <text x="1116" y="702">Periodic restoration testing</text>
+    </g>
+  </svg>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 14 · §13 Deployment, hosting, and data ownership</span></div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

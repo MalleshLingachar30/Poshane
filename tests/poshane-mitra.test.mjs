@@ -131,6 +131,7 @@ test("all required Poshane Mitra tool definitions are present", () => {
     "poshane_get_state_overview",
     "poshane_get_state_trends",
     "poshane_get_district_progress",
+    "poshane_get_taluk_progress",
     "poshane_compare_districts",
     "poshane_get_land_registry",
     "poshane_get_stakeholders",
@@ -160,6 +161,7 @@ test("assistant is embedded in the existing command-center shell and can target 
   assert.match(appShell, /CSS\.escape\(voiceHighlight\)/);
   assert.match(frames, /data-mitra-id="state-total-planted"/);
   assert.match(frames, /data-mitra-id="district-land-split"/);
+  assert.match(frames, /<DistrictTalukSplit/);
   assert.match(frames, /data-mitra-id="land-registry"/);
   assert.match(frames, /data-mitra-id="stakeholders"/);
   assert.match(frames, /id="stakeholder-district"/);

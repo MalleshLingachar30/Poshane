@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D13</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --paper:#F7F3E9; --ink:#1F2430;
+    --green-tint:#E8F0EA; --navy-tint:#E9EDF5; --gold-tint:#F7EFDC; --line:#D8D2C2; --card:#FFFDF8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    padding:28px 34px; line-height:1.45; font-size:15px;
+  }
+  .doc-head{max-width:1560px; margin:0 auto 26px auto; border-bottom:3px solid var(--green); padding-bottom:16px;}
+  .doc-head h1{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:30px; font-weight:700; letter-spacing:0.2px;}
+  .doc-head .sub{color:var(--navy); font-size:15px; margin-top:4px; font-weight:600;}
+  .doc-head .meta{color:#5A5F6B; font-size:12.5px; margin-top:6px;}
+  .panel{
+    max-width:1560px; margin:0 auto 40px auto; background:var(--card);
+    border:1px solid var(--line); border-top:5px solid var(--green);
+    padding:26px 30px 18px 30px; page-break-after:always; break-after:page;
+  }
+  .panel:last-of-type{page-break-after:auto; break-after:auto;}
+  .panel.gov{border-top-color:var(--navy);}
+  .eyebrow{font-size:11.5px; letter-spacing:2.2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:24px; font-weight:700; margin-bottom:6px;}
+  .panel.gov h2{color:var(--navy);}
+  .panel .lede{font-size:14.5px; color:#3A3F4A; max-width:1150px; margin-bottom:18px;}
+  .panel h3{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--navy); font-size:17px; margin:22px 0 8px 0;}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;}
+  .serif{font-family:Fraunces,Georgia,"Times New Roman",serif;}
+  .foot{
+    border-top:1px solid var(--line); margin-top:18px; padding-top:8px;
+    font-size:11px; color:#6A6F7A; display:flex; justify-content:space-between; gap:16px;
+  }
+  /* ---------- permission matrix ---------- */
+  .matrix-wrap{overflow-x:auto; margin-top:10px;}
+  table.pmatrix{border-collapse:collapse; width:100%; font-size:12px;}
+  table.pmatrix thead th{
+    background:var(--navy); color:#FFFFFF; padding:8px 4px; vertical-align:bottom;
+    border:1px solid #1E3760; font-weight:600; font-size:11px;
+  }
+  table.pmatrix thead th span{display:inline-block; writing-mode:vertical-rl; transform:rotate(180deg); max-height:118px; line-height:1.1;}
+  table.pmatrix thead th.corner{text-align:left; vertical-align:middle; min-width:260px;}
+  table.pmatrix thead th.corner .axis, table.pmatrix thead th.corner .axis2{writing-mode:horizontal-tb; transform:none; display:block; font-size:10px; font-weight:400; color:#C9D4E8;}
+  table.pmatrix tbody th{
+    text-align:left; padding:5px 10px; border:1px solid var(--line); background:var(--green-tint);
+    font-weight:600; color:var(--ink); white-space:nowrap;
+  }
+  table.pmatrix tbody th .rname{display:block; font-size:12px;}
+  table.pmatrix tbody th .rscope{display:block; font-size:10px; font-weight:400; color:#55604F;}
+  table.pmatrix tbody td{border:1px solid var(--line); text-align:center; padding:4px 2px; min-width:44px; background:#FFFFFF;}
+  table.pmatrix tbody tr:nth-child(even) td{background:#FBF8F0;}
+  .cell{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; position:relative;}
+  .cell.full{background:var(--green);}
+  .cell.scoped{background:linear-gradient(135deg, var(--green) 50%, #FFFFFF 50%); border:1.5px solid var(--green);}
+  .cell.ro{background:#FFFFFF; border:2px solid var(--navy); border-radius:50%; width:12px; height:12px;}
+  .cell.none{background:#DDD8CB; width:6px; height:6px; border-radius:50%;}
+  .cell.stepup::after{content:"▲"; position:absolute; top:-9px; right:-9px; font-size:9px; color:var(--gold);}
+  .legend{display:flex; flex-wrap:wrap; gap:22px; align-items:center; margin:10px 0 4px 0; font-size:12px; color:#3A3F4A;}
+  .legend .cell{margin-right:6px;}
+  /* ---------- separation-of-duties panel ---------- */
+  .sod{
+    border:2px solid var(--gold); background:var(--gold-tint); border-radius:6px;
+    padding:16px 20px; margin-top:20px;
+  }
+  .sod h3{margin:0 0 10px 0; color:var(--ink); font-size:17px;}
+  .sod h3 .tag{color:var(--gold);}
+  .sod-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px 18px;}
+  .sod-item{background:#FFFDF6; border:1px solid #E0CE9E; border-radius:5px; padding:10px 12px; font-size:12.5px;}
+  .sod-item b{display:block; color:var(--navy); font-size:12.5px; margin-bottom:3px;}
+  .sod-item.key{border:2px solid var(--gold); background:#FFF9E8;}
+  .sod-item.key b{color:var(--green);}
+  .stepup-strip{
+    margin-top:14px; border-left:5px solid var(--gold); background:#FFFDF6; padding:10px 16px; font-size:13px;
+  }
+  .stepup-strip b{color:var(--navy);}
+  /* ---------- boundary + generic tables ---------- */
+  table.spec{border-collapse:collapse; width:100%; font-size:13px; margin-top:8px;}
+  table.spec th{background:var(--green); color:#fff; text-align:left; padding:8px 12px; border:1px solid #164628; font-weight:600;}
+  table.spec.navy th{background:var(--navy); border-color:#1E3760;}
+  table.spec td{border:1px solid var(--line); padding:7px 12px; background:#FFFFFF; vertical-align:top;}
+  table.spec tr:nth-child(even) td{background:#FBF8F0;}
+  table.spec td.inplat{color:var(--green); font-weight:700;}
+  table.spec td.outplat{color:var(--navy); font-weight:700;}
+  table.spec td.never{color:#8A2F2A; font-weight:700;}
+  .callout{
+    margin-top:16px; border:2px solid var(--navy); background:var(--navy-tint); border-radius:6px;
+    padding:14px 20px; font-size:14.5px; color:var(--ink);
+  }
+  .callout .q{font-family:Fraunces,Georgia,serif; font-style:italic; color:var(--navy); font-size:16px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  @media (max-width:900px){ .sod-grid{grid-template-columns:1fr;} .two-col{grid-template-columns:1fr;} }
+  @page{size:A3 landscape; margin:12mm;}
+  @media print{
+    body{padding:0; background:#FFFFFF;}
+    .panel{border:1px solid var(--line); box-shadow:none; margin-bottom:0;}
+    .matrix-wrap{overflow:visible;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel">
+  <div class="eyebrow">Diagram 13 · Specification §12</div>
+  <h2>Audit Log &amp; the Evidential Chain</h2>
+  <p class="lede">Every state transition in the platform writes an immutable, append-only entry carrying six
+  dimensions: what changed, who changed it, when, where, how, and why. Entries are never updated or deleted —
+  a correction is a new entry that supersedes an earlier one, with the superseded entry still readable. Below,
+  the record structure; beneath it, the chain of evidence that answers an external auditor without relying on
+  anything a person merely typed into a box.</p>
+
+  <svg viewBox="0 0 1500 760" role="img" aria-label="Append-only audit log structure and evidential chain">
+    <defs>
+      <marker id="arrInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1F2430"/></marker>
+      <marker id="arrGold3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+      <marker id="arrNavy3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+    </defs>
+
+    <!-- ===== part 1: append-only record ===== -->
+    <text x="30" y="34" fill="#1C5A33" font-size="18" font-weight="700" font-family="Georgia,serif">THE APPEND-ONLY RECORD — six dimensions of every entry (§12.1)</text>
+
+    <!-- one entry, anatomised -->
+    <rect x="30" y="52" width="880" height="292" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+    <rect x="30" y="52" width="880" height="36" rx="8" fill="#1C5A33"/>
+    <rect x="30" y="72" width="880" height="16" fill="#1C5A33"/>
+    <text x="46" y="76" fill="#FFFFFF" font-size="13" font-weight="700">AUDIT LOG ENTRY — one state transition, one immutable record</text>
+
+    <g font-size="12.5">
+      <rect x="48" y="102" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="124" text-anchor="middle" fill="#fff" font-weight="700">WHAT</text>
+      <text x="152" y="123" fill="#1F2430">Entity · prior state · new state · changed values</text>
+
+      <rect x="48" y="142" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="164" text-anchor="middle" fill="#fff" font-weight="700">WHO</text>
+      <text x="152" y="163" fill="#1F2430">Authenticated identity · role in force · scope in force at that moment</text>
+
+      <rect x="48" y="182" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="204" text-anchor="middle" fill="#fff" font-weight="700">WHEN</text>
+      <text x="152" y="203" fill="#1F2430">Device capture time and server receipt time — both retained</text>
+
+      <rect x="48" y="222" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="244" text-anchor="middle" fill="#fff" font-weight="700">WHERE</text>
+      <text x="152" y="243" fill="#1F2430">Device GPS at capture · parcel reference</text>
+
+      <rect x="48" y="262" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="284" text-anchor="middle" fill="#fff" font-weight="700">HOW</text>
+      <text x="152" y="283" fill="#1F2430">Device identifier · app version · channel · tag tap cryptogram where applicable</text>
+
+      <rect x="48" y="302" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="324" text-anchor="middle" fill="#fff" font-weight="700">WHY</text>
+      <text x="152" y="323" fill="#1F2430">Reason code and free text for decisions, rejections, and supersessions</text>
+    </g>
+
+    <!-- supersession ledger -->
+    <rect x="940" y="52" width="530" height="292" rx="8" fill="#F2F0EA" stroke="#9AA0AC" stroke-width="1.5"/>
+    <text x="960" y="82" fill="#1F2430" font-size="14" font-weight="700" font-family="Georgia,serif">Corrections supersede — they never overwrite</text>
+
+    <g font-size="11.5">
+      <rect x="960" y="100" width="490" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="974" y="117" fill="#1C5A33" font-weight="700">Entry 4171</text>
+      <text x="974" y="132" fill="#3A3F4A">Batch planted — species mix and count recorded at tag tap</text>
+
+      <rect x="960" y="148" width="490" height="40" rx="5" fill="#FBF6EA" stroke="#C09A3E" stroke-width="1.5"/>
+      <text x="974" y="165" fill="#8A6A1E" font-weight="700">Entry 4172 — SUPERSEDED, still readable</text>
+      <text x="974" y="180" fill="#3A3F4A">Count mis-keyed · supersession visible on the entry itself</text>
+
+      <rect x="960" y="196" width="490" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="974" y="213" fill="#1C5A33" font-weight="700">Entry 4173</text>
+      <text x="974" y="228" fill="#3A3F4A">Maintenance visit recorded</text>
+
+      <rect x="960" y="244" width="490" height="40" rx="5" fill="#E8F0EA" stroke="#1C5A33" stroke-width="2"/>
+      <text x="974" y="261" fill="#1C5A33" font-weight="700">Entry 4180 — CORRECTION, supersedes 4172</text>
+      <text x="974" y="276" fill="#3A3F4A">New entry with reason code · the earlier entry remains in the record</text>
+
+      <path d="M 1455 262 C 1490 240, 1490 190, 1455 170" stroke="#C09A3E" stroke-width="2.5" fill="none" marker-end="url(#arrGold3)"/>
+    </g>
+    <text x="1205" y="316" text-anchor="middle" fill="#8A2F2A" font-size="12.5" font-weight="700">Entries are never updated or deleted</text>
+    <text x="1205" y="333" text-anchor="middle" fill="#5A5F6B" font-size="11.5">A correction is a new entry; the superseded entry stays readable, its supersession visible</text>
+
+    <!-- ===== part 2: evidential chain ===== -->
+    <text x="30" y="398" fill="#1C5A33" font-size="18" font-weight="700" font-family="Georgia,serif">THE EVIDENTIAL CHAIN — answering an external auditor (§12.2)</text>
+
+    <rect x="30" y="418" width="1440" height="70" rx="8" fill="#27467A"/>
+    <text x="750" y="448" text-anchor="middle" fill="#FFFFFF" font-size="17" font-family="Georgia,serif" font-style="italic">"Prove that this parcel was planted with these species on this date."</text>
+    <text x="750" y="472" text-anchor="middle" fill="#C9D4E8" font-size="12">The auditor's question — answered link by link, each link independently evidenced</text>
+
+    <path d="M 750 488 L 750 508" stroke="#27467A" stroke-width="2.5" marker-end="url(#arrNavy3)"/>
+
+    <!-- six chain links -->
+    <g font-size="11.5" text-anchor="middle">
+      <rect x="30" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="142" cy="544" r="14" fill="#C09A3E"/><text x="142" y="549" fill="#fff" font-weight="700" font-size="13">1</text>
+      <text x="142" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">TAG TAP CRYPTOGRAM</text>
+      <text x="142" y="592" fill="#3A3F4A">Per-tap unique cryptogram —</text>
+      <text x="142" y="607" fill="#3A3F4A">proves physical presence</text>
+      <text x="142" y="622" fill="#3A3F4A">at the parcel's tag</text>
+
+      <rect x="273" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="385" cy="544" r="14" fill="#C09A3E"/><text x="385" y="549" fill="#fff" font-weight="700" font-size="13">2</text>
+      <text x="385" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">DEVICE &amp; IDENTITY</text>
+      <text x="385" y="592" fill="#3A3F4A">The registered device and the</text>
+      <text x="385" y="607" fill="#3A3F4A">authenticated identity that</text>
+      <text x="385" y="622" fill="#3A3F4A">captured the record</text>
+
+      <rect x="516" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="628" cy="544" r="14" fill="#C09A3E"/><text x="628" y="549" fill="#fff" font-weight="700" font-size="13">3</text>
+      <text x="628" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">POSITION AT CAPTURE</text>
+      <text x="628" y="592" fill="#3A3F4A">Device GPS at the moment</text>
+      <text x="628" y="607" fill="#3A3F4A">of capture, held against</text>
+      <text x="628" y="622" fill="#3A3F4A">the parcel reference</text>
+
+      <rect x="759" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="871" cy="544" r="14" fill="#C09A3E"/><text x="871" y="549" fill="#fff" font-weight="700" font-size="13">4</text>
+      <text x="871" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">IN-APP PHOTOGRAPHS</text>
+      <text x="871" y="592" fill="#3A3F4A">Taken in-app and bound to</text>
+      <text x="871" y="607" fill="#3A3F4A">the payload — not attached</text>
+      <text x="871" y="622" fill="#3A3F4A">from a gallery afterwards</text>
+
+      <rect x="1002" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="1114" cy="544" r="14" fill="#C09A3E"/><text x="1114" y="549" fill="#fff" font-weight="700" font-size="13">5</text>
+      <text x="1114" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">INDEPENDENT VERIFIER</text>
+      <text x="1114" y="592" fill="#3A3F4A">A verifier's inspection made</text>
+      <text x="1114" y="607" fill="#3A3F4A">against the same physical</text>
+      <text x="1114" y="622" fill="#3A3F4A">tag, independently</text>
+
+      <rect x="1245" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="1357" cy="544" r="14" fill="#C09A3E"/><text x="1357" y="549" fill="#fff" font-weight="700" font-size="13">6</text>
+      <text x="1357" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">UNBROKEN STATE CHAIN</text>
+      <text x="1357" y="592" fill="#3A3F4A">Every transition from</text>
+      <text x="1357" y="607" fill="#3A3F4A">departmental identification</text>
+      <text x="1357" y="622" fill="#3A3F4A">to the present, in the log</text>
+    </g>
+    <!-- chain connectors -->
+    <g stroke="#C09A3E" stroke-width="3">
+      <line x1="255" y1="575" x2="273" y2="575"/><line x1="498" y1="575" x2="516" y2="575"/>
+      <line x1="741" y1="575" x2="759" y2="575"/><line x1="984" y1="575" x2="1002" y2="575"/>
+      <line x1="1227" y1="575" x2="1245" y2="575"/>
+    </g>
+
+    <!-- conclusion -->
+    <rect x="30" y="662" width="1440" height="56" rx="8" fill="#C09A3E"/>
+    <text x="750" y="690" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700" font-family="Georgia,serif">No link in this chain rests on an assertion that someone typed into a box.</text>
+    <text x="750" y="708" text-anchor="middle" fill="#FFF6DF" font-size="11.5">Cryptogram, device, position, bound imagery, independent inspection, and the unbroken log — each is evidence, not testimony</text>
+  </svg>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 13 · §12 Audit log and evidential integrity</span></div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

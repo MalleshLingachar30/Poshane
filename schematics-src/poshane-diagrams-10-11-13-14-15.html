@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane — Command &amp; Control Center · Architecture Diagrams 10, 11, 13, 14, 15</title>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --paper:#F7F3E9; --ink:#1F2430;
+    --green-tint:#E8F0EA; --navy-tint:#E9EDF5; --gold-tint:#F7EFDC; --line:#D8D2C2; --card:#FFFDF8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    padding:28px 34px; line-height:1.45; font-size:15px;
+  }
+  .doc-head{max-width:1560px; margin:0 auto 26px auto; border-bottom:3px solid var(--green); padding-bottom:16px;}
+  .doc-head h1{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:30px; font-weight:700; letter-spacing:0.2px;}
+  .doc-head .sub{color:var(--navy); font-size:15px; margin-top:4px; font-weight:600;}
+  .doc-head .meta{color:#5A5F6B; font-size:12.5px; margin-top:6px;}
+  .panel{
+    max-width:1560px; margin:0 auto 40px auto; background:var(--card);
+    border:1px solid var(--line); border-top:5px solid var(--green);
+    padding:26px 30px 18px 30px; page-break-after:always; break-after:page;
+  }
+  .panel:last-of-type{page-break-after:auto; break-after:auto;}
+  .panel.gov{border-top-color:var(--navy);}
+  .eyebrow{font-size:11.5px; letter-spacing:2.2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:24px; font-weight:700; margin-bottom:6px;}
+  .panel.gov h2{color:var(--navy);}
+  .panel .lede{font-size:14.5px; color:#3A3F4A; max-width:1150px; margin-bottom:18px;}
+  .panel h3{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--navy); font-size:17px; margin:22px 0 8px 0;}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;}
+  .serif{font-family:Fraunces,Georgia,"Times New Roman",serif;}
+  .foot{
+    border-top:1px solid var(--line); margin-top:18px; padding-top:8px;
+    font-size:11px; color:#6A6F7A; display:flex; justify-content:space-between; gap:16px;
+  }
+  /* ---------- permission matrix ---------- */
+  .matrix-wrap{overflow-x:auto; margin-top:10px;}
+  table.pmatrix{border-collapse:collapse; width:100%; font-size:12px;}
+  table.pmatrix thead th{
+    background:var(--navy); color:#FFFFFF; padding:8px 4px; vertical-align:bottom;
+    border:1px solid #1E3760; font-weight:600; font-size:11px;
+  }
+  table.pmatrix thead th span{display:inline-block; writing-mode:vertical-rl; transform:rotate(180deg); max-height:118px; line-height:1.1;}
+  table.pmatrix thead th.corner{text-align:left; vertical-align:middle; min-width:260px;}
+  table.pmatrix thead th.corner .axis, table.pmatrix thead th.corner .axis2{writing-mode:horizontal-tb; transform:none; display:block; font-size:10px; font-weight:400; color:#C9D4E8;}
+  table.pmatrix tbody th{
+    text-align:left; padding:5px 10px; border:1px solid var(--line); background:var(--green-tint);
+    font-weight:600; color:var(--ink); white-space:nowrap;
+  }
+  table.pmatrix tbody th .rname{display:block; font-size:12px;}
+  table.pmatrix tbody th .rscope{display:block; font-size:10px; font-weight:400; color:#55604F;}
+  table.pmatrix tbody td{border:1px solid var(--line); text-align:center; padding:4px 2px; min-width:44px; background:#FFFFFF;}
+  table.pmatrix tbody tr:nth-child(even) td{background:#FBF8F0;}
+  .cell{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; position:relative;}
+  .cell.full{background:var(--green);}
+  .cell.scoped{background:linear-gradient(135deg, var(--green) 50%, #FFFFFF 50%); border:1.5px solid var(--green);}
+  .cell.ro{background:#FFFFFF; border:2px solid var(--navy); border-radius:50%; width:12px; height:12px;}
+  .cell.none{background:#DDD8CB; width:6px; height:6px; border-radius:50%;}
+  .cell.stepup::after{content:"▲"; position:absolute; top:-9px; right:-9px; font-size:9px; color:var(--gold);}
+  .legend{display:flex; flex-wrap:wrap; gap:22px; align-items:center; margin:10px 0 4px 0; font-size:12px; color:#3A3F4A;}
+  .legend .cell{margin-right:6px;}
+  /* ---------- separation-of-duties panel ---------- */
+  .sod{
+    border:2px solid var(--gold); background:var(--gold-tint); border-radius:6px;
+    padding:16px 20px; margin-top:20px;
+  }
+  .sod h3{margin:0 0 10px 0; color:var(--ink); font-size:17px;}
+  .sod h3 .tag{color:var(--gold);}
+  .sod-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px 18px;}
+  .sod-item{background:#FFFDF6; border:1px solid #E0CE9E; border-radius:5px; padding:10px 12px; font-size:12.5px;}
+  .sod-item b{display:block; color:var(--navy); font-size:12.5px; margin-bottom:3px;}
+  .sod-item.key{border:2px solid var(--gold); background:#FFF9E8;}
+  .sod-item.key b{color:var(--green);}
+  .stepup-strip{
+    margin-top:14px; border-left:5px solid var(--gold); background:#FFFDF6; padding:10px 16px; font-size:13px;
+  }
+  .stepup-strip b{color:var(--navy);}
+  /* ---------- boundary + generic tables ---------- */
+  table.spec{border-collapse:collapse; width:100%; font-size:13px; margin-top:8px;}
+  table.spec th{background:var(--green); color:#fff; text-align:left; padding:8px 12px; border:1px solid #164628; font-weight:600;}
+  table.spec.navy th{background:var(--navy); border-color:#1E3760;}
+  table.spec td{border:1px solid var(--line); padding:7px 12px; background:#FFFFFF; vertical-align:top;}
+  table.spec tr:nth-child(even) td{background:#FBF8F0;}
+  table.spec td.inplat{color:var(--green); font-weight:700;}
+  table.spec td.outplat{color:var(--navy); font-weight:700;}
+  table.spec td.never{color:#8A2F2A; font-weight:700;}
+  .callout{
+    margin-top:16px; border:2px solid var(--navy); background:var(--navy-tint); border-radius:6px;
+    padding:14px 20px; font-size:14.5px; color:var(--ink);
+  }
+  .callout .q{font-family:Fraunces,Georgia,serif; font-style:italic; color:var(--navy); font-size:16px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  @media (max-width:900px){ .sod-grid{grid-template-columns:1fr;} .two-col{grid-template-columns:1fr;} }
+  @page{size:A3 landscape; margin:12mm;}
+  @media print{
+    body{padding:0; background:#FFFFFF;}
+    .panel{border:1px solid var(--line); box-shadow:none; margin-bottom:0;}
+    .matrix-wrap{overflow:visible;}
+  }
+</style>
+</head>
+<body>
+<div class="doc-head">
+  <h1>Poshane — Command &amp; Control Center</h1>
+  <div class="sub">KSLSA Five Crore Sapling Plantation &amp; Lake Rejuvenation Programme · Architecture Diagram Set — Diagrams 10, 11, 13, 14 &amp; 15</div>
+  <div class="meta">Institution of Agroforestry Farmers and Technologists — Principal Scientific Advisory Body and Program Management Unit · System Architecture Specification v0.9 (§9, §10, §12, §13, §14)</div>
+</div>
+
+<!-- ======================= DIAGRAM 10 ======================= -->
+<section class="panel">
+  <div class="eyebrow">Diagram 10 · Specification §9</div>
+  <h2>Role-Based Access Control — Two Axes, One Permission</h2>
+  <p class="lede">Authority in the platform is never a single grant. Every permission is the intersection of
+  <b>role</b> (what a person may do), <b>geographic scope</b> (where they may do it), and <b>record state</b>
+  (when in the lifecycle the role has authority). Part (a) shows the model with a worked example; part (b)
+  renders the full permission matrix and the separation-of-duties rules that prevent self-approval.</p>
+
+  <h3>(a) The two-axis model — permission = role × scope × record state</h3>
+  <svg viewBox="0 0 1500 660" role="img" aria-label="Two-axis access model with scope pyramid and worked example">
+    <!-- formula band -->
+    <rect x="20" y="14" width="1460" height="58" rx="6" fill="#27467A"/>
+    <text x="750" y="44" text-anchor="middle" fill="#FFFFFF" font-size="24" font-weight="700" font-family="Georgia,serif">PERMISSION&#160;&#160;=&#160;&#160;ROLE (function)&#160;&#160;×&#160;&#160;SCOPE (geography)&#160;&#160;×&#160;&#160;RECORD STATE (lifecycle)</text>
+    <text x="750" y="62" text-anchor="middle" fill="#C9D4E8" font-size="12">Neither axis alone is sufficient — scope is resolved at the data layer, before a query reaches the store (§9.3)</text>
+
+    <!-- AXIS 1: role catalogue -->
+    <rect x="20" y="100" width="330" height="470" rx="8" fill="#E9EDF5" stroke="#27467A" stroke-width="2"/>
+    <text x="185" y="128" text-anchor="middle" fill="#27467A" font-size="16" font-weight="700" font-family="Georgia,serif">AXIS 1 — ROLE CATALOGUE</text>
+    <text x="185" y="146" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Seventeen roles, six families (§9.2)</text>
+
+    <g font-size="12" fill="#1F2430">
+      <rect x="38" y="160" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="177" font-weight="700" fill="#27467A">Command &amp; governance</text>
+      <text x="50" y="193">Programme Administrator · State Command (KSLSA)</text>
+      <text x="50" y="208">IAFT Programme Management</text>
+
+      <rect x="38" y="224" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="241" font-weight="700" fill="#27467A">Department &amp; territory</text>
+      <text x="50" y="257">State Forest Officer · District Command</text>
+      <text x="50" y="272">District Forest Officer · Taluk Officer</text>
+
+      <rect x="38" y="288" width="294" height="58" rx="4" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2"/>
+      <text x="50" y="305" font-weight="700" fill="#1C5A33">Two independent cadres</text>
+      <text x="50" y="321">Verification Cadre (RFO / DRFO)</text>
+      <text x="50" y="336">Audit Cadre — mutually exclusive with verification</text>
+
+      <rect x="38" y="354" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="371" font-weight="700" fill="#27467A">Execution</text>
+      <text x="50" y="387">Implementing Agency Supervisor · Field Operator</text>
+      <text x="50" y="402">Nursery Operator · Volunteer (advisory only)</text>
+
+      <rect x="38" y="418" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="435" font-weight="700" fill="#27467A">Finance &amp; assurance</text>
+      <text x="50" y="451">Finance Reviewer (IAFT) — step-up required</text>
+      <text x="50" y="466">Donor / CSR Observer · Auditor (external)</text>
+
+      <rect x="38" y="482" width="294" height="42" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="499" font-weight="700" fill="#27467A">Public</text>
+      <text x="50" y="514">Tag landing page · published dashboard only</text>
+    </g>
+    <text x="185" y="552" text-anchor="middle" fill="#5A5F6B" font-size="11" font-style="italic">Role defines function — it grants nothing anywhere by itself</text>
+
+    <!-- multiplication sign -->
+    <text x="380" y="350" text-anchor="middle" fill="#C09A3E" font-size="42" font-weight="700">×</text>
+
+    <!-- AXIS 2: scope pyramid -->
+    <rect x="410" y="100" width="380" height="470" rx="8" fill="#E8F0EA" stroke="#1C5A33" stroke-width="2"/>
+    <text x="600" y="128" text-anchor="middle" fill="#1C5A33" font-size="16" font-weight="700" font-family="Georgia,serif">AXIS 2 — GEOGRAPHIC SCOPE</text>
+    <text x="600" y="146" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Resolved at the data layer, inherited downward only (§9.3)</text>
+
+    <!-- pyramid -->
+    <polygon points="600,168 660,238 540,238" fill="#1C5A33"/>
+    <text x="600" y="222" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">STATE</text>
+    <polygon points="530,246 670,246 706,316 494,316" fill="#2E7047"/>
+    <text x="600" y="288" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">DISTRICT (35)</text>
+    <polygon points="486,324 714,324 748,394 452,394" fill="#4C8A63"/>
+    <text x="600" y="366" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">TALUK (240)</text>
+    <polygon points="446,402 754,402 774,472 426,472" fill="#7AA98C"/>
+    <text x="600" y="444" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">ASSIGNED PARCELS</text>
+
+    <g font-size="11" fill="#1C5A33">
+      <path d="M 786 190 L 786 450" stroke="#1C5A33" stroke-width="1.6" marker-end="url(#arrGreen)"/>
+      <text x="782" y="320" text-anchor="end" transform="rotate(-90 782 320)" font-weight="600">inherited downward</text>
+    </g>
+    <text x="600" y="496" text-anchor="middle" fill="#8A2F2A" font-size="11.5" font-weight="700">Never inherited upward or sideways —</text>
+    <text x="600" y="512" text-anchor="middle" fill="#8A2F2A" font-size="11.5">a taluk verifier cannot see the adjacent taluk</text>
+    <text x="600" y="536" text-anchor="middle" fill="#5A5F6B" font-size="11">Assignment narrows further: an agency sees only its</text>
+    <text x="600" y="551" text-anchor="middle" fill="#5A5F6B" font-size="11">contracted parcels · aggregates respect scope</text>
+
+    <!-- multiplication sign 2 -->
+    <text x="820" y="350" text-anchor="middle" fill="#C09A3E" font-size="42" font-weight="700">×</text>
+
+    <!-- AXIS 3: record state -->
+    <rect x="850" y="100" width="180" height="470" rx="8" fill="#FFFDF6" stroke="#C09A3E" stroke-width="2"/>
+    <text x="940" y="128" text-anchor="middle" fill="#8A6A1E" font-size="15" font-weight="700" font-family="Georgia,serif">RECORD STATE</text>
+    <text x="940" y="146" text-anchor="middle" fill="#3A3F4A" font-size="11">Lifecycle gate (§6, §9.1)</text>
+    <g font-size="11.5" fill="#1F2430" text-anchor="middle">
+      <rect x="872" y="162" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="181">Identified</text>
+      <rect x="872" y="202" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="221">Verified</text>
+      <rect x="872" y="242" width="136" height="30" rx="4" fill="#FFF3D6" stroke="#C09A3E" stroke-width="2"/><text x="940" y="261" font-weight="700">Approved</text>
+      <rect x="872" y="282" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="301">Planted</text>
+      <rect x="872" y="322" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="341">Under census</text>
+      <rect x="872" y="362" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="381">Audited</text>
+      <path d="M 940 194 L 940 200" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 234 L 940 240" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 274 L 940 280" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 314 L 940 320" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 354 L 940 360" stroke="#C09A3E" stroke-width="1.5"/>
+    </g>
+    <text x="940" y="420" text-anchor="middle" fill="#5A5F6B" font-size="10.5">A role may act only on</text>
+    <text x="940" y="434" text-anchor="middle" fill="#5A5F6B" font-size="10.5">records in states where</text>
+    <text x="940" y="448" text-anchor="middle" fill="#5A5F6B" font-size="10.5">that role has authority</text>
+
+    <!-- equals -->
+    <text x="1058" y="350" text-anchor="middle" fill="#C09A3E" font-size="42" font-weight="700">=</text>
+
+    <!-- worked example -->
+    <rect x="1088" y="100" width="392" height="470" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+    <rect x="1088" y="100" width="392" height="52" rx="8" fill="#1C5A33"/>
+    <rect x="1088" y="132" width="392" height="20" fill="#1C5A33"/>
+    <text x="1284" y="122" text-anchor="middle" fill="#FFFFFF" font-size="14.5" font-weight="700" font-family="Georgia,serif">WORKED EXAMPLE</text>
+    <text x="1284" y="142" text-anchor="middle" fill="#DCE8DF" font-size="12">District Verification Coordinator — Belagavi</text>
+
+    <g font-size="12" fill="#1F2430">
+      <rect x="1106" y="168" width="356" height="98" rx="5" fill="#E8F0EA" stroke="#1C5A33"/>
+      <text x="1118" y="188" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1118" y="206">Verification records and land parcels across</text>
+      <text x="1118" y="221">Belagavi district — every taluk within it,</text>
+      <text x="1118" y="236">constrained before the query reaches the store.</text>
+      <text x="1118" y="256" fill="#5A5F6B" font-size="11">Role: verification-coordinator · Scope: Belagavi district</text>
+
+      <rect x="1106" y="278" width="356" height="112" rx="5" fill="#FFF9E8" stroke="#C09A3E" stroke-width="1.5"/>
+      <text x="1118" y="298" font-weight="700" fill="#8A6A1E">MAY ACT ON</text>
+      <text x="1118" y="316">Only records in lifecycle states where the</text>
+      <text x="1118" y="331">verification-coordinator role has authority —</text>
+      <text x="1118" y="346">parcels awaiting verification and the blocking</text>
+      <text x="1118" y="361">approval decision. No audit capability, ever.</text>
+      <text x="1118" y="381" fill="#5A5F6B" font-size="11">Role × scope × state — all three must agree</text>
+
+      <rect x="1106" y="402" width="356" height="92" rx="5" fill="#F2F0EA" stroke="#9AA0AC" stroke-dasharray="6 4"/>
+      <text x="1118" y="424" font-weight="700" fill="#6A6F7A">INVISIBLE — KALABURAGI</text>
+      <text x="1118" y="442" fill="#6A6F7A">The adjacent district does not appear in any</text>
+      <text x="1118" y="457" fill="#6A6F7A">list, map, search result, or aggregate detail.</text>
+      <text x="1118" y="472" fill="#6A6F7A" font-size="11">Scope is never inherited sideways (§9.3)</text>
+    </g>
+    <text x="1284" y="530" text-anchor="middle" fill="#27467A" font-size="12" font-weight="700">The same person, same login — three constraints,</text>
+    <text x="1284" y="546" text-anchor="middle" fill="#27467A" font-size="12" font-weight="700">one permission envelope</text>
+
+    <defs>
+      <marker id="arrGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+    </defs>
+  </svg>
+
+  <h3>(b) Permission matrix — seventeen roles × twelve capabilities</h3>
+  <div class="legend">
+    <span><span class="cell full"></span> Full</span>
+    <span><span class="cell scoped"></span> Scoped — within the role's geographic scope / assignment</span>
+    <span><span class="cell ro"></span> Read-only</span>
+    <span><span class="cell none"></span> None</span>
+    <span><span style="color:var(--gold); font-weight:700;">▲</span> Step-up authorisation required at the moment of access (§9.5)</span>
+  </div>
+  <div class="matrix-wrap">
+  <table class="pmatrix">
+<thead><tr><th scope="col" class="corner">Role &nbsp;<span class="axis">function ↓</span><span class="axis2">capability →</span></th><th scope="col"><span>Identify land</span></th><th scope="col"><span>Verify / gate</span></th><th scope="col"><span>Bind tag</span></th><th scope="col"><span>Record planting</span></th><th scope="col"><span>Record maintenance</span></th><th scope="col"><span>Record survival</span></th><th scope="col"><span>Co-sign census</span></th><th scope="col"><span>Audit</span></th><th scope="col"><span>Certify scope</span></th><th scope="col"><span>View utilisation</span></th><th scope="col"><span>Configure</span></th><th scope="col"><span>Export</span></th></tr></thead>
+<tbody>
+<tr><th scope="row"><span class="rname">Programme Administrator</span><span class="rscope">State</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell full" title="Full"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">State Command (KSLSA)</span><span class="rscope">State</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell full" title="Full"></span></td></tr>
+<tr><th scope="row"><span class="rname">IAFT Programme Management</span><span class="rscope">State</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell full stepup" title="Full — step-up authorisation"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">State Forest Officer</span><span class="rscope">State</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">District Command</span><span class="rscope">District</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">District Forest Officer</span><span class="rscope">District</span></th><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Taluk Officer</span><span class="rscope">Taluk</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Verification Cadre (RFO / DRFO)</span><span class="rscope">Taluk (assigned)</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Audit Cadre</span><span class="rscope">Taluk / district (assigned independently)</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Implementing Agency Supervisor</span><span class="rscope">Assigned parcels</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Field Operator (agency)</span><span class="rscope">Assigned parcels</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Nursery Operator</span><span class="rscope">Nursery</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Volunteer</span><span class="rscope">Assigned parcels</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Finance Reviewer (IAFT)</span><span class="rscope">State / assigned</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell full stepup" title="Full — step-up authorisation"></span></td><td><span class="cell full stepup" title="Full — step-up authorisation"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Donor / CSR Observer</span><span class="rscope">Funded parcels only</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Auditor (external)</span><span class="rscope">Configurable</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Public</span><span class="rscope">None (published data only)</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+</tbody>
+</table>
+  </div>
+  <p style="font-size:11.5px; color:#5A5F6B; margin-top:6px;">All access is additionally constrained by geographic scope (§9.3) and record state (§9.1). Verification Cadre and Audit Cadre are <b>separate roles with mutually exclusive capabilities</b> — no identity holds both against the same parcel. Nursery Operator capabilities (stock, grading, dispatch) and Volunteer advisory observations sit outside this capability set. Public access is limited to the tag landing page and the published programme dashboard.</p>
+
+  <div class="sod">
+    <h3><span class="tag">■</span> Separation of duties — six structural rules that prevent self-approval (§9.4)</h3>
+    <div class="sod-grid">
+      <div class="sod-item key"><b>Verification vs audit</b>The cadre that verifies land and enters its parameters never audits it. Mutually exclusive roles, enforced at parcel level.</div>
+      <div class="sod-item key"><b>Identification vs verification</b>The department identifies land; the verification cadre approves it. Never the same identity.</div>
+      <div class="sod-item key"><b>Execution vs assurance</b>The agency that plants cannot record the authoritative survival census alone; audit-cadre co-signature is required.</div>
+      <div class="sod-item"><b>Operations vs finance</b>Scope certification and utilisation sit behind a separate role and step-up authorisation.</div>
+      <div class="sod-item"><b>Administration vs data</b>Programme administrators configure the system; they do not enter or alter operational records.</div>
+      <div class="sod-item"><b>Volunteer vs authoritative</b>Volunteer observations are always advisory. They may raise a flag; they can never close one.</div>
+    </div>
+  </div>
+  <div class="stepup-strip"><b>Step-up authorisation (§9.5) — applies even to the highest-privilege accounts.</b>
+  Restricted modules require a second factor at the moment of access, independent of session login. Every attempt, successful or not, is logged with identity, time, and device. Access does not persist across sessions; leaving the module re-locks it.</div>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 10 · §9 Role-based access control</span></div>
+</section>
+
+<!-- ======================= DIAGRAM 11 ======================= -->
+<section class="panel gov">
+  <div class="eyebrow">Diagram 11 · Specification §10</div>
+  <h2>The Financial Boundary — No Funds Transit the Platform</h2>
+  <p class="lede">The programme's money does not flow through the platform, deliberately. The platform records
+  IAFT's certification of scope, registers the donor's commitment, and holds tag-anchored evidence that the
+  work was delivered. Disbursement itself moves directly from donor to implementing agency through banking
+  channels — visibly outside the platform boundary. This removes an entire class of risk and audit obligation
+  from the system.</p>
+
+  <svg viewBox="0 0 1500 620" role="img" aria-label="Financial boundary diagram: funds bypass the platform">
+    <defs>
+      <marker id="arrN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="arrG2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="arrGold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- platform boundary -->
+    <rect x="560" y="40" width="920" height="440" rx="14" fill="#F2F7F3" stroke="#1C5A33" stroke-width="4"/>
+    <rect x="560" y="40" width="920" height="46" rx="14" fill="#1C5A33"/>
+    <rect x="560" y="66" width="920" height="20" fill="#1C5A33"/>
+    <text x="1020" y="70" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700" font-family="Georgia,serif">POSHANE — PLATFORM BOUNDARY · SYSTEM OF RECORD</text>
+
+    <!-- IAFT outside -->
+    <rect x="40" y="110" width="240" height="86" rx="8" fill="#27467A"/>
+    <text x="160" y="142" text-anchor="middle" fill="#FFFFFF" font-size="15" font-weight="700">IAFT</text>
+    <text x="160" y="160" text-anchor="middle" fill="#C9D4E8" font-size="11">Principal Scientific Advisory Body</text>
+    <text x="160" y="175" text-anchor="middle" fill="#C9D4E8" font-size="11">and Program Management Unit</text>
+    <path d="M 280 153 L 552 153" stroke="#27467A" stroke-width="2.5" marker-end="url(#arrN)"/>
+    <text x="416" y="144" text-anchor="middle" fill="#27467A" font-size="12" font-weight="700">certifies scope of work — into the platform</text>
+
+    <!-- certified scope inside -->
+    <rect x="600" y="118" width="300" height="72" rx="8" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="750" y="146" text-anchor="middle" fill="#1F2430" font-size="14" font-weight="700">CERTIFIED SCOPE OF WORK</text>
+    <text x="750" y="164" text-anchor="middle" fill="#5A5F6B" font-size="11.5">IAFT certification — recorded and published</text>
+    <text x="750" y="179" text-anchor="middle" fill="#8A6A1E" font-size="11">Step-up authorised module (§9.5)</text>
+
+    <!-- assurance dashboard inside -->
+    <rect x="1050" y="118" width="380" height="72" rx="8" fill="#FFFFFF" stroke="#27467A" stroke-width="2.5"/>
+    <text x="1240" y="146" text-anchor="middle" fill="#27467A" font-size="14" font-weight="700">ASSURANCE DASHBOARD</text>
+    <text x="1240" y="164" text-anchor="middle" fill="#5A5F6B" font-size="11.5">Certified scope published · read-only</text>
+    <text x="1240" y="179" text-anchor="middle" fill="#5A5F6B" font-size="11.5">Donor / CSR Observer view — funded parcels only</text>
+    <path d="M 900 153 L 1042 153" stroke="#1C5A33" stroke-width="2.5" marker-end="url(#arrG2)"/>
+    <text x="971" y="144" text-anchor="middle" fill="#1C5A33" font-size="11.5" font-weight="600">published</text>
+
+    <!-- operational records inside -->
+    <rect x="600" y="286" width="300" height="88" rx="8" fill="#E8F0EA" stroke="#1C5A33" stroke-width="2.5"/>
+    <text x="750" y="313" text-anchor="middle" fill="#1C5A33" font-size="14" font-weight="700">TAG-ANCHORED</text>
+    <text x="750" y="331" text-anchor="middle" fill="#1C5A33" font-size="14" font-weight="700">OPERATIONAL RECORDS</text>
+    <text x="750" y="350" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Planting · maintenance · survival census</text>
+    <text x="750" y="365" text-anchor="middle" fill="#3A3F4A" font-size="11.5">each anchored to a physical tag tap</text>
+
+    <!-- utilisation evidence inside -->
+    <rect x="1050" y="286" width="380" height="88" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+    <text x="1240" y="316" text-anchor="middle" fill="#1C5A33" font-size="14" font-weight="700">UTILISATION EVIDENCE</text>
+    <text x="1240" y="336" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Operational evidence reconciled against</text>
+    <text x="1240" y="351" text-anchor="middle" fill="#3A3F4A" font-size="11.5">the certified scope — physical delivery,</text>
+    <text x="1240" y="366" text-anchor="middle" fill="#3A3F4A" font-size="11.5">not self-reported expenditure</text>
+    <path d="M 900 330 L 1042 330" stroke="#1C5A33" stroke-width="2.5" marker-end="url(#arrG2)"/>
+    <text x="971" y="321" text-anchor="middle" fill="#1C5A33" font-size="11.5" font-weight="600">reconciled</text>
+    <path d="M 1240 286 L 1240 198" stroke="#27467A" stroke-width="2" stroke-dasharray="2 3" marker-end="url(#arrN)"/>
+    <text x="1252" y="245" fill="#27467A" font-size="11.5">answers the donor's question</text>
+
+    <!-- fund commitment registered -->
+    <rect x="600" y="416" width="300" height="42" rx="6" fill="#FFFFFF" stroke="#27467A" stroke-width="1.5"/>
+    <text x="750" y="436" text-anchor="middle" fill="#27467A" font-size="12" font-weight="700">FUND COMMITMENT — registered as a record</text>
+    <text x="750" y="450" text-anchor="middle" fill="#5A5F6B" font-size="10.5">the commitment is recorded; the money is never routed here</text>
+
+    <!-- donor outside -->
+    <rect x="40" y="300" width="240" height="96" rx="8" fill="#FFFFFF" stroke="#27467A" stroke-width="3"/>
+    <text x="160" y="334" text-anchor="middle" fill="#27467A" font-size="15" font-weight="700">DONOR / CSR</text>
+    <text x="160" y="353" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Funds the programme ·</text>
+    <text x="160" y="368" text-anchor="middle" fill="#3A3F4A" font-size="11.5">receives read-only assurance</text>
+    <path d="M 280 340 L 592 437" stroke="#27467A" stroke-width="1.6" stroke-dasharray="2 3" marker-end="url(#arrN)"/>
+    <text x="420" y="374" text-anchor="middle" fill="#27467A" font-size="10.5" transform="rotate(17 420 374)">commitment registered</text>
+
+    <!-- implementing agency outside -->
+    <rect x="40" y="512" width="1440" height="0" fill="none"/>
+    <rect x="620" y="524" width="280" height="80" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="3"/>
+    <text x="760" y="554" text-anchor="middle" fill="#1C5A33" font-size="15" font-weight="700">IMPLEMENTING AGENCY</text>
+    <text x="760" y="573" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Executes planting, maintenance and</text>
+    <text x="760" y="588" text-anchor="middle" fill="#3A3F4A" font-size="11.5">census capture on assigned parcels</text>
+    <path d="M 760 524 L 754 382" stroke="#1C5A33" stroke-width="2.5" marker-end="url(#arrG2)"/>
+    <text x="770" y="500" fill="#1C5A33" font-size="11.5" font-weight="600">generates records inside the platform</text>
+
+    <!-- THE dashed funds line, bypassing the boundary -->
+    <path d="M 160 396 C 160 590, 400 588, 612 566" stroke="#C09A3E" stroke-width="5" stroke-dasharray="14 10" fill="none" marker-end="url(#arrGold)"/>
+    <rect x="150" y="560" width="330" height="34" rx="17" fill="#C09A3E"/>
+    <text x="315" y="582" text-anchor="middle" fill="#FFFFFF" font-size="13.5" font-weight="700">FUNDS — DIRECT, OUTSIDE PLATFORM</text>
+    <text x="315" y="546" text-anchor="middle" fill="#8A6A1E" font-size="11.5">donor → agency, through banking channels — the line never crosses the green boundary</text>
+
+    <!-- no payment rail stamp -->
+    <rect x="1060" y="410" width="370" height="58" rx="6" fill="#FDF3F2" stroke="#8A2F2A" stroke-width="2"/>
+    <text x="1245" y="430" text-anchor="middle" fill="#8A2F2A" font-size="12.5" font-weight="700">NO PAYMENT RAIL · NO PAYMENT CREDENTIALS</text>
+    <text x="1245" y="446" text-anchor="middle" fill="#8A2F2A" font-size="10.5">the platform initiates no transfers —</text>
+    <text x="1245" y="460" text-anchor="middle" fill="#8A2F2A" font-size="10.5">payment instruction and settlement never enter it</text>
+  </svg>
+
+  <div class="two-col" style="margin-top:18px;">
+    <div>
+      <h3 style="margin-top:0;">What lives inside versus outside the platform (§10.1)</h3>
+      <table class="spec navy">
+        <tr><th style="width:46%;">Concern</th><th>Where it lives</th></tr>
+        <tr><td>Certification of scope of work</td><td class="inplat">In the platform — IAFT certifies; recorded and published</td></tr>
+        <tr><td>Fund commitment by donor / CSR</td><td class="inplat">In the platform as a record — the commitment is registered</td></tr>
+        <tr><td>Actual disbursement</td><td class="outplat">Outside the platform — donor to agency, direct, through banking channels</td></tr>
+        <tr><td>Evidence that work was delivered</td><td class="inplat">In the platform — operational records, tag-anchored</td></tr>
+        <tr><td>Utilisation reporting against scope</td><td class="inplat">In the platform — evidence reconciled to the certified scope</td></tr>
+        <tr><td>Payment instruction / settlement</td><td class="never">Never in the platform</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">What this buys (§10.2)</h3>
+      <div class="callout">
+        <p style="margin-bottom:10px;">The platform holds no payment credentials and initiates no transfers. Utilisation
+        assurance is grounded in physical evidence — tag-anchored planting and survival records — rather than in
+        self-reported expenditure.</p>
+        <p class="q">A donor's assurance question — "was what I funded actually delivered?" — is answered by the
+        operational record, not by an accounting entry.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 11 · §10 The financial boundary</span></div>
+</section>
+
+<!-- ======================= DIAGRAM 13 ======================= -->
+<section class="panel">
+  <div class="eyebrow">Diagram 13 · Specification §12</div>
+  <h2>Audit Log &amp; the Evidential Chain</h2>
+  <p class="lede">Every state transition in the platform writes an immutable, append-only entry carrying six
+  dimensions: what changed, who changed it, when, where, how, and why. Entries are never updated or deleted —
+  a correction is a new entry that supersedes an earlier one, with the superseded entry still readable. Below,
+  the record structure; beneath it, the chain of evidence that answers an external auditor without relying on
+  anything a person merely typed into a box.</p>
+
+  <svg viewBox="0 0 1500 760" role="img" aria-label="Append-only audit log structure and evidential chain">
+    <defs>
+      <marker id="arrInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1F2430"/></marker>
+      <marker id="arrGold3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+      <marker id="arrNavy3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+    </defs>
+
+    <!-- ===== part 1: append-only record ===== -->
+    <text x="30" y="34" fill="#1C5A33" font-size="18" font-weight="700" font-family="Georgia,serif">THE APPEND-ONLY RECORD — six dimensions of every entry (§12.1)</text>
+
+    <!-- one entry, anatomised -->
+    <rect x="30" y="52" width="880" height="292" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+    <rect x="30" y="52" width="880" height="36" rx="8" fill="#1C5A33"/>
+    <rect x="30" y="72" width="880" height="16" fill="#1C5A33"/>
+    <text x="46" y="76" fill="#FFFFFF" font-size="13" font-weight="700">AUDIT LOG ENTRY — one state transition, one immutable record</text>
+
+    <g font-size="12.5">
+      <rect x="48" y="102" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="124" text-anchor="middle" fill="#fff" font-weight="700">WHAT</text>
+      <text x="152" y="123" fill="#1F2430">Entity · prior state · new state · changed values</text>
+
+      <rect x="48" y="142" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="164" text-anchor="middle" fill="#fff" font-weight="700">WHO</text>
+      <text x="152" y="163" fill="#1F2430">Authenticated identity · role in force · scope in force at that moment</text>
+
+      <rect x="48" y="182" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="204" text-anchor="middle" fill="#fff" font-weight="700">WHEN</text>
+      <text x="152" y="203" fill="#1F2430">Device capture time and server receipt time — both retained</text>
+
+      <rect x="48" y="222" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="244" text-anchor="middle" fill="#fff" font-weight="700">WHERE</text>
+      <text x="152" y="243" fill="#1F2430">Device GPS at capture · parcel reference</text>
+
+      <rect x="48" y="262" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="284" text-anchor="middle" fill="#fff" font-weight="700">HOW</text>
+      <text x="152" y="283" fill="#1F2430">Device identifier · app version · channel · tag tap cryptogram where applicable</text>
+
+      <rect x="48" y="302" width="88" height="34" rx="4" fill="#27467A"/><text x="92" y="324" text-anchor="middle" fill="#fff" font-weight="700">WHY</text>
+      <text x="152" y="323" fill="#1F2430">Reason code and free text for decisions, rejections, and supersessions</text>
+    </g>
+
+    <!-- supersession ledger -->
+    <rect x="940" y="52" width="530" height="292" rx="8" fill="#F2F0EA" stroke="#9AA0AC" stroke-width="1.5"/>
+    <text x="960" y="82" fill="#1F2430" font-size="14" font-weight="700" font-family="Georgia,serif">Corrections supersede — they never overwrite</text>
+
+    <g font-size="11.5">
+      <rect x="960" y="100" width="490" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="974" y="117" fill="#1C5A33" font-weight="700">Entry 4171</text>
+      <text x="974" y="132" fill="#3A3F4A">Batch planted — species mix and count recorded at tag tap</text>
+
+      <rect x="960" y="148" width="490" height="40" rx="5" fill="#FBF6EA" stroke="#C09A3E" stroke-width="1.5"/>
+      <text x="974" y="165" fill="#8A6A1E" font-weight="700">Entry 4172 — SUPERSEDED, still readable</text>
+      <text x="974" y="180" fill="#3A3F4A">Count mis-keyed · supersession visible on the entry itself</text>
+
+      <rect x="960" y="196" width="490" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="974" y="213" fill="#1C5A33" font-weight="700">Entry 4173</text>
+      <text x="974" y="228" fill="#3A3F4A">Maintenance visit recorded</text>
+
+      <rect x="960" y="244" width="490" height="40" rx="5" fill="#E8F0EA" stroke="#1C5A33" stroke-width="2"/>
+      <text x="974" y="261" fill="#1C5A33" font-weight="700">Entry 4180 — CORRECTION, supersedes 4172</text>
+      <text x="974" y="276" fill="#3A3F4A">New entry with reason code · the earlier entry remains in the record</text>
+
+      <path d="M 1455 262 C 1490 240, 1490 190, 1455 170" stroke="#C09A3E" stroke-width="2.5" fill="none" marker-end="url(#arrGold3)"/>
+    </g>
+    <text x="1205" y="316" text-anchor="middle" fill="#8A2F2A" font-size="12.5" font-weight="700">Entries are never updated or deleted</text>
+    <text x="1205" y="333" text-anchor="middle" fill="#5A5F6B" font-size="11.5">A correction is a new entry; the superseded entry stays readable, its supersession visible</text>
+
+    <!-- ===== part 2: evidential chain ===== -->
+    <text x="30" y="398" fill="#1C5A33" font-size="18" font-weight="700" font-family="Georgia,serif">THE EVIDENTIAL CHAIN — answering an external auditor (§12.2)</text>
+
+    <rect x="30" y="418" width="1440" height="70" rx="8" fill="#27467A"/>
+    <text x="750" y="448" text-anchor="middle" fill="#FFFFFF" font-size="17" font-family="Georgia,serif" font-style="italic">"Prove that this parcel was planted with these species on this date."</text>
+    <text x="750" y="472" text-anchor="middle" fill="#C9D4E8" font-size="12">The auditor's question — answered link by link, each link independently evidenced</text>
+
+    <path d="M 750 488 L 750 508" stroke="#27467A" stroke-width="2.5" marker-end="url(#arrNavy3)"/>
+
+    <!-- six chain links -->
+    <g font-size="11.5" text-anchor="middle">
+      <rect x="30" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="142" cy="544" r="14" fill="#C09A3E"/><text x="142" y="549" fill="#fff" font-weight="700" font-size="13">1</text>
+      <text x="142" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">TAG TAP CRYPTOGRAM</text>
+      <text x="142" y="592" fill="#3A3F4A">Per-tap unique cryptogram —</text>
+      <text x="142" y="607" fill="#3A3F4A">proves physical presence</text>
+      <text x="142" y="622" fill="#3A3F4A">at the parcel's tag</text>
+
+      <rect x="273" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="385" cy="544" r="14" fill="#C09A3E"/><text x="385" y="549" fill="#fff" font-weight="700" font-size="13">2</text>
+      <text x="385" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">DEVICE &amp; IDENTITY</text>
+      <text x="385" y="592" fill="#3A3F4A">The registered device and the</text>
+      <text x="385" y="607" fill="#3A3F4A">authenticated identity that</text>
+      <text x="385" y="622" fill="#3A3F4A">captured the record</text>
+
+      <rect x="516" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="628" cy="544" r="14" fill="#C09A3E"/><text x="628" y="549" fill="#fff" font-weight="700" font-size="13">3</text>
+      <text x="628" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">POSITION AT CAPTURE</text>
+      <text x="628" y="592" fill="#3A3F4A">Device GPS at the moment</text>
+      <text x="628" y="607" fill="#3A3F4A">of capture, held against</text>
+      <text x="628" y="622" fill="#3A3F4A">the parcel reference</text>
+
+      <rect x="759" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="871" cy="544" r="14" fill="#C09A3E"/><text x="871" y="549" fill="#fff" font-weight="700" font-size="13">4</text>
+      <text x="871" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">IN-APP PHOTOGRAPHS</text>
+      <text x="871" y="592" fill="#3A3F4A">Taken in-app and bound to</text>
+      <text x="871" y="607" fill="#3A3F4A">the payload — not attached</text>
+      <text x="871" y="622" fill="#3A3F4A">from a gallery afterwards</text>
+
+      <rect x="1002" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="1114" cy="544" r="14" fill="#C09A3E"/><text x="1114" y="549" fill="#fff" font-weight="700" font-size="13">5</text>
+      <text x="1114" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">INDEPENDENT VERIFIER</text>
+      <text x="1114" y="592" fill="#3A3F4A">A verifier's inspection made</text>
+      <text x="1114" y="607" fill="#3A3F4A">against the same physical</text>
+      <text x="1114" y="622" fill="#3A3F4A">tag, independently</text>
+
+      <rect x="1245" y="516" width="225" height="118" rx="10" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+      <circle cx="1357" cy="544" r="14" fill="#C09A3E"/><text x="1357" y="549" fill="#fff" font-weight="700" font-size="13">6</text>
+      <text x="1357" y="574" fill="#1C5A33" font-weight="700" font-size="12.5">UNBROKEN STATE CHAIN</text>
+      <text x="1357" y="592" fill="#3A3F4A">Every transition from</text>
+      <text x="1357" y="607" fill="#3A3F4A">departmental identification</text>
+      <text x="1357" y="622" fill="#3A3F4A">to the present, in the log</text>
+    </g>
+    <!-- chain connectors -->
+    <g stroke="#C09A3E" stroke-width="3">
+      <line x1="255" y1="575" x2="273" y2="575"/><line x1="498" y1="575" x2="516" y2="575"/>
+      <line x1="741" y1="575" x2="759" y2="575"/><line x1="984" y1="575" x2="1002" y2="575"/>
+      <line x1="1227" y1="575" x2="1245" y2="575"/>
+    </g>
+
+    <!-- conclusion -->
+    <rect x="30" y="662" width="1440" height="56" rx="8" fill="#C09A3E"/>
+    <text x="750" y="690" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700" font-family="Georgia,serif">No link in this chain rests on an assertion that someone typed into a box.</text>
+    <text x="750" y="708" text-anchor="middle" fill="#FFF6DF" font-size="11.5">Cryptogram, device, position, bound imagery, independent inspection, and the unbroken log — each is evidence, not testimony</text>
+  </svg>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 13 · §12 Audit log and evidential integrity</span></div>
+</section>
+
+<!-- ======================= DIAGRAM 14 ======================= -->
+<section class="panel gov">
+  <div class="eyebrow">Diagram 14 · Specification §13</div>
+  <h2>Deployment, Hosting &amp; Data Ownership</h2>
+  <p class="lede">The ownership position is unambiguous: KSLSA owns the programme record in full; Grobet India
+  Agrotech hosts and operates the platform as Technology Partner; the data is resident in India; and KSLSA may
+  export the complete record — including the audit log — in open formats, at any time and on exit. Departmental
+  and remote-sensing sources feed the platform through read-only machine interfaces: the platform reads, and
+  does not write into, departmental systems of record.</p>
+
+  <svg viewBox="0 0 1500 740" role="img" aria-label="Hosting topology, ownership, interfaces and public surface">
+    <defs>
+      <marker id="arrN4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="arrG4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+    </defs>
+
+    <!-- KSLSA ownership banner -->
+    <rect x="380" y="20" width="740" height="88" rx="10" fill="#27467A"/>
+    <text x="750" y="52" text-anchor="middle" fill="#FFFFFF" font-size="19" font-weight="700" font-family="Georgia,serif">KSLSA OWNS THE PROGRAMME RECORD IN FULL</text>
+    <text x="750" y="74" text-anchor="middle" fill="#C9D4E8" font-size="12.5">Karnataka State Legal Services Authority — data owner</text>
+    <text x="750" y="92" text-anchor="middle" fill="#C9D4E8" font-size="12.5">Defined exit: on termination, the full record and its audit log transfer to KSLSA</text>
+
+    <!-- export arrow up from platform to KSLSA -->
+    <path d="M 690 216 L 690 116" stroke="#27467A" stroke-width="3" marker-end="url(#arrN4)"/>
+    <text x="676" y="170" text-anchor="end" fill="#27467A" font-size="12" font-weight="700">FULL EXPORT RIGHTS</text>
+    <text x="676" y="186" text-anchor="end" fill="#3A3F4A" font-size="11">complete record incl. audit log ·</text>
+    <text x="676" y="200" text-anchor="end" fill="#3A3F4A" font-size="11">open formats · at any time and on exit</text>
+    <path d="M 810 116 L 810 216" stroke="#27467A" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrN4)"/>
+    <text x="824" y="170" fill="#27467A" font-size="12" font-weight="700">governance &amp; policy</text>
+    <text x="824" y="186" fill="#3A3F4A" font-size="11">no lock-in through</text>
+    <text x="824" y="200" fill="#3A3F4A" font-size="11">proprietary formats</text>
+
+    <!-- platform centre -->
+    <rect x="440" y="224" width="620" height="256" rx="12" fill="#F2F7F3" stroke="#1C5A33" stroke-width="4"/>
+    <rect x="440" y="224" width="620" height="44" rx="12" fill="#1C5A33"/>
+    <rect x="440" y="248" width="620" height="20" fill="#1C5A33"/>
+    <text x="750" y="252" text-anchor="middle" fill="#FFFFFF" font-size="16" font-weight="700" font-family="Georgia,serif">POSHANE PLATFORM — SYSTEM OF RECORD</text>
+
+    <rect x="464" y="284" width="572" height="52" rx="6" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2"/>
+    <text x="750" y="306" text-anchor="middle" fill="#1F2430" font-size="13" font-weight="700">DATA RESIDENCY — INDIA REGION</text>
+    <text x="750" y="324" text-anchor="middle" fill="#5A5F6B" font-size="11.5">The programme record does not leave Indian jurisdiction</text>
+
+    <rect x="464" y="348" width="572" height="52" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="750" y="370" text-anchor="middle" fill="#1C5A33" font-size="13" font-weight="700">HOSTED &amp; OPERATED BY GROBET INDIA AGROTECH — TECHNOLOGY PARTNER</text>
+    <text x="750" y="388" text-anchor="middle" fill="#5A5F6B" font-size="11.5">Operates the platform; owns none of the record</text>
+
+    <rect x="464" y="412" width="572" height="52" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="750" y="434" text-anchor="middle" fill="#1C5A33" font-size="13" font-weight="700">SEGREGATED ENVIRONMENTS</text>
+    <text x="750" y="452" text-anchor="middle" fill="#5A5F6B" font-size="11.5">No production data in test environments · access logging retained independently of the operational store</text>
+
+    <!-- departmental sources left -->
+    <rect x="40" y="240" width="330" height="110" rx="8" fill="#FFFFFF" stroke="#27467A" stroke-width="2.5"/>
+    <text x="205" y="268" text-anchor="middle" fill="#27467A" font-size="14" font-weight="700">DEPARTMENTAL SYSTEMS OF RECORD</text>
+    <text x="205" y="290" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Authoritative land records — survey numbers,</text>
+    <text x="205" y="305" text-anchor="middle" fill="#3A3F4A" font-size="11.5">RTC / Bhoomi — referenced, never replaced</text>
+    <text x="205" y="328" text-anchor="middle" fill="#8A2F2A" font-size="11" font-weight="700">The platform never writes into these systems</text>
+
+    <rect x="40" y="374" width="330" height="86" rx="8" fill="#FFFFFF" stroke="#27467A" stroke-width="2.5"/>
+    <text x="205" y="402" text-anchor="middle" fill="#27467A" font-size="14" font-weight="700">REMOTE-SENSING SOURCES</text>
+    <text x="205" y="424" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Machine interfaces for corroboration</text>
+    <text x="205" y="440" text-anchor="middle" fill="#3A3F4A" font-size="11.5">of the field record</text>
+
+    <path d="M 370 295 L 432 295" stroke="#1C5A33" stroke-width="3" marker-end="url(#arrG4)"/>
+    <path d="M 370 415 L 432 415" stroke="#1C5A33" stroke-width="3" marker-end="url(#arrG4)"/>
+    <text x="403" y="356" text-anchor="middle" fill="#1C5A33" font-size="10.5" font-weight="700">READ-ONLY</text>
+    <text x="403" y="370" text-anchor="middle" fill="#1C5A33" font-size="10" font-weight="700">one way in</text>
+
+    <!-- public surface right -->
+    <rect x="1130" y="240" width="340" height="240" rx="8" fill="#F2F0EA" stroke="#9AA0AC" stroke-width="1.5"/>
+    <text x="1300" y="268" text-anchor="middle" fill="#1F2430" font-size="14" font-weight="700" font-family="Georgia,serif">PUBLIC DISCLOSURE SURFACE</text>
+    <text x="1300" y="285" text-anchor="middle" fill="#5A5F6B" font-size="11">Deliberately narrow · read-only (§13.3)</text>
+    <g font-size="11.5">
+      <rect x="1148" y="298" width="304" height="48" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="1160" y="316" fill="#1C5A33" font-weight="700">Tag landing page</text>
+      <text x="1160" y="332" fill="#3A3F4A">Parcel location · species · planting date ·</text>
+      <text x="1160" y="344" fill="#3A3F4A" font-size="10.5">current survival status · custodian body</text>
+      <rect x="1148" y="354" width="304" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="1160" y="372" fill="#1C5A33" font-weight="700">Published programme dashboard</text>
+      <text x="1160" y="388" fill="#3A3F4A">Aggregate progress by district and zone</text>
+      <rect x="1148" y="402" width="304" height="40" rx="5" fill="#FFFFFF" stroke="#1C5A33"/>
+      <text x="1160" y="420" fill="#1C5A33" font-weight="700">Information request channel</text>
+      <text x="1160" y="436" fill="#3A3F4A">For data beyond the published surface</text>
+    </g>
+    <text x="1300" y="466" text-anchor="middle" fill="#8A2F2A" font-size="10.5" font-weight="700">Institutional custody shown — never individual identity</text>
+
+    <path d="M 1068 340 L 1122 340" stroke="#27467A" stroke-width="2.5" marker-end="url(#arrN4)"/>
+    <text x="1095" y="330" text-anchor="middle" fill="#27467A" font-size="10.5" font-weight="600">publishes</text>
+
+    <!-- personal data note -->
+    <rect x="1130" y="494" width="340" height="60" rx="8" fill="#FDF3F2" stroke="#8A2F2A" stroke-width="2"/>
+    <text x="1300" y="518" text-anchor="middle" fill="#8A2F2A" font-size="12" font-weight="700">PERSONAL DATA — NEVER PUBLICLY EXPOSED</text>
+    <text x="1300" y="536" text-anchor="middle" fill="#8A2F2A" font-size="11">Field workers, verifiers and volunteers are not</text>
+    <text x="1300" y="549" text-anchor="middle" fill="#8A2F2A" font-size="11">identifiable on any public view</text>
+
+    <!-- security posture strip -->
+    <rect x="40" y="580" width="1430" height="140" rx="10" fill="#E9EDF5" stroke="#27467A" stroke-width="2"/>
+    <text x="60" y="608" fill="#27467A" font-size="15" font-weight="700" font-family="Georgia,serif">SECURITY POSTURE (§13.2)</text>
+    <g font-size="11.5" fill="#1F2430">
+      <rect x="60" y="622" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="72" y="639" font-weight="700" fill="#27467A">Encryption in transit and at rest</text>
+      <text x="72" y="654">Including the on-device local store</text>
+
+      <rect x="408" y="620" width="336" height="44" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="420" y="635" font-weight="700" fill="#27467A">Tag cryptography</text>
+      <text x="420" y="648" font-size="10.5">NTAG 424 DNA · AES-128 SUN/SDM ·</text>
+      <text x="420" y="660" font-size="10.5">per-tap unique cryptograms · clone detection</text>
+
+      <rect x="756" y="622" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="768" y="639" font-weight="700" fill="#27467A">Device registration and binding</text>
+      <text x="768" y="654">Lost-device revocation</text>
+
+      <rect x="1104" y="622" width="346" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="1116" y="639" font-weight="700" fill="#27467A">Step-up authorisation</text>
+      <text x="1116" y="654">On restricted modules, independent of session</text>
+
+      <rect x="60" y="670" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="72" y="687" font-weight="700" fill="#27467A">Role and scope enforcement</text>
+      <text x="72" y="702">Applied at the data layer, not the interface</text>
+
+      <rect x="408" y="670" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="420" y="687" font-weight="700" fill="#27467A">Full request and access logging</text>
+      <text x="420" y="702">Retained independently of the operational store</text>
+
+      <rect x="756" y="670" width="336" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="768" y="687" font-weight="700" fill="#27467A">Segregated environments</text>
+      <text x="768" y="702">No production data in test environments</text>
+
+      <rect x="1104" y="670" width="346" height="40" rx="5" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="1116" y="687" font-weight="700" fill="#27467A">Backup with defined RPO / RTO</text>
+      <text x="1116" y="702">Periodic restoration testing</text>
+    </g>
+  </svg>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 14 · §13 Deployment, hosting, and data ownership</span></div>
+</section>
+
+<!-- ======================= DIAGRAM 15 ======================= -->
+<section class="panel">
+  <div class="eyebrow">Diagram 15 · Specification §14</div>
+  <h2>Conceptual Data Model — Parcel and Location ID as the Spine</h2>
+  <p class="lede">The principal entities and their relationships, grouped by domain. Everything joins back to the
+  spine at the centre: one Parcel holds exactly one Location ID; one Location ID is served by many physical Tag
+  Instances over time; one Parcel receives many Batches. Survival Census is written against Parcel +
+  Batch and Audit against Parcel; authority flows from Identity through Role Assignment to Scope; and an Audit Log Entry can attach to any
+  entity in the model. This is the conceptual model, not a schema.</p>
+
+  <svg viewBox="0 0 1500 920" role="img" aria-label="Entity-relationship diagram of the conceptual data model">
+    <defs>
+      <marker id="dotE" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6"><circle cx="4" cy="4" r="3" fill="#1F2430"/></marker>
+    </defs>
+    <style>
+      .ent{fill:#FFFFFF; stroke-width:2;}
+      .ename{font-size:12.5px; font-weight:700;}
+      .edetail{font-size:10.5px; fill:#5A5F6B;}
+      .card{font-size:11px; font-weight:700; fill:#1F2430;}
+      .rel{stroke:#8B8F99; stroke-width:1.6; fill:none;}
+      .rellbl{font-size:10px; fill:#6A6F7A; font-style:italic;}
+      .grp{font-size:12px; font-weight:700; letter-spacing:1.5px;}
+    </style>
+
+    <!-- ===== domain group frames ===== -->
+    <rect x="24" y="30" width="440" height="200" rx="10" fill="#E8F0EA" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="44" y="54" class="grp" fill="#1C5A33">GEOGRAPHY</text>
+    <rect x="1024" y="30" width="452" height="240" rx="10" fill="#E9EDF5" stroke="#27467A" stroke-width="1.5"/>
+    <text x="1044" y="54" class="grp" fill="#27467A">PEOPLE &amp; IDENTITY</text>
+    <rect x="24" y="290" width="440" height="290" rx="10" fill="#E8F0EA" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="44" y="314" class="grp" fill="#1C5A33">LAND</text>
+    <rect x="510" y="300" width="470" height="300" rx="10" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="530" y="324" class="grp" fill="#8A6A1E">THE SPINE — PARCEL · LOCATION ID</text>
+    <rect x="1024" y="300" width="452" height="300" rx="10" fill="#E8F0EA" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="1044" y="324" class="grp" fill="#1C5A33">PLANTING</text>
+    <rect x="310" y="650" width="810" height="240" rx="10" fill="#E9EDF5" stroke="#27467A" stroke-width="1.5"/>
+    <text x="330" y="674" class="grp" fill="#27467A">ASSURANCE</text>
+    <rect x="1150" y="650" width="326" height="240" rx="10" fill="#FFF9E8" stroke="#C09A3E" stroke-width="1.5"/>
+    <text x="1170" y="674" class="grp" fill="#8A6A1E">CERTIFICATION</text>
+
+    <!-- ===== geography ===== -->
+    <rect x="48" y="72" width="190" height="86" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="60" y="92" class="ename" fill="#1C5A33">Administrative Unit</text>
+    <text x="60" y="110" class="edetail">State → District → Taluk</text>
+    <text x="60" y="124" class="edetail">hierarchical self-reference</text>
+    <path class="rel" d="M 100 72 C 84 46, 164 46, 148 72"/>
+    <text x="124" y="44" text-anchor="middle" class="rellbl">contains</text>
+
+    <rect x="268" y="72" width="176" height="86" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="280" y="92" class="ename" fill="#1C5A33">Agro-Climatic Zone</text>
+    <text x="280" y="110" class="edetail">Spans districts; governs</text>
+    <text x="280" y="124" class="edetail">eligible species</text>
+
+    <!-- Admin Unit to Parcel -->
+    <path class="rel" d="M 143 158 L 143 200 L 620 200 L 620 372" stroke-width="1.8"/>
+    <text x="150" y="182" class="card">1</text><text x="600" y="366" class="card">∗</text>
+    <text x="380" y="194" class="rellbl">a Parcel belongs to a Taluk</text>
+
+    <!-- Zone to Species -->
+    <path class="rel" d="M 356 158 L 356 284 L 1362 284 L 1362 340"/>
+    <text x="364" y="174" class="card">1</text><text x="1370" y="334" class="card">∗</text>
+    <text x="870" y="278" class="rellbl">zone governs species eligibility</text>
+
+    <!-- ===== people & identity ===== -->
+    <rect x="1044" y="72" width="196" height="72" rx="6" class="ent" stroke="#27467A"/>
+    <text x="1056" y="92" class="ename" fill="#27467A">Organisation</text>
+    <text x="1056" y="110" class="edetail">NGO · department · nursery ·</text>
+    <text x="1056" y="124" class="edetail">donor · institution</text>
+
+    <rect x="1264" y="72" width="196" height="72" rx="6" class="ent" stroke="#27467A"/>
+    <text x="1276" y="92" class="ename" fill="#27467A">Person / Identity</text>
+    <text x="1276" y="110" class="edetail">Holds roles; each role</text>
+    <text x="1276" y="124" class="edetail">carries scope</text>
+
+    <rect x="1264" y="176" width="196" height="76" rx="6" class="ent" stroke="#27467A" stroke-width="2.5"/>
+    <text x="1276" y="196" class="ename" fill="#27467A">Role Assignment</text>
+    <text x="1276" y="214" class="edetail">Identity × Role × Scope,</text>
+    <text x="1276" y="228" class="edetail">with validity period</text>
+    <text x="1276" y="244" class="edetail" fill="#8A6A1E">→ Scope (geography, §9)</text>
+
+    <rect x="1044" y="176" width="196" height="76" rx="6" class="ent" stroke="#27467A"/>
+    <text x="1056" y="196" class="ename" fill="#27467A">Device</text>
+    <text x="1056" y="214" class="edetail">Registered to an Identity;</text>
+    <text x="1056" y="228" class="edetail">carries sync state</text>
+
+    <path class="rel" d="M 1362 144 L 1362 176"/>
+    <text x="1368" y="158" class="card">1</text><text x="1368" y="174" class="card">∗</text>
+    <path class="rel" d="M 1240 108 L 1264 108"/>
+    <path class="rel" d="M 1142 176 L 1142 160 L 1300 160 L 1300 144"/>
+    <text x="1150" y="172" class="card">∗</text><text x="1288" y="156" class="card">1</text>
+
+    <!-- ===== spine ===== -->
+    <rect x="534" y="352" width="200" height="120" rx="8" class="ent" stroke="#1C5A33" stroke-width="3.5"/>
+    <text x="548" y="376" class="ename" fill="#1C5A33" font-size="15">PARCEL</text>
+    <text x="548" y="396" class="edetail">Belongs to Taluk · geometry ·</text>
+    <text x="548" y="410" class="edetail">land type · land record reference</text>
+    <text x="548" y="424" class="edetail">(survey no., RTC / Bhoomi)</text>
+    <text x="548" y="444" class="edetail" fill="#1C5A33" font-weight="700">Holds one Location ID</text>
+
+    <rect x="800" y="352" width="164" height="90" rx="8" class="ent" stroke="#C09A3E" stroke-width="3.5"/>
+    <text x="814" y="376" class="ename" fill="#8A6A1E" font-size="14">LOCATION ID</text>
+    <text x="814" y="394" class="edetail">Tag identity of the parcel</text>
+    <text x="814" y="408" class="edetail">— the permanent join key</text>
+
+    <path d="M 734 400 L 800 400" stroke="#C09A3E" stroke-width="4"/>
+    <text x="742" y="392" class="card">1</text><text x="786" y="392" class="card">1</text>
+    <text x="767" y="418" text-anchor="middle" class="rellbl">one-to-one</text>
+
+    <rect x="800" y="496" width="164" height="84" rx="6" class="ent" stroke="#C09A3E" stroke-width="2"/>
+    <text x="814" y="516" class="ename" fill="#8A6A1E">Tag Instance</text>
+    <text x="814" y="534" class="edetail">Physical tag bound to a</text>
+    <text x="814" y="548" class="edetail">Location ID; issue, bind,</text>
+    <text x="814" y="562" class="edetail">replace, retire events</text>
+    <path class="rel" d="M 882 442 L 882 496" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="890" y="458" class="card">1</text><text x="890" y="492" class="card">∗</text>
+    <text x="896" y="474" class="rellbl">over time</text>
+
+    <!-- ===== land ===== -->
+    <rect x="48" y="336" width="200" height="90" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="60" y="356" class="ename" fill="#1C5A33">Custody Assignment</text>
+    <text x="60" y="374" class="edetail">Parcel ↔ custodian body;</text>
+    <text x="60" y="388" class="edetail">type, obligation period,</text>
+    <text x="60" y="402" class="edetail">acceptance record</text>
+    <path class="rel" d="M 248 380 L 534 380"/>
+    <text x="254" y="374" class="card">∗</text><text x="520" y="374" class="card">1</text>
+
+    <rect x="48" y="452" width="200" height="104" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="60" y="472" class="ename" fill="#1C5A33">Verification Record</text>
+    <text x="60" y="490" class="edetail">Parcel ↔ verification-cadre</text>
+    <text x="60" y="504" class="edetail">identity; verified land</text>
+    <text x="60" y="518" class="edetail">parameters, gating decision,</text>
+    <text x="60" y="532" class="edetail">evidence</text>
+    <path class="rel" d="M 248 500 L 500 500 L 534 452"/>
+    <text x="254" y="494" class="card">∗</text><text x="514" y="470" class="card">1</text>
+    <path class="rel" d="M 248 472 L 280 472 L 280 262 L 1362 262 L 1362 252" stroke-dasharray="4 4"/>
+    <text x="720" y="256" class="rellbl">verified by a verification-cadre identity (role assignment in force)</text>
+
+    <!-- ===== planting ===== -->
+    <rect x="1044" y="340" width="196" height="96" rx="6" class="ent" stroke="#1C5A33" stroke-width="2.5"/>
+    <text x="1056" y="360" class="ename" fill="#1C5A33">Batch</text>
+    <text x="1056" y="378" class="edetail">A planting event on a Parcel;</text>
+    <text x="1056" y="392" class="edetail">species composition, counts,</text>
+    <text x="1056" y="406" class="edetail">date, nursery source</text>
+    <path class="rel" d="M 734 460 L 1006 460 L 1044 412" stroke-width="2"/>
+    <text x="742" y="454" class="card">1</text><text x="1024" y="420" class="card">∗</text>
+    <text x="990" y="452" text-anchor="end" class="rellbl">one parcel, many batches</text>
+
+    <rect x="1264" y="340" width="196" height="76" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="1276" y="360" class="ename" fill="#1C5A33">Species</text>
+    <text x="1276" y="378" class="edetail">Master list; eligibility</text>
+    <text x="1276" y="392" class="edetail">by Zone</text>
+    <path class="rel" d="M 1240 380 L 1264 380"/>
+    <text x="1243" y="374" class="card">∗</text><text x="1259" y="374" class="card">∗</text>
+
+    <rect x="1264" y="440" width="196" height="76" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="1276" y="460" class="ename" fill="#1C5A33">Nursery</text>
+    <text x="1276" y="478" class="edetail">Supplies batches; stock and</text>
+    <text x="1276" y="492" class="edetail">provenance records</text>
+    <path class="rel" d="M 1264 478 L 1248 478 L 1248 428 L 1240 428"/>
+    <text x="1252" y="470" class="card">1</text><text x="1246" y="420" text-anchor="end" class="card">∗</text>
+
+    <rect x="1044" y="480" width="196" height="96" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="1056" y="500" class="ename" fill="#1C5A33">Maintenance Record</text>
+    <text x="1056" y="518" class="edetail">Against Parcel + Batch;</text>
+    <text x="1056" y="532" class="edetail">activity, date, actor,</text>
+    <text x="1056" y="546" class="edetail">evidence</text>
+    <path class="rel" d="M 1142 480 L 1142 436"/>
+    <text x="1150" y="476" class="card">∗</text>
+
+    <!-- ===== assurance ===== -->
+    <rect x="334" y="692" width="190" height="112" rx="6" class="ent" stroke="#27467A" stroke-width="2.5"/>
+    <text x="346" y="712" class="ename" fill="#27467A">Survival Census</text>
+    <text x="346" y="730" class="edetail">Against Parcel + Batch;</text>
+    <text x="346" y="744" class="edetail">method, sample, tally,</text>
+    <text x="346" y="758" class="edetail">condition grading,</text>
+    <text x="346" y="772" class="edetail" fill="#8A6A1E">co-signature (audit cadre)</text>
+    <path class="rel" d="M 430 692 L 430 620 L 620 620 L 620 472" stroke-width="1.8"/>
+    <text x="438" y="686" class="card">∗</text><text x="600" y="486" class="card">1</text>
+    <text x="470" y="614" class="rellbl">against Parcel + Batch</text>
+    
+    <rect x="548" y="692" width="180" height="112" rx="6" class="ent" stroke="#27467A" stroke-width="2.5"/>
+    <text x="560" y="712" class="ename" fill="#27467A">Audit / Inspection</text>
+    <text x="560" y="730" class="edetail">Against Parcel; by audit-cadre</text>
+    <text x="560" y="744" class="edetail">identity excluded from that</text>
+    <text x="560" y="758" class="edetail">parcel's Verification Record;</text>
+    <text x="560" y="772" class="edetail">scheduled or surprise;</text>
+    <text x="560" y="786" class="edetail">findings, pass / flag</text>
+    <path class="rel" d="M 660 692 L 660 472" stroke-width="1.8"/>
+    <text x="668" y="686" class="card">∗</text><text x="668" y="486" class="card">1</text>
+
+    <rect x="752" y="692" width="170" height="92" rx="6" class="ent" stroke="#27467A"/>
+    <text x="764" y="712" class="ename" fill="#27467A">Rectification</text>
+    <text x="764" y="730" class="edetail">Raised by Audit; owner,</text>
+    <text x="764" y="744" class="edetail">deadline, evidence, closure</text>
+    <path class="rel" d="M 728 740 L 752 740"/>
+    <text x="734" y="734" class="card">1</text><text x="742" y="734" class="card">∗</text>
+
+    <rect x="944" y="692" width="160" height="92" rx="6" class="ent" stroke="#27467A"/>
+    <text x="956" y="712" class="ename" fill="#27467A">Issue / Grievance</text>
+    <text x="956" y="730" class="edetail">Against Parcel or Taluk;</text>
+    <text x="956" y="744" class="edetail">severity, status,</text>
+    <text x="956" y="758" class="edetail">escalation path</text>
+    <path class="rel" d="M 1024 692 L 1024 640 L 700 640 L 700 472" stroke-dasharray="4 4"/>
+
+    <!-- ===== certification ===== -->
+    <rect x="1170" y="692" width="286" height="80" rx="6" class="ent" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="1182" y="712" class="ename" fill="#8A6A1E">Certified Scope</text>
+    <text x="1182" y="730" class="edetail">IAFT certification; links an Organisation</text>
+    <text x="1182" y="744" class="edetail">to a defined body of work</text>
+    
+    <rect x="1170" y="792" width="286" height="80" rx="6" class="ent" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="1182" y="812" class="ename" fill="#8A6A1E">Utilisation Evidence</text>
+    <text x="1182" y="830" class="edetail">Against Certified Scope; reconciled</text>
+    <text x="1182" y="844" class="edetail">to operational records</text>
+    <path class="rel" d="M 1310 772 L 1310 792" stroke-width="2"/>
+    <text x="1318" y="780" class="card">1</text><text x="1318" y="792" class="card">∗</text>
+    <path class="rel" d="M 1170 832 L 1112 832" stroke-dasharray="4 4"/>
+    <text x="1118" y="826" class="rellbl" text-anchor="end">reconciled to operational records</text>
+
+    <!-- ===== audit log entry ===== -->
+    <rect x="40" y="700" width="240" height="100" rx="10" fill="#FFFFFF" stroke="#1F2430" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="160" y="728" text-anchor="middle" class="ename" fill="#1F2430">Audit Log Entry</text>
+    <text x="160" y="748" text-anchor="middle" class="edetail">Append-only ·</text>
+    <text x="160" y="762" text-anchor="middle" class="edetail">attaches to ANY entity</text>
+    <text x="160" y="782" text-anchor="middle" class="edetail" fill="#8A2F2A">never updated or deleted (§12)</text>
+    <path class="rel" d="M 280 750 L 320 750" marker-end="url(#dotE)" stroke-dasharray="3 3"/>
+    <path class="rel" d="M 160 700 L 160 600 L 300 560" marker-end="url(#dotE)" stroke-dasharray="3 3"/>
+    <text x="164" y="640" class="rellbl">to every entity in the model</text>
+  </svg>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 15 · §14 Core data model (conceptual)</span></div>
+</section>
+
+</body>
+</html>

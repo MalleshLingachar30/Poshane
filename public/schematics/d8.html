@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D8</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --bg:#F7F3E9; --ink:#1F2430;
+    --green-tint:#EAF1EC; --navy-tint:#EBEFF6; --gold-tint:#F6EEDC; --card:#FDFBF4; --rule:#D9D2C0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif; font-size:15px; line-height:1.55;}
+  .doc-header{max-width:1600px; margin:0 auto; padding:34px 28px 10px 28px;
+    border-bottom:3px solid var(--green);}
+  .doc-header h1{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600;
+    font-size:30px; color:var(--green); letter-spacing:.2px;}
+  .doc-header .sub{margin-top:6px; font-size:14.5px; color:var(--ink);}
+  .doc-header .sub b{color:var(--navy);}
+  .doc-header .meta{margin-top:8px; font-size:12.5px; color:#5A5647; letter-spacing:.4px;
+    text-transform:uppercase;}
+  .panel{max-width:1600px; margin:0 auto; padding:30px 28px 8px 28px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600; font-size:23px;
+    color:var(--green); border-left:6px solid var(--gold); padding-left:14px;}
+  .panel h2 .ref{color:var(--navy); font-size:15px; font-weight:400; margin-left:10px;}
+  .panel .lede{margin:10px 0 18px 20px; max-width:1180px; font-size:14.5px; color:#3A3E4A;}
+  .figure{background:#FFFFFF; border:1px solid var(--rule); border-radius:6px;
+    padding:14px 14px 6px 14px; box-shadow:0 1px 0 rgba(31,36,48,.04);}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif;}
+  .figfoot{display:flex; justify-content:space-between; padding:8px 4px 6px 4px;
+    font-size:11.5px; color:#6B6656; border-top:1px solid var(--rule); margin-top:8px;}
+  .doc-footer{max-width:1600px; margin:8px auto 40px auto; padding:14px 28px 0 28px;
+    border-top:3px solid var(--green); font-size:12.5px; color:#5A5647;}
+  @media print{
+    @page{size:A3 landscape; margin:9mm;}
+    body{background:#FFFFFF; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .doc-header{padding-top:8px;}
+    .panel{page-break-after:always; padding-top:10px;}
+    .panel:last-of-type{page-break-after:auto;}
+    .figure{box-shadow:none;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel">
+  <h2>Diagram 8 · Flow B — Planting to survival assurance<span class="ref">Specification §8.2 · census co-signature per §7.3, §9.4</span></h2>
+  <p class="lede">Planting is recorded against the tag as a batch; survival is a measured, tag-anchored, photo-backed
+  observation — not a submitted number. The agency that plants cannot alone record the authoritative survival census:
+  an independent audit-cadre officer must co-sign it. A census below threshold raises casualty replacement as a new
+  Batch ID against the same Location ID, and generates a demand signal back to the nursery.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1010" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow B — planting to survival assurance">
+    <defs>
+      <marker id="d8-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d8-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="d8-au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- legend -->
+    <g font-size="10.5" fill="#1F2430">
+      <rect x="640" y="10" width="14" height="14" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/><text x="660" y="21">field action</text>
+      <rect x="760" y="10" width="14" height="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/><text x="780" y="21">platform record</text>
+      <rect x="900" y="10" width="14" height="14" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/><text x="920" y="21">gate · threshold</text>
+      <line x1="1040" y1="17" x2="1080" y2="17" stroke="#27467A" stroke-width="1.4" stroke-dasharray="5 4"/><text x="1088" y="21">demand / cycle signal</text>
+      <text x="1310" y="21" font-style="italic" fill="#5A5647">arrow labels = data payload</text>
+    </g>
+
+    <!-- lanes -->
+    <g>
+      <rect x="148" y="40"  width="1400" height="160" fill="#F7F3E9" stroke="#D9D2C0"/>
+      <rect x="148" y="208" width="1400" height="230" fill="#EAF1EC" stroke="#D9D2C0"/>
+      <rect x="148" y="446" width="1400" height="170" fill="#EAF1EC" stroke="#D9D2C0"/>
+      <rect x="148" y="624" width="1400" height="340" fill="#EBEFF6" stroke="#D9D2C0"/>
+      <rect x="12" y="40"  width="130" height="160" fill="#4A4F3C"/>
+      <rect x="12" y="208" width="130" height="230" fill="#1C5A33"/>
+      <rect x="12" y="446" width="130" height="170" fill="#1C5A33"/>
+      <rect x="12" y="624" width="130" height="340" fill="#27467A"/>
+      <g fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5">
+        <text x="77" y="125" text-anchor="middle">Nursery</text>
+        <text x="77" y="308" text-anchor="middle">Implementing</text><text x="77" y="326" text-anchor="middle">Agency</text><text x="77" y="346" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">NGO · plants &amp; maintains</text>
+        <text x="77" y="516" text-anchor="middle">Audit Cadre</text><text x="77" y="536" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">independent ·</text><text x="77" y="551" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">separately constituted</text>
+        <text x="77" y="790" text-anchor="middle">Platform</text><text x="77" y="810" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">system of record</text>
+      </g>
+    </g>
+
+    <!-- Nursery stock -->
+    <g>
+      <rect x="170" y="70" width="260" height="110" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="170" y="70" width="260" height="26" rx="4" fill="#1C5A33"/>
+      <text x="180" y="88" fill="#F7F3E9" font-size="12.5" font-weight="bold">E9 · Stock raising &amp; dispatch</text>
+      <text x="180" y="114" font-size="11.5" fill="#1F2430">species · quantity · grading</text>
+      <text x="180" y="130" font-size="11.5" fill="#1F2430">provenance · dispatch to batch</text>
+      <text x="180" y="152" font-size="10.5" fill="#5A5647" font-style="italic">traceable to the planting batch it supplies</text>
+    </g>
+    <path d="M430,125 H505 V242" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="520" y="180" font-size="10.5" fill="#5A5647" font-style="italic">seedlings dispatched · species · quantity · provenance</text>
+
+    <!-- precondition chip -->
+    <g>
+      <rect x="170" y="660" width="245" height="66" rx="6" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="182" y="684" font-size="12" font-weight="bold" fill="#27467A">Approved, tagged parcel</text>
+      <text x="182" y="702" font-size="10.5" fill="#5A5647">state 8 · Tag Bound — output of Flow A</text>
+    </g>
+    <path d="M292,660 V420 H462" fill="none" stroke="#27467A" stroke-width="2" marker-end="url(#d8-an)"/>
+    <text x="304" y="540" font-size="10.5" fill="#5A5647" font-style="italic">valid tap resolves Location ID</text>
+
+    <!-- E5 planting -->
+    <g>
+      <rect x="470" y="250" width="270" height="150" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="470" y="250" width="270" height="26" rx="4" fill="#1C5A33"/>
+      <text x="480" y="268" fill="#F7F3E9" font-size="12.5" font-weight="bold">E5 · Planting event</text>
+      <rect x="640" y="254" width="92" height="18" rx="9" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="686" y="267" text-anchor="middle" font-size="10" fill="#1F2430">tag tap required</text>
+      <text x="480" y="294" font-size="11.5" fill="#1F2430">species composition · counts</text>
+      <text x="480" y="310" font-size="11.5" fill="#1F2430">pit spacing · date · nursery source</text>
+      <text x="480" y="326" font-size="11.5" fill="#1F2430">in-app photographs, bound to payload</text>
+      <text x="480" y="348" font-size="10.5" fill="#5A5647" font-style="italic">parcel enters state 9 · Planted</text>
+      <text x="480" y="382" font-size="10.5" fill="#5A5647" font-style="italic">capture offline · signed on device</text>
+    </g>
+    <path d="M605,400 V652" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="617" y="530" font-size="10.5" fill="#5A5647" font-style="italic">signed capture payload</text>
+
+    <!-- Batch ID box -->
+    <g>
+      <rect x="470" y="660" width="270" height="112" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <rect x="470" y="660" width="270" height="26" rx="4" fill="#27467A"/>
+      <text x="480" y="678" fill="#F7F3E9" font-size="12.5" font-weight="bold">Batch ID created</text>
+      <text x="480" y="704" font-size="11.5" fill="#1F2430">species composition · counts · evidence</text>
+      <text x="480" y="720" font-size="11.5" fill="#1F2430">bound to Location ID + Batch ID pair</text>
+      <text x="480" y="744" font-size="10.5" fill="#5A5647" font-style="italic">every later observation is written</text>
+      <text x="480" y="759" font-size="10.5" fill="#5A5647" font-style="italic">against this pair — survival per planting event</text>
+    </g>
+
+    <!-- E6 maintenance -->
+    <line x1="740" y1="320" x2="812" y2="320" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="789" y="336" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">maintenance</text>
+    <text x="789" y="349" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">begins</text>
+    <g>
+      <rect x="820" y="250" width="250" height="140" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="820" y="250" width="250" height="26" rx="4" fill="#1C5A33"/>
+      <text x="830" y="268" fill="#F7F3E9" font-size="12.5" font-weight="bold">E6 · Maintenance cycle</text>
+      <rect x="972" y="254" width="92" height="18" rx="9" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="1018" y="267" text-anchor="middle" font-size="10" fill="#1F2430">tag tap required</text>
+      <text x="830" y="294" font-size="11.5" fill="#1F2430">watering · weeding · fencing</text>
+      <text x="830" y="310" font-size="11.5" fill="#1F2430">guard status · roster reference</text>
+      <text x="830" y="334" font-size="10.5" fill="#5A5647" font-style="italic">recurring through the assurance period</text>
+    </g>
+    <path d="M870,250 C880,220 1010,220 1020,248" fill="none" stroke="#1C5A33" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#d8-ag)"/>
+    <text x="945" y="216" text-anchor="middle" font-size="10" fill="#5A5647" font-style="italic">recurring</text>
+
+    <!-- two-signature gate -->
+    <line x1="1070" y1="320" x2="1112" y2="320" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="1091" y="228" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">census at defined intervals</text>
+    <g>
+      <rect x="1120" y="240" width="400" height="360" rx="6" fill="none" stroke="#C09A3E" stroke-width="3"/>
+      <rect x="1120" y="240" width="400" height="30" rx="6" fill="#C09A3E"/>
+      <text x="1132" y="260" font-size="13" font-weight="bold" fill="#1F2430">TWO-SIGNATURE GATE — survival census (E7)</text>
+      <text x="1136" y="288" font-size="10.5" fill="#5A5647" font-style="italic">the agency that plants cannot alone record the</text>
+      <text x="1136" y="302" font-size="10.5" fill="#5A5647" font-style="italic">authoritative survival census — §9.4, execution vs assurance</text>
+
+      <rect x="1140" y="312" width="360" height="118" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1140" y="312" width="360" height="24" rx="4" fill="#1C5A33"/>
+      <text x="1150" y="329" fill="#F7F3E9" font-size="12" font-weight="bold">Signature 1 · recorded by agency — tag tap</text>
+      <text x="1150" y="354" font-size="11.5" fill="#1F2430">sample or full count · survival tally</text>
+      <text x="1150" y="370" font-size="11.5" fill="#1F2430">casualty count · condition grading</text>
+      <text x="1150" y="386" font-size="11.5" fill="#1F2430">in-app photographs</text>
+      <text x="1150" y="408" font-size="10.5" fill="#5A5647" font-style="italic">a claim, not yet the authoritative record</text>
+
+      <line x1="1320" y1="430" x2="1320" y2="462" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d8-au)"/>
+
+      <rect x="1140" y="470" width="360" height="112" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1140" y="470" width="360" height="24" rx="4" fill="#1C5A33"/>
+      <text x="1150" y="487" fill="#F7F3E9" font-size="12" font-weight="bold">Signature 2 · audit-cadre co-signature</text>
+      <text x="1150" y="512" font-size="11.5" fill="#1F2430">independent officer — separately constituted team,</text>
+      <text x="1150" y="528" font-size="11.5" fill="#1F2430">never the verifier of this parcel</text>
+      <text x="1150" y="550" font-size="10.5" fill="#5A5647" font-style="italic">without this co-signature the census</text>
+      <text x="1150" y="565" font-size="10.5" fill="#5A5647" font-style="italic">is not authoritative</text>
+    </g>
+
+    <!-- census to threshold -->
+    <path d="M1320,600 V652" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="1332" y="632" font-size="10.5" fill="#5A5647" font-style="italic">co-signed census payload</text>
+
+    <!-- threshold diamond -->
+    <g>
+      <polygon points="1320,660 1440,725 1320,790 1200,725" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="1320" y="720" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1F2430">Survival at or</text>
+      <text x="1320" y="737" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1F2430">above threshold?</text>
+    </g>
+
+    <!-- continue path -->
+    <line x1="1200" y1="725" x2="1128" y2="725" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="1164" y="716" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">yes</text>
+    <g>
+      <rect x="880" y="695" width="248" height="62" rx="6" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="892" y="719" font-size="12" font-weight="bold" fill="#27467A">Continue assurance cycle</text>
+      <text x="892" y="737" font-size="10.5" fill="#5A5647">state 10 · Under Assurance</text>
+    </g>
+    <path d="M1000,695 V398" fill="none" stroke="#1C5A33" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#d8-ag)"/>
+    <text x="1012" y="560" font-size="10.5" fill="#5A5647" font-style="italic">next census interval</text>
+
+    <!-- replacement path -->
+    <path d="M1320,790 V836" fill="none" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d8-au)"/>
+    <text x="1332" y="818" font-size="10.5" fill="#5A5647" font-style="italic">no — below threshold</text>
+    <g>
+      <rect x="1170" y="844" width="360" height="104" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <rect x="1170" y="844" width="360" height="26" rx="4" fill="#27467A"/>
+      <text x="1180" y="862" fill="#F7F3E9" font-size="12.5" font-weight="bold">Casualty replacement raised</text>
+      <text x="1180" y="888" font-size="11.5" fill="#1F2430">replacement batch · NEW Batch ID</text>
+      <text x="1180" y="904" font-size="11.5" fill="#1F2430">against the SAME Location ID</text>
+      <text x="1180" y="926" font-size="10.5" fill="#5A5647" font-style="italic">replacement planting recorded as E5 · new census follows</text>
+    </g>
+    <line x1="1170" y1="896" x2="1118" y2="896" stroke="#27467A" stroke-width="2" marker-end="url(#d8-an)"/>
+    <g>
+      <rect x="810" y="864" width="300" height="64" rx="6" fill="#EBEFF6" stroke="#27467A" stroke-width="1.8"/>
+      <text x="824" y="889" font-size="12" font-weight="bold" fill="#27467A">Nursery demand signal</text>
+      <text x="824" y="907" font-size="10.5" fill="#5A5647">replacement demand: species × quantity</text>
+    </g>
+    <path d="M810,896 H758 V150 H438" fill="none" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#d8-an)"/>
+    <text x="600" y="141" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">demand signal to nursery — cycle repeats</text>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 8 · Flow B · Specification §8.2, §7.1, §7.3, §9.4</span></div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

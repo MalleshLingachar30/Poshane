@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D12</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --bg:#F7F3E9; --ink:#1F2430;
+    --green-tint:#EAF1EC; --navy-tint:#EBEFF6; --gold-tint:#F6EEDC; --card:#FDFBF4; --rule:#D9D2C0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif; font-size:15px; line-height:1.55;}
+  .doc-header{max-width:1600px; margin:0 auto; padding:34px 28px 10px 28px;
+    border-bottom:3px solid var(--green);}
+  .doc-header h1{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600;
+    font-size:30px; color:var(--green); letter-spacing:.2px;}
+  .doc-header .sub{margin-top:6px; font-size:14.5px; color:var(--ink);}
+  .doc-header .sub b{color:var(--navy);}
+  .doc-header .meta{margin-top:8px; font-size:12.5px; color:#5A5647; letter-spacing:.4px;
+    text-transform:uppercase;}
+  .panel{max-width:1600px; margin:0 auto; padding:30px 28px 8px 28px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600; font-size:23px;
+    color:var(--green); border-left:6px solid var(--gold); padding-left:14px;}
+  .panel h2 .ref{color:var(--navy); font-size:15px; font-weight:400; margin-left:10px;}
+  .panel .lede{margin:10px 0 18px 20px; max-width:1180px; font-size:14.5px; color:#3A3E4A;}
+  .figure{background:#FFFFFF; border:1px solid var(--rule); border-radius:6px;
+    padding:14px 14px 6px 14px; box-shadow:0 1px 0 rgba(31,36,48,.04);}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif;}
+  .figfoot{display:flex; justify-content:space-between; padding:8px 4px 6px 4px;
+    font-size:11.5px; color:#6B6656; border-top:1px solid var(--rule); margin-top:8px;}
+  .doc-footer{max-width:1600px; margin:8px auto 40px auto; padding:14px 28px 0 28px;
+    border-top:3px solid var(--green); font-size:12.5px; color:#5A5647;}
+  @media print{
+    @page{size:A3 landscape; margin:9mm;}
+    body{background:#FFFFFF; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .doc-header{padding-top:8px;}
+    .panel{page-break-after:always; padding-top:10px;}
+    .panel:last-of-type{page-break-after:auto;}
+    .figure{box-shadow:none;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel">
+  <h2>Diagram 12 · Offline-first field operation<span class="ref">Specification §11</span></h2>
+  <p class="lede">Connectivity across 240 taluks cannot be assumed. Field capture is designed as if the network does
+  not exist: the device carries its reference data, capture runs fully offline, and every payload is signed, encrypted
+  and queued in order on the device itself. When connectivity returns, the sync service verifies, orders by device
+  sequence, and commits. Capture never blocks on network — a field officer in a village without coverage is never
+  stopped from working.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Offline-first field operation and sync">
+    <defs>
+      <marker id="d12-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d12-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+    </defs>
+
+    <!-- FIELD DEVICE PANEL -->
+    <g>
+      <rect x="20" y="40" width="560" height="536" rx="6" fill="#EAF1EC" stroke="#1C5A33" stroke-width="2.4"/>
+      <rect x="20" y="40" width="560" height="34" rx="6" fill="#1C5A33"/>
+      <text x="36" y="63" fill="#F7F3E9" font-family="Georgia,serif" font-size="15" font-weight="bold">FIELD DEVICE — village, no connectivity assumed</text>
+
+      <rect x="44" y="92" width="512" height="76" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="114" font-size="12" font-weight="bold" fill="#1F2430">1 · Reference data cached locally</text>
+      <text x="58" y="134" font-size="11" fill="#1F2430">assigned parcels · tasks · species master · zone rules</text>
+      <text x="58" y="150" font-size="11" fill="#1F2430">checklists · thresholds</text>
+      <line x1="300" y1="168" x2="300" y2="186" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="190" width="512" height="76" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="212" font-size="12" font-weight="bold" fill="#1F2430">2 · Capture proceeds fully offline</text>
+      <rect x="404" y="198" width="140" height="18" rx="9" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="474" y="211" text-anchor="middle" font-size="10" fill="#1F2430">tag tap opens the form</text>
+      <text x="58" y="232" font-size="11" fill="#1F2430">tag tap / scan · forms · photographs · GPS</text>
+      <text x="58" y="250" font-size="10.5" fill="#5A5647" font-style="italic">no network request is made or awaited at any point</text>
+      <line x1="300" y1="266" x2="300" y2="284" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="288" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="310" font-size="12" font-weight="bold" fill="#1F2430">3 · Payload signed on device</text>
+      <text x="58" y="330" font-size="11" fill="#1F2430">tampering between capture and upload is detectable</text>
+      <line x1="300" y1="350" x2="300" y2="368" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="372" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="394" font-size="12" font-weight="bold" fill="#1F2430">4 · Written to an encrypted local store</text>
+      <text x="58" y="414" font-size="11" fill="#1F2430">devices are lost; the data on them is programme data</text>
+      <line x1="300" y1="434" x2="300" y2="452" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="456" width="512" height="76" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="478" font-size="12" font-weight="bold" fill="#1F2430">5 · Enqueued for sync</text>
+      <text x="58" y="498" font-size="11" fill="#1F2430">monotonic device sequence number per payload</text>
+      <text x="58" y="516" font-size="10.5" fill="#5A5647" font-style="italic">queue depth and age visible to the field user</text>
+    </g>
+
+    <!-- CONNECTIVITY BOUNDARY -->
+    <line x1="670" y1="60" x2="670" y2="576" stroke="#C09A3E" stroke-width="2" stroke-dasharray="10 7"/>
+    <text x="670" y="120" font-size="11.5" fill="#1F2430" font-weight="bold" transform="rotate(-90 670 120)" text-anchor="end"> </text>
+    <g>
+      <rect x="600" y="240" width="140" height="96" rx="6" fill="#F7F3E9" stroke="#C09A3E" stroke-width="1.8"/>
+      <text x="670" y="268" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">connectivity</text>
+      <text x="670" y="284" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">returns</text>
+      <text x="670" y="306" text-anchor="middle" font-size="10" fill="#5A5647">opportunistic</text>
+      <text x="670" y="320" text-anchor="middle" font-size="10" fill="#5A5647">resumable · batched</text>
+    </g>
+    <line x1="580" y1="494" x2="752" y2="494" stroke="#1C5A33" stroke-width="2.6" marker-end="url(#d12-ag)"/>
+    <text x="666" y="484" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">signed payloads, in device order</text>
+    <line x1="752" y1="130" x2="580" y2="130" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#d12-an)"/>
+    <text x="666" y="120" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">reference data refresh</text>
+
+    <!-- SYNC SERVICE PANEL -->
+    <g>
+      <rect x="760" y="40" width="560" height="536" rx="6" fill="#EBEFF6" stroke="#27467A" stroke-width="2.4"/>
+      <rect x="760" y="40" width="560" height="34" rx="6" fill="#27467A"/>
+      <text x="776" y="63" fill="#F7F3E9" font-family="Georgia,serif" font-size="15" font-weight="bold">SYNC SERVICE — on reconnection</text>
+
+      <rect x="784" y="92" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="114" font-size="12" font-weight="bold" fill="#1F2430">1 · Verify signature &amp; device registration</text>
+      <text x="798" y="134" font-size="11" fill="#1F2430">unsigned or unregistered-device payloads do not enter the record</text>
+      <line x1="1040" y1="154" x2="1040" y2="172" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="176" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="198" font-size="12" font-weight="bold" fill="#1F2430">2 · Reject replay</text>
+      <text x="798" y="218" font-size="11" fill="#1F2430">sequence number + payload digest — the same payload commits once</text>
+      <line x1="1040" y1="238" x2="1040" y2="256" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="260" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="282" font-size="12" font-weight="bold" fill="#1F2430">3 · Validate against server-side rules</text>
+      <text x="798" y="302" font-size="11" fill="#1F2430">rules in force at capture time govern; divergence flagged for review</text>
+      <line x1="1040" y1="322" x2="1040" y2="340" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="344" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="366" font-size="12" font-weight="bold" fill="#1F2430">4 · Resolve ordering by device sequence — not arrival time</text>
+      <text x="798" y="386" font-size="11" fill="#1F2430">two visits made in order stay in order, even if uploaded out of order</text>
+      <line x1="1040" y1="406" x2="1040" y2="424" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="428" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="450" font-size="12" font-weight="bold" fill="#1F2430">5 · Commit</text>
+      <text x="798" y="470" font-size="11" fill="#1F2430">write to the operational store · append to the immutable audit log</text>
+
+      <text x="798" y="522" font-size="10.5" fill="#5A5647" font-style="italic">photographs sync separately and resumably — metadata does not wait for imagery</text>
+    </g>
+
+    <!-- stores -->
+    <path d="M1296,459 H1360" fill="none" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+    <g>
+      <path d="M1370,400 a80,14 0 0 0 160,0 v56 a80,14 0 0 1 -160,0 z" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <ellipse cx="1450" cy="400" rx="80" ry="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="1450" y="438" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">Operational store</text>
+      <path d="M1370,510 a80,14 0 0 0 160,0 v56 a80,14 0 0 1 -160,0 z" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <ellipse cx="1450" cy="510" rx="80" ry="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="1450" y="546" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">Immutable audit log</text>
+      <text x="1450" y="562" text-anchor="middle" font-size="10" fill="#5A5647">append-only</text>
+      <line x1="1450" y1="470" x2="1450" y2="494" stroke="#27467A" stroke-width="1.6" marker-end="url(#d12-an)"/>
+    </g>
+    <text x="1450" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#1C5A33" font-weight="bold">Every commit is</text>
+    <text x="1450" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#1C5A33" font-weight="bold">two writes:</text>
+    <text x="1450" y="160" text-anchor="middle" font-size="10.5" fill="#5A5647">the record, and the</text>
+    <text x="1450" y="175" text-anchor="middle" font-size="10.5" fill="#5A5647">append-only entry</text>
+    <text x="1450" y="190" text-anchor="middle" font-size="10.5" fill="#5A5647">that proves it</text>
+
+    <!-- CENTRAL MESSAGE -->
+    <g>
+      <rect x="20" y="600" width="1525" height="70" rx="6" fill="#F6EEDC" stroke="#C09A3E" stroke-width="3.2"/>
+      <text x="782" y="630" text-anchor="middle" font-family="Georgia,serif" font-size="19" font-weight="bold" fill="#1F2430">CAPTURE NEVER BLOCKS ON NETWORK</text>
+      <text x="782" y="654" text-anchor="middle" font-size="12.5" fill="#1F2430">a field officer in Yadgir — or any village without coverage — is never stopped from working · connectivity is an opportunity to synchronise, not a precondition to work</text>
+    </g>
+
+    <!-- EIGHT DESIGN RULES -->
+    <g>
+      <rect x="20" y="694" width="745" height="492" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2"/>
+      <rect x="20" y="694" width="745" height="32" rx="6" fill="#1C5A33"/>
+      <text x="36" y="716" fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5" font-weight="bold">EIGHT DESIGN RULES — §11.2</text>
+      <text x="36" y="750" font-size="10.5" fill="#5A5647" font-weight="bold">RULE</text>
+      <text x="380" y="750" font-size="10.5" fill="#5A5647" font-weight="bold">RATIONALE</text>
+      <line x1="36" y1="758" x2="749" y2="758" stroke="#D9D2C0" stroke-width="1.2"/>
+
+      <text x="36" y="782" font-size="11.5" font-weight="bold" fill="#1C5A33">1 · Capture never blocks on network</text>
+      <text x="380" y="782" font-size="11" fill="#1F2430">a field officer in Yadgir must not be stopped</text>
+      <text x="380" y="797" font-size="11" fill="#1F2430">by absent coverage</text>
+      <line x1="36" y1="808" x2="749" y2="808" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="832" font-size="11.5" font-weight="bold" fill="#1C5A33">2 · Local store is encrypted</text>
+      <text x="380" y="832" font-size="11" fill="#1F2430">devices are lost; the data on them is</text>
+      <text x="380" y="847" font-size="11" fill="#1F2430">programme data</text>
+      <line x1="36" y1="858" x2="749" y2="858" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="882" font-size="11.5" font-weight="bold" fill="#1C5A33">3 · Payloads are signed at capture</text>
+      <text x="380" y="882" font-size="11" fill="#1F2430">detects tampering between capture</text>
+      <text x="380" y="897" font-size="11" fill="#1F2430">and upload</text>
+      <line x1="36" y1="908" x2="749" y2="908" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="932" font-size="11.5" font-weight="bold" fill="#1C5A33">4 · Sync is idempotent</text>
+      <text x="380" y="932" font-size="11" fill="#1F2430">repeated upload of the same payload</text>
+      <text x="380" y="947" font-size="11" fill="#1F2430">commits once</text>
+      <line x1="36" y1="958" x2="749" y2="958" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="982" font-size="11.5" font-weight="bold" fill="#1C5A33">5 · Ordering follows device sequence</text>
+      <text x="380" y="982" font-size="11" fill="#1F2430">two visits made in order stay in order,</text>
+      <text x="380" y="997" font-size="11" fill="#1F2430">even if uploaded out of order</text>
+      <line x1="36" y1="1008" x2="749" y2="1008" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="1032" font-size="11.5" font-weight="bold" fill="#1C5A33">6 · Photographs sync separately, resumably</text>
+      <text x="380" y="1032" font-size="11" fill="#1F2430">imagery is the bulk of payload weight;</text>
+      <text x="380" y="1047" font-size="11" fill="#1F2430">metadata should not wait for it</text>
+      <line x1="36" y1="1058" x2="749" y2="1058" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="1082" font-size="11.5" font-weight="bold" fill="#1C5A33">7 · Conflicts supersede, never overwrite</text>
+      <text x="380" y="1082" font-size="11" fill="#1F2430">both versions retained; the later becomes</text>
+      <text x="380" y="1097" font-size="11" fill="#1F2430">current, the earlier stays visible</text>
+      <line x1="36" y1="1108" x2="749" y2="1108" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="1132" font-size="11.5" font-weight="bold" fill="#1C5A33">8 · Queue depth and age are visible</text>
+      <text x="380" y="1132" font-size="11" fill="#1F2430">to the field user, to the taluk officer,</text>
+      <text x="380" y="1147" font-size="11" fill="#1F2430">and in the command view</text>
+    </g>
+
+    <!-- CONFLICT HANDLING -->
+    <g>
+      <rect x="785" y="694" width="760" height="290" rx="6" fill="#FFFFFF" stroke="#27467A" stroke-width="2"/>
+      <rect x="785" y="694" width="760" height="32" rx="6" fill="#27467A"/>
+      <text x="801" y="716" fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5" font-weight="bold">CONFLICT HANDLING — §11.3</text>
+      <text x="801" y="748" font-size="10.5" fill="#5A5647" font-style="italic">genuine conflicts are rare — most captures are new observations, not edits</text>
+
+      <text x="801" y="776" font-size="11.5" font-weight="bold" fill="#27467A">1 · Different actors, same parcel, different observations</text>
+      <text x="820" y="793" font-size="11" fill="#1F2430">both retained; both visible — no conflict</text>
+
+      <text x="801" y="820" font-size="11.5" font-weight="bold" fill="#27467A">2 · Same actor, same observation, re-submitted</text>
+      <text x="820" y="837" font-size="11" fill="#1F2430">idempotency key collapses to one record</text>
+
+      <text x="801" y="864" font-size="11.5" font-weight="bold" fill="#27467A">3 · Contradictory authoritative records — e.g. two survival censuses</text>
+      <text x="820" y="881" font-size="11" fill="#1F2430">later supersedes; earlier retained and visible · divergence beyond tolerance</text>
+      <text x="820" y="896" font-size="11" fill="#1F2430">raises an audit task automatically</text>
+
+      <text x="801" y="923" font-size="11.5" font-weight="bold" fill="#27467A">4 · Server-side rule changed between capture and sync</text>
+      <text x="820" y="940" font-size="11" fill="#1F2430">committed against the rules in force at capture time,</text>
+      <text x="820" y="955" font-size="11" fill="#1F2430">and flagged for review under the new rule</text>
+    </g>
+
+    <!-- STALE-DEVICE PROTECTION -->
+    <g>
+      <rect x="785" y="1002" width="760" height="184" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2"/>
+      <rect x="785" y="1002" width="760" height="32" rx="6" fill="#1C5A33"/>
+      <text x="801" y="1024" fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5" font-weight="bold">STALE-DEVICE PROTECTION — §11.4</text>
+
+      <rect x="801" y="1052" width="212" height="60" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.5"/>
+      <text x="815" y="1075" font-size="11" font-weight="bold" fill="#1F2430">Device not synchronised</text>
+      <text x="815" y="1091" font-size="11" fill="#1F2430">beyond configured period</text>
+      <line x1="1013" y1="1082" x2="1043" y2="1082" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+      <rect x="1049" y="1052" width="150" height="60" rx="4" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/>
+      <text x="1063" y="1075" font-size="11" font-weight="bold" fill="#1F2430">Marked stale</text>
+      <text x="1063" y="1091" font-size="10.5" fill="#1F2430">user warned prominently</text>
+      <line x1="1199" y1="1082" x2="1229" y2="1082" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+      <rect x="1235" y="1052" width="292" height="60" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.5"/>
+      <text x="1249" y="1075" font-size="11" font-weight="bold" fill="#1F2430">Capture continues — work must not stop</text>
+      <text x="1249" y="1091" font-size="11" fill="#1F2430">submissions flagged for review on sync</text>
+
+      <text x="801" y="1146" font-size="10.5" fill="#5A5647" font-style="italic">staleness affects how a submission is reviewed — never whether the officer may work</text>
+    </g>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 12 · Offline-first field operation · Specification §11</span></div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

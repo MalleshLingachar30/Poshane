@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D9</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --bg:#F7F3E9; --ink:#1F2430;
+    --green-tint:#EAF1EC; --navy-tint:#EBEFF6; --gold-tint:#F6EEDC; --card:#FDFBF4; --rule:#D9D2C0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif; font-size:15px; line-height:1.55;}
+  .doc-header{max-width:1600px; margin:0 auto; padding:34px 28px 10px 28px;
+    border-bottom:3px solid var(--green);}
+  .doc-header h1{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600;
+    font-size:30px; color:var(--green); letter-spacing:.2px;}
+  .doc-header .sub{margin-top:6px; font-size:14.5px; color:var(--ink);}
+  .doc-header .sub b{color:var(--navy);}
+  .doc-header .meta{margin-top:8px; font-size:12.5px; color:#5A5647; letter-spacing:.4px;
+    text-transform:uppercase;}
+  .panel{max-width:1600px; margin:0 auto; padding:30px 28px 8px 28px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600; font-size:23px;
+    color:var(--green); border-left:6px solid var(--gold); padding-left:14px;}
+  .panel h2 .ref{color:var(--navy); font-size:15px; font-weight:400; margin-left:10px;}
+  .panel .lede{margin:10px 0 18px 20px; max-width:1180px; font-size:14.5px; color:#3A3E4A;}
+  .figure{background:#FFFFFF; border:1px solid var(--rule); border-radius:6px;
+    padding:14px 14px 6px 14px; box-shadow:0 1px 0 rgba(31,36,48,.04);}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif;}
+  .figfoot{display:flex; justify-content:space-between; padding:8px 4px 6px 4px;
+    font-size:11.5px; color:#6B6656; border-top:1px solid var(--rule); margin-top:8px;}
+  .doc-footer{max-width:1600px; margin:8px auto 40px auto; padding:14px 28px 0 28px;
+    border-top:3px solid var(--green); font-size:12.5px; color:#5A5647;}
+  @media print{
+    @page{size:A3 landscape; margin:9mm;}
+    body{background:#FFFFFF; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .doc-header{padding-top:8px;}
+    .panel{page-break-after:always; padding-top:10px;}
+    .panel:last-of-type{page-break-after:auto;}
+    .figure{box-shadow:none;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel">
+  <h2>Diagram 9 · Flow C — Audit &amp; rectification · Flow D — Remote-sensing corroboration<span class="ref">Specification §8.3 · §8.4</span></h2>
+  <p class="lede">Every audit finding is an independent second observation: the audit-cadre officer is structurally
+  excluded from any parcel where their identity appears in the verification record, and capture is gated by a tag tap
+  that proves presence. Remote sensing corroborates the reported record from above — but its flag is advisory only.
+  It becomes a task for the audit cadre; a human inspection decides, and the analytics flag never alters the record.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow C audit and rectification, Flow D remote-sensing corroboration">
+    <defs>
+      <marker id="d9-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d9-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="d9-au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- legend -->
+    <g font-size="10.5" fill="#1F2430">
+      <rect x="620" y="8" width="14" height="14" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/><text x="640" y="19">field / audit action</text>
+      <rect x="770" y="8" width="14" height="14" fill="#2F3F63" stroke="#27467A" stroke-width="1.6"/><text x="790" y="19">command level</text>
+      <rect x="905" y="8" width="14" height="14" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/><text x="925" y="19">gate · threshold</text>
+      <line x1="1040" y1="15" x2="1080" y2="15" stroke="#27467A" stroke-width="1.4" stroke-dasharray="5 4"/><text x="1088" y="19">advisory — never authoritative</text>
+    </g>
+
+    <line x1="990" y1="40" x2="990" y2="1140" stroke="#D9D2C0" stroke-width="1.5"/>
+
+    <!-- FLOW C header -->
+    <text x="30" y="58" font-family="Georgia,serif" font-size="17" fill="#1C5A33" font-weight="bold">FLOW C — Audit &amp; rectification</text>
+    <text x="330" y="58" font-size="11.5" fill="#5A5647">§8.3 · audit triggers from four sources</text>
+
+    <!-- trigger chips -->
+    <g>
+      <rect x="30" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="42" y="93" font-size="12" font-weight="bold" fill="#1F2430">Scheduled cycle</text>
+      <text x="42" y="110" font-size="10.5" fill="#5A5647">routine audit calendar</text>
+      <rect x="260" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="272" y="93" font-size="12" font-weight="bold" fill="#1F2430">Risk flag</text>
+      <text x="272" y="110" font-size="10.5" fill="#5A5647">parcel risk score</text>
+      <rect x="490" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="502" y="93" font-size="12" font-weight="bold" fill="#1F2430">Grievance</text>
+      <text x="502" y="110" font-size="10.5" fill="#5A5647">issue channel · E11</text>
+      <rect x="720" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4"/>
+      <text x="732" y="93" font-size="12" font-weight="bold" fill="#27467A">Analytics anomaly</text>
+      <text x="732" y="110" font-size="10.5" fill="#5A5647">advisory · arrives from Flow D</text>
+    </g>
+    <line x1="137" y1="160" x2="827" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="137" y1="124" x2="137" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="367" y1="124" x2="367" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="597" y1="124" x2="597" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="827" y1="124" x2="827" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="500" y1="160" x2="500" y2="182" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- assignment -->
+    <g>
+      <rect x="250" y="188" width="500" height="122" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="250" y="188" width="500" height="26" rx="4" fill="#1C5A33"/>
+      <text x="262" y="206" fill="#F7F3E9" font-size="12.5" font-weight="bold">Audit-cadre officer assigned</text>
+      <text x="262" y="232" font-size="11.5" fill="#1F2430">assigned through a separate path from verification tasks · cannot self-select</text>
+      <text x="262" y="254" font-size="11.5" font-weight="bold" fill="#1F2430">structural exclusion — never the verifier of this parcel:</text>
+      <text x="262" y="271" font-size="11.5" fill="#1F2430">the system refuses to assign an identity appearing in the parcel's verification record</text>
+      <text x="262" y="293" font-size="10.5" fill="#5A5647" font-style="italic">attempted breach is logged and surfaced to district command — §7.3</text>
+    </g>
+    <line x1="500" y1="310" x2="500" y2="336" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- tag tap gate -->
+    <g>
+      <rect x="300" y="342" width="400" height="66" rx="4" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="500" y="368" text-anchor="middle" font-size="13" font-weight="bold" fill="#1F2430">TAG TAP GATE — capture cannot begin without a valid tap (E8)</text>
+      <text x="500" y="388" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">a valid NTAG 424 DNA tap is evidence the officer was physically at the parcel</text>
+    </g>
+    <line x1="500" y1="408" x2="500" y2="434" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d9-au)"/>
+
+    <!-- findings -->
+    <g>
+      <rect x="300" y="440" width="400" height="106" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="300" y="440" width="400" height="26" rx="4" fill="#1C5A33"/>
+      <text x="312" y="458" fill="#F7F3E9" font-size="12.5" font-weight="bold">Independent findings recorded — with evidence</text>
+      <text x="312" y="484" font-size="11.5" fill="#1F2430">findings · evidence photographs · pass / flag</text>
+      <text x="312" y="500" font-size="11.5" fill="#1F2430">rectification instruction where flagged</text>
+      <text x="312" y="522" font-size="10.5" fill="#5A5647" font-style="italic">auditor sees only the submitted authoritative record — no shared draft state</text>
+    </g>
+    <line x1="500" y1="546" x2="500" y2="572" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- pass/flag diamond -->
+    <g>
+      <polygon points="500,578 608,630 500,682 392,630" fill="#FDFBF4" stroke="#1C5A33" stroke-width="2"/>
+      <text x="500" y="626" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Finding:</text>
+      <text x="500" y="642" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">pass or flag?</text>
+    </g>
+
+    <!-- pass path -->
+    <line x1="392" y1="630" x2="338" y2="630" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <text x="365" y="621" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">pass</text>
+    <g>
+      <rect x="60" y="598" width="270" height="64" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="74" y="624" font-size="12" font-weight="bold" fill="#1F2430">Pass — logged</text>
+      <text x="74" y="642" font-size="11" fill="#1F2430">parcel risk score updated</text>
+    </g>
+
+    <!-- flag path -->
+    <path d="M500,682 V706" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <text x="512" y="700" font-size="10.5" fill="#5A5647" font-style="italic">flag</text>
+    <g>
+      <rect x="310" y="712" width="380" height="88" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="310" y="712" width="380" height="26" rx="4" fill="#1C5A33"/>
+      <text x="322" y="730" fill="#F7F3E9" font-size="12.5" font-weight="bold">Rectification raised</text>
+      <text x="322" y="756" font-size="11.5" fill="#1F2430">named owner · deadline</text>
+      <text x="322" y="778" font-size="10.5" fill="#5A5647" font-style="italic">non-blocking but consequential — an obligation, not a suggestion</text>
+    </g>
+    <line x1="500" y1="800" x2="500" y2="826" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <g>
+      <rect x="310" y="832" width="380" height="60" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="322" y="856" font-size="12" font-weight="bold" fill="#1F2430">Agency rectifies · evidence submitted</text>
+      <text x="322" y="876" font-size="10.5" fill="#5A5647" font-style="italic">rectification evidence attached to the finding</text>
+    </g>
+    <line x1="500" y1="892" x2="500" y2="920" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- re-inspection diamond -->
+    <g>
+      <polygon points="500,926 604,974 500,1022 396,974" fill="#FDFBF4" stroke="#1C5A33" stroke-width="2"/>
+      <text x="500" y="970" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Re-inspection:</text>
+      <text x="500" y="986" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">cleared?</text>
+    </g>
+    <line x1="396" y1="974" x2="332" y2="974" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <text x="364" y="965" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">cleared</text>
+    <g>
+      <rect x="90" y="944" width="240" height="60" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="104" y="969" font-size="12" font-weight="bold" fill="#1F2430">Finding closed</text>
+      <text x="104" y="987" font-size="11" fill="#1F2430">closure recorded with evidence</text>
+    </g>
+    <line x1="604" y1="974" x2="692" y2="974" stroke="#27467A" stroke-width="2" marker-end="url(#d9-an)"/>
+    <text x="648" y="965" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">not cleared</text>
+    <g>
+      <rect x="700" y="938" width="260" height="70" rx="4" fill="#2F3F63" stroke="#27467A" stroke-width="2"/>
+      <text x="714" y="966" fill="#F7F3E9" font-size="12.5" font-weight="bold">Escalation · District Command</text>
+      <text x="714" y="986" fill="#D8DEEC" font-size="10.5">escalation acceptance recorded</text>
+    </g>
+    <line x1="830" y1="1008" x2="830" y2="1036" stroke="#27467A" stroke-width="2" marker-end="url(#d9-an)"/>
+    <text x="842" y="1028" font-size="10.5" fill="#5A5647" font-style="italic">repeat breach</text>
+    <g>
+      <rect x="700" y="1042" width="260" height="70" rx="4" fill="#2F3F63" stroke="#27467A" stroke-width="2"/>
+      <text x="714" y="1070" fill="#F7F3E9" font-size="12.5" font-weight="bold">Escalation · State Command</text>
+      <text x="714" y="1090" fill="#D8DEEC" font-size="10.5">statewide exception handling</text>
+    </g>
+
+    <!-- FLOW D header -->
+    <text x="1020" y="58" font-family="Georgia,serif" font-size="17" fill="#1C5A33" font-weight="bold">FLOW D — Remote-sensing corroboration</text>
+    <text x="1382" y="58" font-size="11.5" fill="#5A5647">§8.4</text>
+
+    <!-- E12 -->
+    <g>
+      <rect x="1060" y="72" width="420" height="96" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1060" y="72" width="420" height="26" rx="4" fill="#1C5A33"/>
+      <text x="1072" y="90" fill="#F7F3E9" font-size="12.5" font-weight="bold">E12 · Remote-sensing ingestion</text>
+      <text x="1072" y="116" font-size="11.5" fill="#1F2430">imagery-derived canopy and change indicators</text>
+      <text x="1072" y="132" font-size="11.5" fill="#1F2430">keyed to parcel geometry</text>
+      <text x="1072" y="154" font-size="10.5" fill="#5A5647" font-style="italic">machine channel — API / file</text>
+    </g>
+    <line x1="1270" y1="168" x2="1270" y2="196" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- analytics comparison -->
+    <g>
+      <rect x="1060" y="202" width="420" height="96" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8" stroke-dasharray="7 4"/>
+      <text x="1072" y="226" font-size="12.5" font-weight="bold" fill="#27467A">Analytics &amp; Intelligence — comparison</text>
+      <text x="1072" y="248" font-size="11.5" fill="#1F2430">observed canopy change vs reported planting</text>
+      <text x="1072" y="270" font-size="10.5" fill="#5A5647" font-style="italic">Layer 4 — derived, non-authoritative · reads from the record,</text>
+      <text x="1072" y="285" font-size="10.5" fill="#5A5647" font-style="italic">never the source of a fact</text>
+    </g>
+    <line x1="1270" y1="298" x2="1270" y2="330" stroke="#27467A" stroke-width="2" marker-end="url(#d9-an)"/>
+
+    <!-- divergence diamond -->
+    <g>
+      <polygon points="1300,336 1418,390 1300,444 1182,390" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="1300" y="386" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Divergence beyond</text>
+      <text x="1300" y="402" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">tolerance?</text>
+    </g>
+    <line x1="1182" y1="390" x2="1130" y2="390" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#d9-ag)"/>
+    <g>
+      <rect x="1008" y="362" width="120" height="56" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="1068" y="386" text-anchor="middle" font-size="10.5" fill="#1F2430">within tolerance</text>
+      <text x="1068" y="402" text-anchor="middle" font-size="10.5" fill="#1F2430">no flag raised</text>
+    </g>
+    <path d="M1300,444 V472" fill="none" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d9-au)"/>
+    <text x="1312" y="466" font-size="10.5" fill="#5A5647" font-style="italic">beyond tolerance</text>
+
+    <!-- advisory flag -->
+    <g>
+      <rect x="1120" y="478" width="360" height="84" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8" stroke-dasharray="7 4"/>
+      <text x="1132" y="502" font-size="12.5" font-weight="bold" fill="#27467A">Advisory flag raised</text>
+      <text x="1132" y="524" font-size="11.5" fill="#1F2430">divergence recorded as an annotation on the parcel</text>
+      <text x="1132" y="546" font-size="10.5" fill="#5A5647" font-style="italic">the flag never alters the record itself</text>
+    </g>
+    <path d="M1120,520 H975 V98 H942" fill="none" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#d9-an)"/>
+    <text x="958" y="300" font-size="10.5" fill="#5A5647" font-style="italic" transform="rotate(-90 958 300)" text-anchor="middle">flag becomes an audit task — Flow C trigger</text>
+
+    <!-- standing rule -->
+    <g>
+      <rect x="1060" y="620" width="420" height="168" rx="6" fill="#F6EEDC" stroke="#C09A3E" stroke-width="3"/>
+      <text x="1076" y="650" font-family="Georgia,serif" font-size="14.5" font-weight="bold" fill="#1F2430">STANDING RULE — §3, Layer 4</text>
+      <text x="1076" y="678" font-size="11.5" fill="#1F2430">Intelligence services annotate and flag. They never alter,</text>
+      <text x="1076" y="696" font-size="11.5" fill="#1F2430">approve, or originate a record of fact.</text>
+      <text x="1076" y="722" font-size="11.5" fill="#1F2430">A flag raised here becomes a task for a human in Layer 3.</text>
+      <text x="1076" y="748" font-size="11.5" font-weight="bold" fill="#1F2430">An independent audit-cadre inspection decides —</text>
+      <text x="1076" y="766" font-size="11.5" font-weight="bold" fill="#1F2430">the analytics flag never alters the record.</text>
+    </g>
+
+    <!-- why separation note -->
+    <g>
+      <rect x="1060" y="820" width="420" height="120" rx="6" fill="#FDFBF4" stroke="#D9D2C0" stroke-width="1.5"/>
+      <text x="1076" y="848" font-family="Georgia,serif" font-size="13.5" font-weight="bold" fill="#1C5A33">Why the exclusion matters — §7.3</text>
+      <text x="1076" y="874" font-size="11" fill="#1F2430">An auditor who verified the land is auditing their own work.</text>
+      <text x="1076" y="892" font-size="11" fill="#1F2430">Every audit finding in Poshane is an independent second</text>
+      <text x="1076" y="910" font-size="11" fill="#1F2430">observation of the same physical parcel, made by someone</text>
+      <text x="1076" y="928" font-size="11" fill="#1F2430">with no stake in the original entry.</text>
+    </g>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 9 · Flows C &amp; D · Specification §8.3, §8.4, §7.3</span></div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

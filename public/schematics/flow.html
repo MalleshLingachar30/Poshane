@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane — How a parcel becomes evidence</title>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B; --panel:#FFFFFF;
+    --line:#DDD6C6; --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC; --red:#9C2F2F;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  .wrap{max-width:1320px;margin:0 auto;padding:26px 28px 48px}
+
+  header{border-bottom:3px solid var(--green);padding-bottom:16px;margin-bottom:20px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  header .t .eyebrow{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--navy);font-weight:600}
+  header .t h1{font-family:var(--serif);font-size:27px;font-weight:600;color:var(--green);margin-top:5px}
+  header .t .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .lang{display:flex;border:1px solid var(--green);border-radius:999px;overflow:hidden}
+  .lang button{border:0;background:transparent;padding:7px 17px;font:inherit;font-size:13px;color:var(--green);cursor:pointer}
+  .lang button.on{background:var(--green);color:#fff}
+
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+  svg#flow{width:100%;height:auto;display:block}
+  svg text{font-family:var(--sans)}
+  svg .serif{font-family:var(--serif)}
+  .an{opacity:0;transition:opacity .45s ease}
+
+  .caption{margin-top:18px;min-height:104px}
+  .caption .n{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .caption h2{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--green);margin:5px 0 7px}
+  .caption p{font-size:14.5px;line-height:1.6;max-width:96ch}
+
+  .bar{display:flex;align-items:center;gap:14px;margin-top:20px;flex-wrap:wrap}
+  .bar button{font:inherit;font-size:13.5px;padding:9px 20px;border-radius:8px;
+    border:1px solid var(--green);background:transparent;color:var(--green);cursor:pointer}
+  .bar button.solid{background:var(--green);color:#fff}
+  .bar button:disabled{opacity:.35;cursor:default}
+  .dots{display:flex;gap:7px;margin-left:auto}
+  .dots i{width:11px;height:11px;border-radius:50%;background:var(--line);cursor:pointer;display:block}
+  .dots i.on{background:var(--green)}
+  .dots i.done{background:var(--gold)}
+
+  @keyframes drift{from{transform:translate(0,0)}to{transform:translate(var(--dx),var(--dy))}}
+  .pk{animation:drift 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.7}}
+  .pulse{animation:pulse 2.4s ease-in-out infinite}
+</style>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="t">
+    <div class="eyebrow">Poshane · Command &amp; Control Center</div>
+    <h1>How a parcel becomes evidence</h1>
+    <div class="sub">From a walk around a field to evidence nobody can dispute — one step at a time</div>
+  </div>
+  <div class="lang">
+    <button id="b-en" class="on" onclick="setLang('en')">English</button>
+    <button id="b-kn" onclick="setLang('kn')">ಕನ್ನಡ</button>
+  </div>
+</header>
+
+<div class="stage">
+<svg id="flow" viewBox="0 0 1240 520" role="img" aria-label="Animated spatial data flow">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+    <marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+  </defs>
+
+  <!-- zone frames -->
+  <rect x="20" y="46" width="270" height="440" rx="8" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1"/>
+  <text x="155" y="72" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#1C5A33" font-weight="700">ON THE GROUND</text>
+
+  <rect x="306" y="46" width="524" height="440" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.4"/>
+  <text x="568" y="72" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#1C5A33" font-weight="700">OUR SYSTEM · IN INDIA</text>
+
+  <line x1="856" y1="46" x2="856" y2="486" stroke="#27467A" stroke-width="2" stroke-dasharray="9 6"/>
+  <rect x="880" y="46" width="340" height="440" rx="8" fill="#EAEEF5" stroke="#27467A" stroke-width="1" stroke-dasharray="5 4"/>
+  <text x="1050" y="70" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#27467A" font-weight="700">OUTSIDE INDIA</text>
+  <text x="1050" y="86" text-anchor="middle" font-size="10" fill="#6B6F7B">only looking and calculating</text>
+
+  <!-- ============ FIELD: walking the boundary ============ -->
+  <g class="an" data-from="1">
+    <text x="155" y="100" text-anchor="middle" font-size="11.5" fill="#6B6F7B">the officer walks around the land</text>
+  </g>
+  <g class="an" data-from="1" data-to="2">
+    <circle cx="70"  cy="150" r="5" fill="#1C5A33"/>
+    <circle cx="132" cy="136" r="5" fill="#1C5A33"/>
+    <circle cx="196" cy="152" r="5" fill="#1C5A33"/>
+    <circle cx="238" cy="196" r="5" fill="#1C5A33"/>
+    <circle cx="222" cy="252" r="5" fill="#1C5A33"/>
+    <circle cx="158" cy="268" r="5" fill="#1C5A33"/>
+    <circle cx="94"  cy="248" r="5" fill="#1C5A33"/>
+    <circle cx="62"  cy="200" r="5" fill="#1C5A33"/>
+  </g>
+  <g class="an" data-from="2">
+    <path d="M70,150 L132,136 L196,152 L238,196 L222,252 L158,268 L94,248 L62,200 Z"
+          fill="#1C5A33" fill-opacity="0.16" stroke="#1C5A33" stroke-width="2"/>
+  </g>
+  <g class="an" data-from="2" data-to="2">
+    <text x="155" y="310" text-anchor="middle" font-size="11.5" fill="#1C5A33">shape closed and checked</text>
+  </g>
+  <g class="an" data-from="3">
+    <text x="155" y="330" text-anchor="middle" font-size="11" fill="#6B6F7B">exact walked path saved as proof</text>
+    <text x="155" y="348" text-anchor="middle" font-size="11" fill="#6B6F7B">a cleaned shape saved for checking</text>
+  </g>
+
+  <!-- packet: field to platform -->
+  <g class="an" data-from="3" data-to="3">
+    <line x1="290" y1="200" x2="352" y2="200" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#ar)"/>
+    <circle class="pk" cx="296" cy="200" r="6" fill="#C09A3E" style="--dx:50px;--dy:0px"/>
+  </g>
+
+  <!-- ============ PLATFORM ============ -->
+  <g class="an" data-from="3">
+    <rect x="360" y="120" width="200" height="86" rx="6" fill="#EAF1EB" stroke="#1C5A33" stroke-width="1.2"/>
+    <text x="460" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="#1C5A33">PostGIS</text>
+    <text x="460" y="174" text-anchor="middle" font-size="10.5" fill="#6B6F7B">our land register</text>
+    <text x="460" y="192" text-anchor="middle" font-size="10.5" fill="#6B6F7B">stored in India</text>
+  </g>
+
+  <!-- overlap gate -->
+  <g class="an" data-from="4">
+    <rect x="600" y="112" width="212" height="102" rx="6" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2"/>
+    <text x="706" y="142" text-anchor="middle" font-size="13" font-weight="700" fill="#1F2430">Overlap check</text>
+    <rect x="626" y="156" width="76" height="40" fill="#1C5A33" fill-opacity="0.2" stroke="#1C5A33" stroke-width="1.2"/>
+    <rect x="700" y="164" width="76" height="40" fill="#27467A" fill-opacity="0.2" stroke="#27467A" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <line x1="560" y1="163" x2="594" y2="163" stroke="#1C5A33" stroke-width="1.6" marker-end="url(#ar)"/>
+  </g>
+  <g class="an" data-from="4" data-to="4">
+    <text x="706" y="232" text-anchor="middle" font-size="11.5" fill="#1C5A33">compared with every land already registered</text>
+  </g>
+
+  <!-- location id -->
+  <g class="an" data-from="5">
+    <rect x="600" y="266" width="212" height="80" rx="6" fill="#1C5A33"/>
+    <text x="706" y="298" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">Location ID</text>
+    <text x="706" y="322" text-anchor="middle" font-size="10.5" fill="#F6EEDC">given now · the tag is linked to this land</text>
+    <line x1="706" y1="216" x2="706" y2="258" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#ar)"/>
+  </g>
+
+  <!-- evidence store -->
+  <g class="an" data-from="8">
+    <rect x="360" y="376" width="452" height="86" rx="6" fill="#1C5A33"/>
+    <text x="586" y="406" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">Our evidence store · written once, never edited</text>
+    <text x="586" y="430" text-anchor="middle" font-size="10.5" fill="#F6EEDC">the number, the cut-out photo, its date, how cloudy it was, and which shape was used</text>
+    <text x="586" y="450" text-anchor="middle" font-size="10.5" fill="#F6EEDC">kept in India — we never have to ask Google for it again</text>
+  </g>
+
+  <!-- ============ OUTSIDE: archive ============ -->
+  <g class="an" data-from="6">
+    <text x="1050" y="112" text-anchor="middle" font-size="11.5" font-weight="700" fill="#27467A">this happens anyway, with or without us</text>
+    <circle cx="1050" cy="134" r="12" fill="#27467A"/>
+    <path d="M1032,134 h-14 M1068,134 h14" stroke="#27467A" stroke-width="2.4"/>
+    <text x="1050" y="170" text-anchor="middle" font-size="11.5" fill="#1F2430">a satellite photographs all land, every five days</text>
+    <rect x="910" y="188" width="280" height="15" rx="3" fill="#27467A" fill-opacity="0.22"/>
+    <rect x="910" y="209" width="280" height="15" rx="3" fill="#27467A" fill-opacity="0.30"/>
+    <rect x="910" y="230" width="280" height="15" rx="3" fill="#27467A" fill-opacity="0.38"/>
+    <text x="1050" y="268" text-anchor="middle" font-size="11.5" font-weight="700" fill="#27467A">a store of photos since 2015</text>
+    <text x="1050" y="288" text-anchor="middle" font-size="10.5" fill="#6B6F7B">kept by Europe's space agency · free for anyone to check</text>
+  </g>
+
+  <!-- compute -->
+  <g class="an" data-from="7">
+    <rect x="910" y="308" width="280" height="82" rx="6" fill="#FFFFFF" stroke="#27467A" stroke-width="1.4" stroke-dasharray="5 4"/>
+    <text x="1050" y="338" text-anchor="middle" font-size="13" font-weight="700" fill="#27467A">Google Earth Engine</text>
+    <text x="1050" y="360" text-anchor="middle" font-size="10.5" fill="#6B6F7B">cuts our shape out of the stored photos</text>
+    <text x="1050" y="378" text-anchor="middle" font-size="10.5" fill="#6B6F7B">we pay only for the calculation</text>
+  </g>
+
+  <!-- outbound polygon packet -->
+  <g class="an" data-from="7" data-to="7">
+    <path d="M812,300 H872 V336 H900" fill="none" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#ar)"/>
+    <circle class="pk" cx="820" cy="300" r="6" fill="#1C5A33" style="--dx:46px;--dy:0px"/>
+  </g>
+
+  <!-- inbound indicator packet -->
+  <g class="an" data-from="8" data-to="8">
+    <path d="M900,372 H868 V419 H818" fill="none" stroke="#27467A" stroke-width="1.8" marker-end="url(#an)"/>
+    <circle class="pk" cx="888" cy="372" r="6" fill="#27467A" style="--dx:-42px;--dy:0px"/>
+  </g>
+
+  <!-- divergence -->
+  <g class="an" data-from="9">
+    <rect x="360" y="266" width="200" height="80" rx="6" fill="#FFFFFF" stroke="#9C2F2F" stroke-width="1.6"/>
+    <text x="460" y="296" text-anchor="middle" font-size="12.5" font-weight="700" fill="#9C2F2F">A check is ordered</text>
+    <text x="460" y="318" text-anchor="middle" font-size="10.5" fill="#6B6F7B">an officer is sent to look</text>
+    <text x="460" y="336" text-anchor="middle" font-size="10.5" fill="#6B6F7B">the counted number is not changed</text>
+    <path d="M460,376 V356" fill="none" stroke="#9C2F2F" stroke-width="1.8" marker-end="url(#ar)"/>
+  </g>
+  <g class="an pulse" data-from="9">
+    <rect x="26" y="52" width="1188" height="428" rx="8" fill="none" stroke="#9C2F2F" stroke-width="1.2"/>
+  </g>
+</svg>
+</div>
+
+<div class="caption">
+  <div class="n"><span id="cn"></span></div>
+  <h2 id="ch"></h2>
+  <p id="cp"></p>
+</div>
+
+<div class="bar">
+  <button id="prev" onclick="go(step-1)">‹ <span id="l-prev">Back</span></button>
+  <button id="play" class="solid" onclick="toggle()"><span id="l-play">Play</span></button>
+  <button id="next" onclick="go(step+1)"><span id="l-next">Next</span> ›</button>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+const STEPS = [
+ {en:["Step 1","The officer walks around the land",
+   "A forest officer walks the edge of the proposed site. His phone saves a point at every corner. No internet is needed for this."],
+  kn:["ಹಂತ 1","ಅಧಿಕಾರಿ ಜಮೀನಿನ ಸುತ್ತ ನಡೆಯುತ್ತಾರೆ",
+   "ಅರಣ್ಯ ಅಧಿಕಾರಿ ಪ್ರಸ್ತಾವಿತ ಜಾಗದ ಅಂಚಿನಲ್ಲಿ ನಡೆಯುತ್ತಾರೆ. ಪ್ರತಿ ಮೂಲೆಯಲ್ಲೂ ಅವರ ಫೋನ್ ಒಂದು ಬಿಂದುವನ್ನು ಉಳಿಸುತ್ತದೆ. ಇದಕ್ಕೆ ಇಂಟರ್ನೆಟ್ ಬೇಕಿಲ್ಲ."]},
+ {en:["Step 2","The shape closes",
+   "The last point joins the first, and the land now has a shape. The system checks the shape is proper before it will accept it. If the lines cross each other, it goes back to the field."],
+  kn:["ಹಂತ 2","ಆಕಾರ ಮುಚ್ಚುತ್ತದೆ",
+   "ಕೊನೆಯ ಬಿಂದು ಮೊದಲನೆಯದಕ್ಕೆ ಸೇರುತ್ತದೆ, ಈಗ ಜಮೀನಿಗೆ ಒಂದು ಆಕಾರ ಬಂತು. ಸ್ವೀಕರಿಸುವ ಮೊದಲು ಆಕಾರ ಸರಿಯಿದೆಯೇ ಎಂದು ವ್ಯವಸ್ಥೆ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಗೆರೆಗಳು ಒಂದನ್ನೊಂದು ಕತ್ತರಿಸಿದರೆ ಅದು ಮತ್ತೆ ಕ್ಷೇತ್ರಕ್ಕೆ ಹೋಗುತ್ತದೆ."]},
+ {en:["Step 3","Two shapes are saved, not one",
+   "The exact path he walked is saved and never changed — that is the proof. A cleaned-up version is saved next to it, and that is the one used for all checks."],
+  kn:["ಹಂತ 3","ಒಂದಲ್ಲ, ಎರಡು ಆಕಾರ ಉಳಿಸಲಾಗುತ್ತದೆ",
+   "ಅವರು ನಡೆದ ನಿಖರವಾದ ದಾರಿಯನ್ನು ಉಳಿಸಿ ಎಂದಿಗೂ ಬದಲಿಸುವುದಿಲ್ಲ — ಅದೇ ಸಾಕ್ಷ್ಯ. ಅದರ ಪಕ್ಕದಲ್ಲಿ ಒಂದು ಸ್ವಚ್ಛಗೊಳಿಸಿದ ಆಕಾರವನ್ನೂ ಉಳಿಸಲಾಗುತ್ತದೆ, ಎಲ್ಲಾ ಪರಿಶೀಲನೆಗೆ ಅದನ್ನೇ ಬಳಸಲಾಗುತ್ತದೆ."]},
+ {en:["Step 4","Is this land already taken?",
+   "The new shape is compared with every piece of land already in the register. A small overlap where two plots share an edge is just GPS error, so it is allowed. A large overlap means the same land is being claimed a second time, and it is stopped here."],
+  kn:["ಹಂತ 4","ಈ ಜಮೀನು ಈಗಾಗಲೇ ನೋಂದಣಿಯಾಗಿದೆಯೇ?",
+   "ಹೊಸ ಆಕಾರವನ್ನು ನೋಂದಣಿಯಲ್ಲಿರುವ ಪ್ರತಿ ಜಮೀನಿನೊಂದಿಗೆ ಹೋಲಿಸಲಾಗುತ್ತದೆ. ಎರಡು ಜಮೀನು ಅಂಚು ಹಂಚಿಕೊಂಡಲ್ಲಿ ಸಣ್ಣ ಅತಿವ್ಯಾಪ್ತಿ ಬರುವುದು ಜಿಪಿಎಸ್ ದೋಷ ಮಾತ್ರ, ಅದನ್ನು ಒಪ್ಪಲಾಗುತ್ತದೆ. ದೊಡ್ಡ ಅತಿವ್ಯಾಪ್ತಿ ಎಂದರೆ ಒಂದೇ ಜಮೀನನ್ನು ಎರಡನೇ ಬಾರಿ ಕ್ಲೇಮ್ ಮಾಡಲಾಗುತ್ತಿದೆ — ಅದನ್ನು ಇಲ್ಲೇ ತಡೆಯಲಾಗುತ್ತದೆ."]},
+ {en:["Step 5","The land gets its ID number",
+   "Only after all the checks pass does the land receive its ID. Only then is a tag fixed on the ground and linked to it. No land record, no owner, no approval — and no ID."],
+  kn:["ಹಂತ 5","ಜಮೀನಿಗೆ ಐಡಿ ಸಂಖ್ಯೆ ದೊರೆಯುತ್ತದೆ",
+   "ಎಲ್ಲಾ ಪರಿಶೀಲನೆ ಮುಗಿದ ನಂತರವೇ ಜಮೀನಿಗೆ ಐಡಿ ದೊರೆಯುತ್ತದೆ. ಆಗಲೇ ನೆಲದ ಮೇಲೆ ಟ್ಯಾಗ್ ಹಾಕಿ ಅದಕ್ಕೆ ಜೋಡಿಸಲಾಗುತ್ತದೆ. ಭೂ ದಾಖಲೆ ಇಲ್ಲ, ಮಾಲೀಕರಿಲ್ಲ, ಅನುಮೋದನೆ ಇಲ್ಲ — ಐಡಿಯೂ ಇಲ್ಲ."]},
+ {en:["Step 6","Meanwhile, photos already exist",
+   "A satellite has been photographing all land, everywhere, once every five days since 2015. It does this anyway. We do not ask it for anything and we cannot tell it what to do. Europe's space agency keeps these photos, and anyone can check them."],
+  kn:["ಹಂತ 6","ಈ ನಡುವೆ, ಚಿತ್ರಗಳು ಈಗಾಗಲೇ ಇವೆ",
+   "2015ರಿಂದ ಒಂದು ಉಪಗ್ರಹ ಪ್ರತಿ ಐದು ದಿನಕ್ಕೊಮ್ಮೆ ಎಲ್ಲಾ ಭೂಮಿಯ ಚಿತ್ರ ತೆಗೆಯುತ್ತಿದೆ. ಅದು ಹೀಗೆಯೇ ಮಾಡುತ್ತದೆ. ನಾವು ಅದಕ್ಕೆ ಏನನ್ನೂ ಕೇಳುವುದಿಲ್ಲ, ಹೇಳುವುದೂ ಇಲ್ಲ. ಈ ಚಿತ್ರಗಳನ್ನು ಯುರೋಪಿನ ಬಾಹ್ಯಾಕಾಶ ಸಂಸ್ಥೆ ಇಟ್ಟುಕೊಂಡಿದೆ, ಯಾರು ಬೇಕಾದರೂ ಪರಿಶೀಲಿಸಬಹುದು."]},
+ {en:["Step 7","We send only the shape",
+   "The shape goes out and is used like a cutter, to cut that one piece out of photos that already exist. Nothing is sent up to the satellite. We are paying for the calculation, not for the photograph."],
+  kn:["ಹಂತ 7","ನಾವು ಕಳುಹಿಸುವುದು ಆಕಾರವನ್ನು ಮಾತ್ರ",
+   "ಆಕಾರ ಹೊರಹೋಗಿ ಒಂದು ಕತ್ತರಿಸುವ ಅಚ್ಚಿನಂತೆ ಬಳಕೆಯಾಗುತ್ತದೆ — ಈಗಾಗಲೇ ಇರುವ ಚಿತ್ರಗಳಿಂದ ಆ ಒಂದು ತುಂಡನ್ನು ಕತ್ತರಿಸಲು. ಉಪಗ್ರಹಕ್ಕೆ ಏನನ್ನೂ ಕಳುಹಿಸುವುದಿಲ್ಲ. ನಾವು ಹಣ ಕೊಡುವುದು ಲೆಕ್ಕಾಚಾರಕ್ಕೆ, ಚಿತ್ರಕ್ಕಲ್ಲ."]},
+ {en:["Step 8","A number comes back, and it becomes ours",
+   "One number comes back, along with the cut-out photo. Both are saved in India in our own store, with the photo's date, how cloudy it was, and which shape was used. Ten years later an officer sees it from our store — we never have to ask Google for it again."],
+  kn:["ಹಂತ 8","ಒಂದು ಸಂಖ್ಯೆ ಮರಳುತ್ತದೆ, ಅದು ನಮ್ಮದಾಗುತ್ತದೆ",
+   "ಒಂದು ಸಂಖ್ಯೆ ಮತ್ತು ಕತ್ತರಿಸಿದ ಚಿತ್ರ ಮರಳುತ್ತವೆ. ಚಿತ್ರದ ದಿನಾಂಕ, ಎಷ್ಟು ಮೋಡವಿತ್ತು, ಯಾವ ಆಕಾರ ಬಳಸಲಾಯಿತು — ಇವೆಲ್ಲದರೊಂದಿಗೆ ಎರಡನ್ನೂ ಭಾರತದಲ್ಲಿನ ನಮ್ಮ ಸಂಗ್ರಹದಲ್ಲಿ ಇಡಲಾಗುತ್ತದೆ. ಹತ್ತು ವರ್ಷ ನಂತರವೂ ಅಧಿಕಾರಿ ನಮ್ಮ ಸಂಗ್ರಹದಿಂದಲೇ ನೋಡುತ್ತಾರೆ — ಮತ್ತೆ ಗೂಗಲ್‌ಗೆ ಕೇಳಬೇಕಿಲ್ಲ."]},
+ {en:["Step 9","If the two do not match, an officer goes to look",
+   "When the satellite number does not agree with the number counted on the ground, the system creates a task for an officer to go and check. It never changes the count. Only people standing on the land decide how many trees survived."],
+  kn:["ಹಂತ 9","ಎರಡೂ ಹೊಂದದಿದ್ದರೆ, ಅಧಿಕಾರಿ ಹೋಗಿ ನೋಡುತ್ತಾರೆ",
+   "ಉಪಗ್ರಹದ ಸಂಖ್ಯೆ ನೆಲದ ಮೇಲೆ ಎಣಿಸಿದ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಹೊಂದದಿದ್ದರೆ, ಅಧಿಕಾರಿ ಹೋಗಿ ಪರಿಶೀಲಿಸಲು ವ್ಯವಸ್ಥೆ ಕಾರ್ಯ ಸೃಷ್ಟಿಸುತ್ತದೆ. ಅದು ಎಣಿಕೆಯನ್ನು ಎಂದಿಗೂ ಬದಲಿಸುವುದಿಲ್ಲ. ಎಷ್ಟು ಮರ ಉಳಿದಿದೆ ಎಂದು ನೆಲದ ಮೇಲೆ ನಿಂತವರೇ ನಿರ್ಧರಿಸುತ್ತಾರೆ."]}
+];
+const LABELS = {en:{back:"Back",next:"Next",play:"Play",pause:"Pause",replay:"Replay"},
+                kn:{back:"ಹಿಂದೆ",next:"ಮುಂದೆ",play:"ಆರಂಭ",pause:"ವಿರಾಮ",replay:"ಮತ್ತೆ"}};
+
+let step = 1, lang = "en", timer = null;
+const N = STEPS.length;
+
+const dots = document.getElementById("dots");
+for (let i = 1; i <= N; i++) {
+  const d = document.createElement("i");
+  d.onclick = () => { stop(); go(i); };
+  dots.appendChild(d);
+}
+
+function render() {
+  document.querySelectorAll("#flow .an").forEach(el => {
+    const from = +el.dataset.from;
+    const to = el.dataset.to ? +el.dataset.to : 99;
+    el.style.opacity = (step >= from && step <= to) ? 1 : 0;
+  });
+  const s = STEPS[step - 1][lang];
+  document.getElementById("cn").textContent = s[0];
+  document.getElementById("ch").textContent = s[1];
+  document.getElementById("cp").textContent = s[2];
+  [...dots.children].forEach((d, i) => {
+    d.className = i + 1 === step ? "on" : (i + 1 < step ? "done" : "");
+  });
+  document.getElementById("prev").disabled = step === 1;
+  document.getElementById("next").disabled = step === N;
+  const L = LABELS[lang];
+  document.getElementById("l-prev").textContent = L.back;
+  document.getElementById("l-next").textContent = L.next;
+  document.getElementById("l-play").textContent =
+    timer ? L.pause : (step === N ? L.replay : L.play);
+}
+function go(n) { if (n < 1 || n > N) return; step = n; render(); }
+function stop() { if (timer) { clearInterval(timer); timer = null; } }
+function toggle() {
+  if (timer) { stop(); render(); return; }
+  if (step === N) step = 0;
+  timer = setInterval(() => {
+    if (step >= N) { stop(); render(); return; }
+    step++; render();
+  }, 5200);
+  step = Math.max(step, 1); render();
+}
+function setLang(l) {
+  lang = l;
+  document.getElementById("b-en").className = l === "en" ? "on" : "";
+  document.getElementById("b-kn").className = l === "kn" ? "on" : "";
+  render();
+}
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") { stop(); go(step + 1); }
+  if (e.key === "ArrowLeft") { stop(); go(step - 1); }
+  if (e.key === " ") { e.preventDefault(); toggle(); }
+});
+render();
+</script>
+
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

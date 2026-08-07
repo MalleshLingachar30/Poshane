@@ -12,6 +12,7 @@ import type { ModelKey, SpeciesRow } from "../silvi";
 import { useLiveSnapshot, useLiveTotal, useLiveWSurv, useLiveDistrict, liveProg } from "../live";
 import { LineChart, Donut, OnboardPill, ContractPill, Rolling } from "./charts";
 import type { CommandCenterFilterSet } from "../mitra/types";
+import { DistrictTalukSplit } from "./taluk-frame";
 
 /* ============ shared bits ============ */
 function slug(value: string) {
@@ -223,7 +224,7 @@ export function Frame1({ onSelectDistrict }: { onSelectDistrict: (code: string) 
 }
 
 /* ============ FRAME 2 — DISTRICT DRILL-DOWN ============ */
-export function Frame2({ code, onChange }: { code: string; onChange: (c: string) => void }) {
+export function Frame2({ code, onChange, onSelectTaluk }: { code: string; onChange: (c: string) => void; onSelectTaluk: (c: string) => void }) {
   const d = DISTRICTS.find(x => x.code === code) ?? DISTRICTS[5];
   const z = ZONES[d.zone];
   const gPct = 52 + ((d.name.length * 7) % 31);
@@ -320,6 +321,7 @@ export function Frame2({ code, onChange }: { code: string; onChange: (c: string)
           </div>
         </div>
       </div>
+      <DistrictTalukSplit district={d} planted={pl} onSelectTaluk={onSelectTaluk} />
     </section>
   );
 }

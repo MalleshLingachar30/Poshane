@@ -23,6 +23,7 @@ import {
   y1Of,
   zoneAlloc,
 } from "../data";
+import { TALUKS, buildTalukMetrics } from "../taluks";
 import type {
   CommandCenterFrameId,
   CommandCenterUiAction,
@@ -41,6 +42,7 @@ import {
 type Args = Record<string, unknown>;
 type BootstrapPayload = {
   districts: { name: string; code: string }[];
+  taluks: { name: string; code: string; district: string; districtCode: string }[];
   zones: string[];
   project_brief_topics: ProjectBriefTopic[];
   land_types: readonly string[];
@@ -67,6 +69,7 @@ const TOOL_TO_SOURCE: Record<PoshaneMitraToolName, string> = {
   poshane_get_state_overview: "State Overview",
   poshane_get_state_trends: "State Overview / Trends",
   poshane_get_district_progress: "District Drill-Down",
+  poshane_get_taluk_progress: "Taluk Drill-Down",
   poshane_compare_districts: "District Drill-Down",
   poshane_get_land_registry: "Land & Ownership Registry",
   poshane_get_stakeholders: "Stakeholder & Onboarding",
@@ -85,21 +88,25 @@ const TOOL_TO_SOURCE: Record<PoshaneMitraToolName, string> = {
 const FRAME_BY_MODULE: Record<string, CommandCenterFrameId> = {
   state_overview: "f1",
   district_drill_down: "f2",
+  taluk_drill_down: "f9",
   land_ownership: "f3",
   stakeholders: "f4",
   species_planning: "f5",
   monitoring_audit: "f6",
   financials: "f7",
+  data_flow_schematics: "f8",
 };
 
 const MODULE_LABELS: Record<string, string> = {
   state_overview: "State Overview",
   district_drill_down: "District Drill-Down",
+  taluk_drill_down: "Taluk Drill-Down",
   land_ownership: "Land and Ownership Registry",
   stakeholders: "Stakeholder and Onboarding",
   species_planning: "Species and Agro-Climatic Planning",
   monitoring_audit: "Monitoring and Audit",
   financials: "Restricted Financials",
+  data_flow_schematics: "Data Flow Schematics",
 };
 
 function meta(tool: PoshaneMitraToolName): ToolResultMeta {
@@ -186,6 +193,23 @@ function findDistrict(value: unknown) {
 
 function findDistrictByName(value: string) {
   return DISTRICTS.find((d) => d.name === value);
+}
+
+function findTaluk(value: unknown, districtValue?: unknown) {
+  const query = norm(value);
+  if (!query) return undefined;
+  const district = findDistrict(districtValue);
+  const matches = TALUKS.filter((taluk) =>
+    (!district || taluk.districtCode === district.code) &&
+    (norm(taluk.name) === query || norm(taluk.code) === query)
+  );
+  if (!matches.length) {
+    throw new Error(`Unknown Karnataka taluk${district ? ` in ${district.name}` : ""}: ${value}`);
+  }
+  if (matches.length > 1) {
+    throw new Error(`Taluk name is ambiguous; include its parent district: ${value}`);
+  }
+  return matches[0];
 }
 
 function validateLandType(value: unknown) {
@@ -308,6 +332,40 @@ function districtPayload(district: (typeof DISTRICTS)[number]) {
   };
 }
 
+function talukPayload(taluk: (typeof TALUKS)[number]) {
+  const district = DISTRICTS.find((item) => item.code === taluk.districtCode);
+  if (!district) throw new Error(`Parent district is missing for taluk: ${taluk.name}`);
+  const metrics = buildTalukMetrics(district).find((row) => row.code === taluk.code);
+  if (!metrics) throw new Error(`Operational split is missing for taluk: ${taluk.name}`);
+  const zone = ZONES[district.zone];
+  return {
+    taluk: metrics.name,
+    code: metrics.code,
+    parent_district: metrics.districtName,
+    parent_district_code: metrics.districtCode,
+    programme_share_lakh: metrics.programmeShare,
+    year_one_target_lakh: Number(metrics.yearOneTarget.toFixed(3)),
+    planted_to_date_lakh: Number(metrics.planted.toFixed(3)),
+    planted_to_date_saplings: Math.round(metrics.planted * LAKH),
+    progress_percent_of_y1: Number(metrics.progress.toFixed(1)),
+    survival_percent: Number(metrics.survival.toFixed(1)),
+    active_ngos: metrics.ngos,
+    volunteers: metrics.volunteers,
+    nurseries: metrics.nurseries,
+    allocation_land_split: {
+      government_and_community_land_percent: Number(metrics.governmentLandPct.toFixed(1)),
+      private_or_institutional_percent: Number((100 - metrics.governmentLandPct).toFixed(1)),
+    },
+    agro_climatic_zone: zone.name,
+    recommended_species: zone.species.map(([common, botanical]) => ({ common, botanical })),
+    reconciliation: {
+      district_programme_share_lakh: district.alloc,
+      district_year_one_target_lakh: Number(y1Of(district).toFixed(2)),
+      district_planted_to_date_lakh: Number(plantedOf(district).toFixed(2)),
+    },
+  };
+}
+
 function stateOverview(tool: PoshaneMitraToolName) {
   const planted = DISTRICTS.reduce((s, d) => s + plantedOf(d), 0);
   const weightedSurvival =
@@ -404,6 +462,25 @@ function districtProgress(args: Args) {
       districtCode: district.code,
       highlightId: focusToHighlight[focus] ?? "district-kpis",
       highlightLabel: district.name,
+    }
+  );
+}
+
+function talukProgress(args: Args) {
+  const taluk = findTaluk(text(args.taluk, "taluk"), args.district);
+  if (!taluk) throw new Error("Taluk is required.");
+  const payload = talukPayload(taluk);
+  return result(
+    "poshane_get_taluk_progress",
+    `${payload.taluk} taluk in ${payload.parent_district} has planted ${lakhFix(payload.planted_to_date_lakh, 2)} with ${payload.survival_percent}% survival.`,
+    payload,
+    { taluk: payload.taluk, district: payload.parent_district },
+    {
+      frame: "f9",
+      districtCode: payload.parent_district_code,
+      talukCode: payload.code,
+      highlightId: "taluk-kpis",
+      highlightLabel: `${payload.taluk}, ${payload.parent_district}`,
     }
   );
 }
@@ -765,7 +842,8 @@ function navigate(args: Args) {
   const targetModule = text(args.module, "module");
   const frame = FRAME_BY_MODULE[targetModule];
   if (!frame) throw new Error(`Unsupported module: ${targetModule}`);
-  const district = findDistrict(args.district);
+  const taluk = findTaluk(args.taluk, args.district);
+  const district = taluk ? findDistrict(taluk.districtCode) : findDistrict(args.district);
   if (frame === "f7") {
     return result(
       "poshane_navigate_command_center",
@@ -777,12 +855,13 @@ function navigate(args: Args) {
   }
   return result(
     "poshane_navigate_command_center",
-    `opening ${MODULE_LABELS[targetModule]}${district ? ` for ${district.name}` : ""}.`,
-    { module: targetModule, district: district?.name ?? null },
-    { module: targetModule, district: district?.name ?? null },
+    `opening ${MODULE_LABELS[targetModule]}${taluk ? ` for ${taluk.name}, ${district?.name}` : district ? ` for ${district.name}` : ""}.`,
+    { module: targetModule, district: district?.name ?? null, taluk: taluk?.name ?? null },
+    { module: targetModule, district: district?.name ?? null, taluk: taluk?.name ?? null },
     {
       frame,
       districtCode: district?.code,
+      talukCode: taluk?.code,
       highlightId: targetModule === "monitoring_audit" ? "monitoring-calendar" : undefined,
       highlightLabel: MODULE_LABELS[targetModule],
     }
@@ -842,6 +921,8 @@ function executeMockTool(tool: PoshaneMitraToolName, args: Args): PoshaneMitraTo
       return stateTrends(args);
     case "poshane_get_district_progress":
       return districtProgress(args);
+    case "poshane_get_taluk_progress":
+      return talukProgress(args);
     case "poshane_compare_districts":
       return compareDistricts(args);
     case "poshane_get_land_registry":
@@ -876,6 +957,12 @@ function executeMockTool(tool: PoshaneMitraToolName, args: Args): PoshaneMitraTo
 function buildBootstrap(): BootstrapPayload {
   return {
     districts: DISTRICTS.map((d) => ({ name: d.name, code: d.code })),
+    taluks: TALUKS.map((taluk) => ({
+      name: taluk.name,
+      code: taluk.code,
+      district: taluk.districtName,
+      districtCode: taluk.districtCode,
+    })),
     zones: ZONES.map((z) => z.name),
     project_brief_topics: projectBriefTopics(),
     land_types: LAND_TYPES,

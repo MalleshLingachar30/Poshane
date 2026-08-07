@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane — Command &amp; Control Center · Diagrams 7–9 &amp; 12 — Data Flows &amp; Offline-First Operation</title>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --bg:#F7F3E9; --ink:#1F2430;
+    --green-tint:#EAF1EC; --navy-tint:#EBEFF6; --gold-tint:#F6EEDC; --card:#FDFBF4; --rule:#D9D2C0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif; font-size:15px; line-height:1.55;}
+  .doc-header{max-width:1600px; margin:0 auto; padding:34px 28px 10px 28px;
+    border-bottom:3px solid var(--green);}
+  .doc-header h1{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600;
+    font-size:30px; color:var(--green); letter-spacing:.2px;}
+  .doc-header .sub{margin-top:6px; font-size:14.5px; color:var(--ink);}
+  .doc-header .sub b{color:var(--navy);}
+  .doc-header .meta{margin-top:8px; font-size:12.5px; color:#5A5647; letter-spacing:.4px;
+    text-transform:uppercase;}
+  .panel{max-width:1600px; margin:0 auto; padding:30px 28px 8px 28px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; font-weight:600; font-size:23px;
+    color:var(--green); border-left:6px solid var(--gold); padding-left:14px;}
+  .panel h2 .ref{color:var(--navy); font-size:15px; font-weight:400; margin-left:10px;}
+  .panel .lede{margin:10px 0 18px 20px; max-width:1180px; font-size:14.5px; color:#3A3E4A;}
+  .figure{background:#FFFFFF; border:1px solid var(--rule); border-radius:6px;
+    padding:14px 14px 6px 14px; box-shadow:0 1px 0 rgba(31,36,48,.04);}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Helvetica Neue",Arial,"Segoe UI",sans-serif;}
+  .figfoot{display:flex; justify-content:space-between; padding:8px 4px 6px 4px;
+    font-size:11.5px; color:#6B6656; border-top:1px solid var(--rule); margin-top:8px;}
+  .doc-footer{max-width:1600px; margin:8px auto 40px auto; padding:14px 28px 0 28px;
+    border-top:3px solid var(--green); font-size:12.5px; color:#5A5647;}
+  @media print{
+    @page{size:A3 landscape; margin:9mm;}
+    body{background:#FFFFFF; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .doc-header{padding-top:8px;}
+    .panel{page-break-after:always; padding-top:10px;}
+    .panel:last-of-type{page-break-after:auto;}
+    .figure{box-shadow:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <h1>Poshane — Command &amp; Control Center</h1>
+  <div class="sub"><b>Diagrams 7–9 &amp; 12 · Core data flows and offline-first field operation</b> —
+    KSLSA Five Crore Sapling Plantation &amp; Lake Rejuvenation Programme</div>
+  <div class="sub">Institution of Agroforestry Farmers and Technologists — Principal Scientific Advisory Body and Program Management Unit</div>
+  <div class="meta">Architecture specification v0.9 · §8.1 · §8.2 · §8.3 · §8.4 · §11 · Baseline for review — KSLSA &amp; IAFT</div>
+</header>
+<!-- ============ DIAGRAM 7 — FLOW A ============ -->
+<section class="panel">
+  <h2>Diagram 7 · Flow A — Land identification to planting approval<span class="ref">Specification §8.1 · states per §6</span></h2>
+  <p class="lede">Land enters the programme through a gate, not a form. The department identifies and surveys; the
+  verification cadre's field decision is blocking; a named custodian must accept the post-plantation obligation before
+  approval is issued. Only then is the Location ID minted and the tag issued. Rejection is a first-class outcome —
+  it returns to the department with structured reasons, and the rejection history stays on the parcel permanently.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1040" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow A — land identification to planting approval">
+    <defs>
+      <marker id="d7-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d7-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="d7-au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+      <marker id="d7-ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1F2430"/></marker>
+    </defs>
+
+    <!-- legend -->
+    <g font-size="10.5" fill="#1F2430">
+      <rect x="600" y="10" width="14" height="14" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/><text x="620" y="21">departmental / field action</text>
+      <rect x="790" y="10" width="14" height="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/><text x="810" y="21">platform / system record</text>
+      <rect x="965" y="10" width="14" height="14" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/><text x="985" y="21">gate · outcome</text>
+      <line x1="1090" y1="17" x2="1130" y2="17" stroke="#1F2430" stroke-width="1.4" stroke-dasharray="5 4"/><text x="1138" y="21">return / revision path</text>
+      <text x="1310" y="21" font-style="italic" fill="#5A5647">arrow labels = data payload</text>
+    </g>
+
+    <!-- lanes -->
+    <g>
+      <rect x="148" y="40"  width="1400" height="210" fill="#EAF1EC" stroke="#D9D2C0"/>
+      <rect x="148" y="258" width="1400" height="210" fill="#EAF1EC" stroke="#D9D2C0"/>
+      <rect x="148" y="476" width="1400" height="150" fill="#F7F3E9" stroke="#D9D2C0"/>
+      <rect x="148" y="634" width="1400" height="330" fill="#EBEFF6" stroke="#D9D2C0"/>
+      <rect x="12" y="40"  width="130" height="210" fill="#1C5A33"/>
+      <rect x="12" y="258" width="130" height="210" fill="#1C5A33"/>
+      <rect x="12" y="476" width="130" height="150" fill="#4A4F3C"/>
+      <rect x="12" y="634" width="130" height="330" fill="#27467A"/>
+      <g fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5">
+        <text x="77" y="132" text-anchor="middle">Forest /</text><text x="77" y="150" text-anchor="middle">Revenue</text><text x="77" y="168" text-anchor="middle">Department</text>
+        <text x="77" y="352" text-anchor="middle">Verification</text><text x="77" y="370" text-anchor="middle">Cadre</text><text x="77" y="390" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">RFO / DRFO · ~480</text>
+        <text x="77" y="543" text-anchor="middle">Custodian</text><text x="77" y="561" text-anchor="middle">Body</text>
+        <text x="77" y="790" text-anchor="middle">Platform</text><text x="77" y="810" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">system of record</text>
+      </g>
+    </g>
+
+    <!-- B1 E1 -->
+    <g>
+      <rect x="170" y="80" width="225" height="135" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="170" y="80" width="225" height="26" rx="4" fill="#1C5A33"/>
+      <text x="180" y="98" fill="#F7F3E9" font-size="12.5" font-weight="bold">E1 · Land identification</text>
+      <text x="180" y="124" font-size="11.5" fill="#1F2430">survey number · extent</text>
+      <text x="180" y="140" font-size="11.5" fill="#1F2430">land type · taluk</text>
+      <text x="180" y="156" font-size="11.5" fill="#1F2430">access · proposed use</text>
+      <text x="180" y="176" font-size="10.5" fill="#5A5647" font-style="italic">web portal + bulk upload</text>
+      <rect x="180" y="188" width="96" height="18" rx="9" fill="#EAF1EC" stroke="#1C5A33" stroke-width="1"/>
+      <text x="228" y="201" text-anchor="middle" font-size="10" fill="#1C5A33">state 1 · Identified</text>
+    </g>
+    <line x1="395" y1="147" x2="457" y2="147" stroke="#1C5A33" stroke-width="2" marker-end="url(#d7-ag)"/>
+    <text x="426" y="126" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">survey data</text>
+    <text x="426" y="139" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">attached</text>
+
+    <!-- B2 E2 -->
+    <g>
+      <rect x="465" y="80" width="225" height="135" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="465" y="80" width="225" height="26" rx="4" fill="#1C5A33"/>
+      <text x="475" y="98" fill="#F7F3E9" font-size="12.5" font-weight="bold">E2 · Survey &amp; boundary capture</text>
+      <text x="475" y="124" font-size="11.5" fill="#1F2430">GPS boundary walk · area</text>
+      <text x="475" y="140" font-size="11.5" fill="#1F2430">photographs · terrain notes</text>
+      <text x="475" y="160" font-size="10.5" fill="#5A5647" font-style="italic">mobile · offline</text>
+      <rect x="475" y="188" width="94" height="18" rx="9" fill="#EAF1EC" stroke="#1C5A33" stroke-width="1"/>
+      <text x="522" y="201" text-anchor="middle" font-size="10" fill="#1C5A33">state 2 · Surveyed</text>
+    </g>
+
+    <!-- rejection return box -->
+    <g>
+      <rect x="1180" y="70" width="350" height="160" rx="4" fill="#FDFBF4" stroke="#1F2430" stroke-width="1.5" stroke-dasharray="6 4"/>
+      <text x="1194" y="94" font-size="12.5" font-weight="bold" fill="#1F2430">Returned to department with structured reasons</text>
+      <text x="1194" y="116" font-size="11.5" fill="#1F2430">unsuitable soil · access · encroachment</text>
+      <text x="1194" y="132" font-size="11.5" fill="#1F2430">boundary dispute · existing vegetation · water availability</text>
+      <text x="1194" y="156" font-size="10.5" fill="#5A5647" font-style="italic">rejection history stays attached to the parcel permanently</text>
+      <text x="1194" y="172" font-size="10.5" fill="#5A5647" font-style="italic">rejected twice → flagged for district review</text>
+      <rect x="1194" y="186" width="98" height="18" rx="9" fill="#F7F3E9" stroke="#1F2430" stroke-width="1"/>
+      <text x="1243" y="199" text-anchor="middle" font-size="10" fill="#1F2430">state 5a · Rejected</text>
+    </g>
+    <line x1="1180" y1="115" x2="698" y2="115" stroke="#1F2430" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#d7-ak)"/>
+    <text x="939" y="106" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">may revise &amp; re-submit (E1 / E2)</text>
+
+    <!-- B2 down to queue -->
+    <path d="M545,215 V666" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d7-ag)"/>
+    <text x="556" y="500" font-size="10.5" fill="#5A5647" font-style="italic">submitted for verification</text>
+
+    <!-- queue box (platform) -->
+    <g>
+      <rect x="465" y="674" width="235" height="95" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <rect x="465" y="674" width="235" height="26" rx="4" fill="#27467A"/>
+      <text x="475" y="692" fill="#F7F3E9" font-size="12.5" font-weight="bold">Assignment queue</text>
+      <text x="475" y="716" font-size="11.5" fill="#1F2430">queued to the taluk verification cadre</text>
+      <rect x="475" y="732" width="162" height="18" rx="9" fill="#EBEFF6" stroke="#27467A" stroke-width="1"/>
+      <text x="556" y="745" text-anchor="middle" font-size="10" fill="#27467A">state 3 · Pending Verification</text>
+    </g>
+    <path d="M660,674 V445" fill="none" stroke="#27467A" stroke-width="2" marker-end="url(#d7-an)"/>
+    <text x="671" y="560" font-size="10.5" fill="#5A5647" font-style="italic">task assigned · verifier accepts</text>
+
+    <!-- B3 E3 -->
+    <g>
+      <rect x="465" y="292" width="250" height="145" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="465" y="292" width="250" height="26" rx="4" fill="#1C5A33"/>
+      <text x="475" y="310" fill="#F7F3E9" font-size="12.5" font-weight="bold">E3 · Field verification &amp; parameter entry</text>
+      <text x="475" y="336" font-size="11.5" fill="#1F2430">verified extent · boundary · soil</text>
+      <text x="475" y="352" font-size="11.5" fill="#1F2430">water availability · access · slope / terrain</text>
+      <text x="475" y="368" font-size="11.5" fill="#1F2430">existing vegetation · photographs · signature</text>
+      <text x="475" y="388" font-size="10.5" fill="#5A5647" font-style="italic">mobile · offline · GPS-gated on first visit</text>
+      <rect x="475" y="402" width="152" height="18" rx="9" fill="#EAF1EC" stroke="#1C5A33" stroke-width="1"/>
+      <text x="551" y="415" text-anchor="middle" font-size="10" fill="#1C5A33">state 4 · Under Verification</text>
+    </g>
+    <line x1="715" y1="364" x2="757" y2="364" stroke="#1C5A33" stroke-width="2" marker-end="url(#d7-ag)"/>
+    <text x="735" y="274" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">decision +</text>
+    <text x="735" y="287" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">evidence</text>
+
+    <!-- decision diamond -->
+    <g>
+      <polygon points="860,312 965,364 860,416 755,364" fill="#FDFBF4" stroke="#1C5A33" stroke-width="2"/>
+      <text x="860" y="360" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Suitability</text>
+      <text x="860" y="376" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">decision</text>
+    </g>
+    <path d="M860,312 V150 H1172" fill="none" stroke="#1F2430" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#d7-ak)"/>
+    <text x="874" y="238" font-size="10.5" fill="#5A5647" font-style="italic">Rejected — reasons recorded</text>
+    <path d="M860,416 V555 H892" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d7-ag)"/>
+    <text x="874" y="490" font-size="10.5" fill="#5A5647" font-style="italic">Verified (state 5b)</text>
+
+    <!-- custody box -->
+    <g>
+      <rect x="900" y="508" width="300" height="95" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="900" y="508" width="300" height="26" rx="4" fill="#1C5A33"/>
+      <text x="910" y="526" fill="#F7F3E9" font-size="12.5" font-weight="bold">Custody model assigned &amp; accepted</text>
+      <text x="910" y="550" font-size="11.5" fill="#1F2430">named body accepts post-plantation</text>
+      <text x="910" y="566" font-size="11.5" fill="#1F2430">maintenance obligation · acceptance recorded</text>
+      <rect x="1078" y="576" width="112" height="18" rx="9" fill="#EAF1EC" stroke="#1C5A33" stroke-width="1"/>
+      <text x="1134" y="589" text-anchor="middle" font-size="10" fill="#1C5A33">state 6 · Custody Assigned</text>
+    </g>
+    <line x1="1050" y1="603" x2="1050" y2="664" stroke="#1C5A33" stroke-width="2" marker-end="url(#d7-ag)"/>
+    <text x="1062" y="638" font-size="10.5" fill="#5A5647" font-style="italic">custody acceptance record</text>
+
+    <!-- APPROVAL GATE -->
+    <g>
+      <rect x="900" y="672" width="320" height="175" rx="4" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <rect x="900" y="672" width="320" height="28" rx="4" fill="#C09A3E"/>
+      <text x="910" y="691" fill="#1F2430" font-size="13" font-weight="bold">APPROVAL GATE — all three must hold</text>
+      <text x="912" y="722" font-size="11.5" fill="#1F2430">1 · Land record attached — survey no. + authoritative reference</text>
+      <text x="912" y="740" font-size="11.5" fill="#1F2430">2 · Verification passed — cadre inspection recorded</text>
+      <text x="912" y="758" font-size="11.5" fill="#1F2430">3 · Custodian assigned — obligation accepted</text>
+      <text x="912" y="782" font-size="10.5" fill="#5A5647" font-style="italic">enforced in the domain service — not a screen validation</text>
+      <text x="912" y="798" font-size="10.5" fill="#5A5647" font-style="italic">that can be waived</text>
+      <rect x="912" y="812" width="180" height="20" rx="10" fill="#FDFBF4" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="1002" y="826" text-anchor="middle" font-size="10.5" fill="#1F2430">state 7 · Approved for Planting</text>
+    </g>
+    <line x1="1220" y1="726" x2="1262" y2="726" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d7-au)"/>
+    <text x="1241" y="704" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">approval</text>
+    <text x="1241" y="717" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">issued</text>
+
+    <!-- mint box -->
+    <g>
+      <rect x="1270" y="676" width="260" height="100" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <rect x="1270" y="676" width="260" height="26" rx="4" fill="#27467A"/>
+      <text x="1280" y="694" fill="#F7F3E9" font-size="12.5" font-weight="bold">Location ID minted · tag produced</text>
+      <text x="1280" y="718" font-size="11.5" fill="#1F2430">tag produced and dispatched to site</text>
+      <text x="1280" y="740" font-size="10.5" fill="#5A5647" font-style="italic">one parcel · one Location ID ·</text>
+      <text x="1280" y="756" font-size="10.5" fill="#5A5647" font-style="italic">for the life of the programme</text>
+    </g>
+    <line x1="1400" y1="776" x2="1400" y2="800" stroke="#27467A" stroke-width="2" marker-end="url(#d7-an)"/>
+
+    <!-- bind box -->
+    <g>
+      <rect x="1270" y="808" width="260" height="118" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1270" y="808" width="260" height="26" rx="4" fill="#1C5A33"/>
+      <text x="1280" y="826" fill="#F7F3E9" font-size="12.5" font-weight="bold">E4 · Tag bound at site — field team</text>
+      <text x="1280" y="850" font-size="11.5" fill="#1F2430">tag ↔ Location ID binding · GPS at tap</text>
+      <text x="1280" y="866" font-size="11.5" fill="#1F2430">installation photograph</text>
+      <text x="1280" y="884" font-size="10.5" fill="#5A5647" font-style="italic">GPS mismatch with parcel boundary → rejected</text>
+      <rect x="1280" y="898" width="96" height="18" rx="9" fill="#EAF1EC" stroke="#1C5A33" stroke-width="1"/>
+      <text x="1328" y="911" text-anchor="middle" font-size="10" fill="#1C5A33">state 8 · Tag Bound</text>
+    </g>
+
+    <!-- outcome -->
+    <path d="M1270,890 H1230 V905 H1198" fill="none" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d7-au)"/>
+    <g>
+      <rect x="940" y="880" width="250" height="50" rx="25" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="1065" y="902" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1F2430">PARCEL IS PLANTABLE</text>
+      <text x="1065" y="919" text-anchor="middle" font-size="10.5" fill="#5A5647">no planting may be recorded before this point</text>
+    </g>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 7 · Flow A · Specification §8.1, §6, §7.1</span></div>
+  </div>
+</section>
+<!-- ============ DIAGRAM 8 — FLOW B ============ -->
+<section class="panel">
+  <h2>Diagram 8 · Flow B — Planting to survival assurance<span class="ref">Specification §8.2 · census co-signature per §7.3, §9.4</span></h2>
+  <p class="lede">Planting is recorded against the tag as a batch; survival is a measured, tag-anchored, photo-backed
+  observation — not a submitted number. The agency that plants cannot alone record the authoritative survival census:
+  an independent audit-cadre officer must co-sign it. A census below threshold raises casualty replacement as a new
+  Batch ID against the same Location ID, and generates a demand signal back to the nursery.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1010" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow B — planting to survival assurance">
+    <defs>
+      <marker id="d8-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d8-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="d8-au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- legend -->
+    <g font-size="10.5" fill="#1F2430">
+      <rect x="640" y="10" width="14" height="14" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/><text x="660" y="21">field action</text>
+      <rect x="760" y="10" width="14" height="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/><text x="780" y="21">platform record</text>
+      <rect x="900" y="10" width="14" height="14" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/><text x="920" y="21">gate · threshold</text>
+      <line x1="1040" y1="17" x2="1080" y2="17" stroke="#27467A" stroke-width="1.4" stroke-dasharray="5 4"/><text x="1088" y="21">demand / cycle signal</text>
+      <text x="1310" y="21" font-style="italic" fill="#5A5647">arrow labels = data payload</text>
+    </g>
+
+    <!-- lanes -->
+    <g>
+      <rect x="148" y="40"  width="1400" height="160" fill="#F7F3E9" stroke="#D9D2C0"/>
+      <rect x="148" y="208" width="1400" height="230" fill="#EAF1EC" stroke="#D9D2C0"/>
+      <rect x="148" y="446" width="1400" height="170" fill="#EAF1EC" stroke="#D9D2C0"/>
+      <rect x="148" y="624" width="1400" height="340" fill="#EBEFF6" stroke="#D9D2C0"/>
+      <rect x="12" y="40"  width="130" height="160" fill="#4A4F3C"/>
+      <rect x="12" y="208" width="130" height="230" fill="#1C5A33"/>
+      <rect x="12" y="446" width="130" height="170" fill="#1C5A33"/>
+      <rect x="12" y="624" width="130" height="340" fill="#27467A"/>
+      <g fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5">
+        <text x="77" y="125" text-anchor="middle">Nursery</text>
+        <text x="77" y="308" text-anchor="middle">Implementing</text><text x="77" y="326" text-anchor="middle">Agency</text><text x="77" y="346" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">NGO · plants &amp; maintains</text>
+        <text x="77" y="516" text-anchor="middle">Audit Cadre</text><text x="77" y="536" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">independent ·</text><text x="77" y="551" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">separately constituted</text>
+        <text x="77" y="790" text-anchor="middle">Platform</text><text x="77" y="810" text-anchor="middle" font-size="11.5" font-family="Arial,sans-serif">system of record</text>
+      </g>
+    </g>
+
+    <!-- Nursery stock -->
+    <g>
+      <rect x="170" y="70" width="260" height="110" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="170" y="70" width="260" height="26" rx="4" fill="#1C5A33"/>
+      <text x="180" y="88" fill="#F7F3E9" font-size="12.5" font-weight="bold">E9 · Stock raising &amp; dispatch</text>
+      <text x="180" y="114" font-size="11.5" fill="#1F2430">species · quantity · grading</text>
+      <text x="180" y="130" font-size="11.5" fill="#1F2430">provenance · dispatch to batch</text>
+      <text x="180" y="152" font-size="10.5" fill="#5A5647" font-style="italic">traceable to the planting batch it supplies</text>
+    </g>
+    <path d="M430,125 H505 V242" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="520" y="180" font-size="10.5" fill="#5A5647" font-style="italic">seedlings dispatched · species · quantity · provenance</text>
+
+    <!-- precondition chip -->
+    <g>
+      <rect x="170" y="660" width="245" height="66" rx="6" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="182" y="684" font-size="12" font-weight="bold" fill="#27467A">Approved, tagged parcel</text>
+      <text x="182" y="702" font-size="10.5" fill="#5A5647">state 8 · Tag Bound — output of Flow A</text>
+    </g>
+    <path d="M292,660 V420 H462" fill="none" stroke="#27467A" stroke-width="2" marker-end="url(#d8-an)"/>
+    <text x="304" y="540" font-size="10.5" fill="#5A5647" font-style="italic">valid tap resolves Location ID</text>
+
+    <!-- E5 planting -->
+    <g>
+      <rect x="470" y="250" width="270" height="150" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="470" y="250" width="270" height="26" rx="4" fill="#1C5A33"/>
+      <text x="480" y="268" fill="#F7F3E9" font-size="12.5" font-weight="bold">E5 · Planting event</text>
+      <rect x="640" y="254" width="92" height="18" rx="9" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="686" y="267" text-anchor="middle" font-size="10" fill="#1F2430">tag tap required</text>
+      <text x="480" y="294" font-size="11.5" fill="#1F2430">species composition · counts</text>
+      <text x="480" y="310" font-size="11.5" fill="#1F2430">pit spacing · date · nursery source</text>
+      <text x="480" y="326" font-size="11.5" fill="#1F2430">in-app photographs, bound to payload</text>
+      <text x="480" y="348" font-size="10.5" fill="#5A5647" font-style="italic">parcel enters state 9 · Planted</text>
+      <text x="480" y="382" font-size="10.5" fill="#5A5647" font-style="italic">capture offline · signed on device</text>
+    </g>
+    <path d="M605,400 V652" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="617" y="530" font-size="10.5" fill="#5A5647" font-style="italic">signed capture payload</text>
+
+    <!-- Batch ID box -->
+    <g>
+      <rect x="470" y="660" width="270" height="112" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <rect x="470" y="660" width="270" height="26" rx="4" fill="#27467A"/>
+      <text x="480" y="678" fill="#F7F3E9" font-size="12.5" font-weight="bold">Batch ID created</text>
+      <text x="480" y="704" font-size="11.5" fill="#1F2430">species composition · counts · evidence</text>
+      <text x="480" y="720" font-size="11.5" fill="#1F2430">bound to Location ID + Batch ID pair</text>
+      <text x="480" y="744" font-size="10.5" fill="#5A5647" font-style="italic">every later observation is written</text>
+      <text x="480" y="759" font-size="10.5" fill="#5A5647" font-style="italic">against this pair — survival per planting event</text>
+    </g>
+
+    <!-- E6 maintenance -->
+    <line x1="740" y1="320" x2="812" y2="320" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="789" y="336" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">maintenance</text>
+    <text x="789" y="349" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">begins</text>
+    <g>
+      <rect x="820" y="250" width="250" height="140" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="820" y="250" width="250" height="26" rx="4" fill="#1C5A33"/>
+      <text x="830" y="268" fill="#F7F3E9" font-size="12.5" font-weight="bold">E6 · Maintenance cycle</text>
+      <rect x="972" y="254" width="92" height="18" rx="9" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="1018" y="267" text-anchor="middle" font-size="10" fill="#1F2430">tag tap required</text>
+      <text x="830" y="294" font-size="11.5" fill="#1F2430">watering · weeding · fencing</text>
+      <text x="830" y="310" font-size="11.5" fill="#1F2430">guard status · roster reference</text>
+      <text x="830" y="334" font-size="10.5" fill="#5A5647" font-style="italic">recurring through the assurance period</text>
+    </g>
+    <path d="M870,250 C880,220 1010,220 1020,248" fill="none" stroke="#1C5A33" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#d8-ag)"/>
+    <text x="945" y="216" text-anchor="middle" font-size="10" fill="#5A5647" font-style="italic">recurring</text>
+
+    <!-- two-signature gate -->
+    <line x1="1070" y1="320" x2="1112" y2="320" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="1091" y="228" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">census at defined intervals</text>
+    <g>
+      <rect x="1120" y="240" width="400" height="360" rx="6" fill="none" stroke="#C09A3E" stroke-width="3"/>
+      <rect x="1120" y="240" width="400" height="30" rx="6" fill="#C09A3E"/>
+      <text x="1132" y="260" font-size="13" font-weight="bold" fill="#1F2430">TWO-SIGNATURE GATE — survival census (E7)</text>
+      <text x="1136" y="288" font-size="10.5" fill="#5A5647" font-style="italic">the agency that plants cannot alone record the</text>
+      <text x="1136" y="302" font-size="10.5" fill="#5A5647" font-style="italic">authoritative survival census — §9.4, execution vs assurance</text>
+
+      <rect x="1140" y="312" width="360" height="118" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1140" y="312" width="360" height="24" rx="4" fill="#1C5A33"/>
+      <text x="1150" y="329" fill="#F7F3E9" font-size="12" font-weight="bold">Signature 1 · recorded by agency — tag tap</text>
+      <text x="1150" y="354" font-size="11.5" fill="#1F2430">sample or full count · survival tally</text>
+      <text x="1150" y="370" font-size="11.5" fill="#1F2430">casualty count · condition grading</text>
+      <text x="1150" y="386" font-size="11.5" fill="#1F2430">in-app photographs</text>
+      <text x="1150" y="408" font-size="10.5" fill="#5A5647" font-style="italic">a claim, not yet the authoritative record</text>
+
+      <line x1="1320" y1="430" x2="1320" y2="462" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d8-au)"/>
+
+      <rect x="1140" y="470" width="360" height="112" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1140" y="470" width="360" height="24" rx="4" fill="#1C5A33"/>
+      <text x="1150" y="487" fill="#F7F3E9" font-size="12" font-weight="bold">Signature 2 · audit-cadre co-signature</text>
+      <text x="1150" y="512" font-size="11.5" fill="#1F2430">independent officer — separately constituted team,</text>
+      <text x="1150" y="528" font-size="11.5" fill="#1F2430">never the verifier of this parcel</text>
+      <text x="1150" y="550" font-size="10.5" fill="#5A5647" font-style="italic">without this co-signature the census</text>
+      <text x="1150" y="565" font-size="10.5" fill="#5A5647" font-style="italic">is not authoritative</text>
+    </g>
+
+    <!-- census to threshold -->
+    <path d="M1320,600 V652" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="1332" y="632" font-size="10.5" fill="#5A5647" font-style="italic">co-signed census payload</text>
+
+    <!-- threshold diamond -->
+    <g>
+      <polygon points="1320,660 1440,725 1320,790 1200,725" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="1320" y="720" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1F2430">Survival at or</text>
+      <text x="1320" y="737" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1F2430">above threshold?</text>
+    </g>
+
+    <!-- continue path -->
+    <line x1="1200" y1="725" x2="1128" y2="725" stroke="#1C5A33" stroke-width="2" marker-end="url(#d8-ag)"/>
+    <text x="1164" y="716" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">yes</text>
+    <g>
+      <rect x="880" y="695" width="248" height="62" rx="6" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="892" y="719" font-size="12" font-weight="bold" fill="#27467A">Continue assurance cycle</text>
+      <text x="892" y="737" font-size="10.5" fill="#5A5647">state 10 · Under Assurance</text>
+    </g>
+    <path d="M1000,695 V398" fill="none" stroke="#1C5A33" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#d8-ag)"/>
+    <text x="1012" y="560" font-size="10.5" fill="#5A5647" font-style="italic">next census interval</text>
+
+    <!-- replacement path -->
+    <path d="M1320,790 V836" fill="none" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d8-au)"/>
+    <text x="1332" y="818" font-size="10.5" fill="#5A5647" font-style="italic">no — below threshold</text>
+    <g>
+      <rect x="1170" y="844" width="360" height="104" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <rect x="1170" y="844" width="360" height="26" rx="4" fill="#27467A"/>
+      <text x="1180" y="862" fill="#F7F3E9" font-size="12.5" font-weight="bold">Casualty replacement raised</text>
+      <text x="1180" y="888" font-size="11.5" fill="#1F2430">replacement batch · NEW Batch ID</text>
+      <text x="1180" y="904" font-size="11.5" fill="#1F2430">against the SAME Location ID</text>
+      <text x="1180" y="926" font-size="10.5" fill="#5A5647" font-style="italic">replacement planting recorded as E5 · new census follows</text>
+    </g>
+    <line x1="1170" y1="896" x2="1118" y2="896" stroke="#27467A" stroke-width="2" marker-end="url(#d8-an)"/>
+    <g>
+      <rect x="810" y="864" width="300" height="64" rx="6" fill="#EBEFF6" stroke="#27467A" stroke-width="1.8"/>
+      <text x="824" y="889" font-size="12" font-weight="bold" fill="#27467A">Nursery demand signal</text>
+      <text x="824" y="907" font-size="10.5" fill="#5A5647">replacement demand: species × quantity</text>
+    </g>
+    <path d="M810,896 H758 V150 H438" fill="none" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#d8-an)"/>
+    <text x="600" y="141" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">demand signal to nursery — cycle repeats</text>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 8 · Flow B · Specification §8.2, §7.1, §7.3, §9.4</span></div>
+  </div>
+</section>
+<!-- ============ DIAGRAM 9 — FLOWS C & D ============ -->
+<section class="panel">
+  <h2>Diagram 9 · Flow C — Audit &amp; rectification · Flow D — Remote-sensing corroboration<span class="ref">Specification §8.3 · §8.4</span></h2>
+  <p class="lede">Every audit finding is an independent second observation: the audit-cadre officer is structurally
+  excluded from any parcel where their identity appears in the verification record, and capture is gated by a tag tap
+  that proves presence. Remote sensing corroborates the reported record from above — but its flag is advisory only.
+  It becomes a task for the audit cadre; a human inspection decides, and the analytics flag never alters the record.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow C audit and rectification, Flow D remote-sensing corroboration">
+    <defs>
+      <marker id="d9-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d9-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="d9-au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- legend -->
+    <g font-size="10.5" fill="#1F2430">
+      <rect x="620" y="8" width="14" height="14" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/><text x="640" y="19">field / audit action</text>
+      <rect x="770" y="8" width="14" height="14" fill="#2F3F63" stroke="#27467A" stroke-width="1.6"/><text x="790" y="19">command level</text>
+      <rect x="905" y="8" width="14" height="14" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/><text x="925" y="19">gate · threshold</text>
+      <line x1="1040" y1="15" x2="1080" y2="15" stroke="#27467A" stroke-width="1.4" stroke-dasharray="5 4"/><text x="1088" y="19">advisory — never authoritative</text>
+    </g>
+
+    <line x1="990" y1="40" x2="990" y2="1140" stroke="#D9D2C0" stroke-width="1.5"/>
+
+    <!-- FLOW C header -->
+    <text x="30" y="58" font-family="Georgia,serif" font-size="17" fill="#1C5A33" font-weight="bold">FLOW C — Audit &amp; rectification</text>
+    <text x="330" y="58" font-size="11.5" fill="#5A5647">§8.3 · audit triggers from four sources</text>
+
+    <!-- trigger chips -->
+    <g>
+      <rect x="30" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="42" y="93" font-size="12" font-weight="bold" fill="#1F2430">Scheduled cycle</text>
+      <text x="42" y="110" font-size="10.5" fill="#5A5647">routine audit calendar</text>
+      <rect x="260" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="272" y="93" font-size="12" font-weight="bold" fill="#1F2430">Risk flag</text>
+      <text x="272" y="110" font-size="10.5" fill="#5A5647">parcel risk score</text>
+      <rect x="490" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="502" y="93" font-size="12" font-weight="bold" fill="#1F2430">Grievance</text>
+      <text x="502" y="110" font-size="10.5" fill="#5A5647">issue channel · E11</text>
+      <rect x="720" y="72" width="215" height="52" rx="6" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4"/>
+      <text x="732" y="93" font-size="12" font-weight="bold" fill="#27467A">Analytics anomaly</text>
+      <text x="732" y="110" font-size="10.5" fill="#5A5647">advisory · arrives from Flow D</text>
+    </g>
+    <line x1="137" y1="160" x2="827" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="137" y1="124" x2="137" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="367" y1="124" x2="367" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="597" y1="124" x2="597" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="827" y1="124" x2="827" y2="160" stroke="#1C5A33" stroke-width="1.8"/>
+    <line x1="500" y1="160" x2="500" y2="182" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- assignment -->
+    <g>
+      <rect x="250" y="188" width="500" height="122" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="250" y="188" width="500" height="26" rx="4" fill="#1C5A33"/>
+      <text x="262" y="206" fill="#F7F3E9" font-size="12.5" font-weight="bold">Audit-cadre officer assigned</text>
+      <text x="262" y="232" font-size="11.5" fill="#1F2430">assigned through a separate path from verification tasks · cannot self-select</text>
+      <text x="262" y="254" font-size="11.5" font-weight="bold" fill="#1F2430">structural exclusion — never the verifier of this parcel:</text>
+      <text x="262" y="271" font-size="11.5" fill="#1F2430">the system refuses to assign an identity appearing in the parcel's verification record</text>
+      <text x="262" y="293" font-size="10.5" fill="#5A5647" font-style="italic">attempted breach is logged and surfaced to district command — §7.3</text>
+    </g>
+    <line x1="500" y1="310" x2="500" y2="336" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- tag tap gate -->
+    <g>
+      <rect x="300" y="342" width="400" height="66" rx="4" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="500" y="368" text-anchor="middle" font-size="13" font-weight="bold" fill="#1F2430">TAG TAP GATE — capture cannot begin without a valid tap (E8)</text>
+      <text x="500" y="388" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">a valid NTAG 424 DNA tap is evidence the officer was physically at the parcel</text>
+    </g>
+    <line x1="500" y1="408" x2="500" y2="434" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d9-au)"/>
+
+    <!-- findings -->
+    <g>
+      <rect x="300" y="440" width="400" height="106" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="300" y="440" width="400" height="26" rx="4" fill="#1C5A33"/>
+      <text x="312" y="458" fill="#F7F3E9" font-size="12.5" font-weight="bold">Independent findings recorded — with evidence</text>
+      <text x="312" y="484" font-size="11.5" fill="#1F2430">findings · evidence photographs · pass / flag</text>
+      <text x="312" y="500" font-size="11.5" fill="#1F2430">rectification instruction where flagged</text>
+      <text x="312" y="522" font-size="10.5" fill="#5A5647" font-style="italic">auditor sees only the submitted authoritative record — no shared draft state</text>
+    </g>
+    <line x1="500" y1="546" x2="500" y2="572" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- pass/flag diamond -->
+    <g>
+      <polygon points="500,578 608,630 500,682 392,630" fill="#FDFBF4" stroke="#1C5A33" stroke-width="2"/>
+      <text x="500" y="626" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Finding:</text>
+      <text x="500" y="642" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">pass or flag?</text>
+    </g>
+
+    <!-- pass path -->
+    <line x1="392" y1="630" x2="338" y2="630" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <text x="365" y="621" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">pass</text>
+    <g>
+      <rect x="60" y="598" width="270" height="64" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="74" y="624" font-size="12" font-weight="bold" fill="#1F2430">Pass — logged</text>
+      <text x="74" y="642" font-size="11" fill="#1F2430">parcel risk score updated</text>
+    </g>
+
+    <!-- flag path -->
+    <path d="M500,682 V706" fill="none" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <text x="512" y="700" font-size="10.5" fill="#5A5647" font-style="italic">flag</text>
+    <g>
+      <rect x="310" y="712" width="380" height="88" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="310" y="712" width="380" height="26" rx="4" fill="#1C5A33"/>
+      <text x="322" y="730" fill="#F7F3E9" font-size="12.5" font-weight="bold">Rectification raised</text>
+      <text x="322" y="756" font-size="11.5" fill="#1F2430">named owner · deadline</text>
+      <text x="322" y="778" font-size="10.5" fill="#5A5647" font-style="italic">non-blocking but consequential — an obligation, not a suggestion</text>
+    </g>
+    <line x1="500" y1="800" x2="500" y2="826" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <g>
+      <rect x="310" y="832" width="380" height="60" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="322" y="856" font-size="12" font-weight="bold" fill="#1F2430">Agency rectifies · evidence submitted</text>
+      <text x="322" y="876" font-size="10.5" fill="#5A5647" font-style="italic">rectification evidence attached to the finding</text>
+    </g>
+    <line x1="500" y1="892" x2="500" y2="920" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- re-inspection diamond -->
+    <g>
+      <polygon points="500,926 604,974 500,1022 396,974" fill="#FDFBF4" stroke="#1C5A33" stroke-width="2"/>
+      <text x="500" y="970" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Re-inspection:</text>
+      <text x="500" y="986" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">cleared?</text>
+    </g>
+    <line x1="396" y1="974" x2="332" y2="974" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+    <text x="364" y="965" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">cleared</text>
+    <g>
+      <rect x="90" y="944" width="240" height="60" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <text x="104" y="969" font-size="12" font-weight="bold" fill="#1F2430">Finding closed</text>
+      <text x="104" y="987" font-size="11" fill="#1F2430">closure recorded with evidence</text>
+    </g>
+    <line x1="604" y1="974" x2="692" y2="974" stroke="#27467A" stroke-width="2" marker-end="url(#d9-an)"/>
+    <text x="648" y="965" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">not cleared</text>
+    <g>
+      <rect x="700" y="938" width="260" height="70" rx="4" fill="#2F3F63" stroke="#27467A" stroke-width="2"/>
+      <text x="714" y="966" fill="#F7F3E9" font-size="12.5" font-weight="bold">Escalation · District Command</text>
+      <text x="714" y="986" fill="#D8DEEC" font-size="10.5">escalation acceptance recorded</text>
+    </g>
+    <line x1="830" y1="1008" x2="830" y2="1036" stroke="#27467A" stroke-width="2" marker-end="url(#d9-an)"/>
+    <text x="842" y="1028" font-size="10.5" fill="#5A5647" font-style="italic">repeat breach</text>
+    <g>
+      <rect x="700" y="1042" width="260" height="70" rx="4" fill="#2F3F63" stroke="#27467A" stroke-width="2"/>
+      <text x="714" y="1070" fill="#F7F3E9" font-size="12.5" font-weight="bold">Escalation · State Command</text>
+      <text x="714" y="1090" fill="#D8DEEC" font-size="10.5">statewide exception handling</text>
+    </g>
+
+    <!-- FLOW D header -->
+    <text x="1020" y="58" font-family="Georgia,serif" font-size="17" fill="#1C5A33" font-weight="bold">FLOW D — Remote-sensing corroboration</text>
+    <text x="1382" y="58" font-size="11.5" fill="#5A5647">§8.4</text>
+
+    <!-- E12 -->
+    <g>
+      <rect x="1060" y="72" width="420" height="96" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.8"/>
+      <rect x="1060" y="72" width="420" height="26" rx="4" fill="#1C5A33"/>
+      <text x="1072" y="90" fill="#F7F3E9" font-size="12.5" font-weight="bold">E12 · Remote-sensing ingestion</text>
+      <text x="1072" y="116" font-size="11.5" fill="#1F2430">imagery-derived canopy and change indicators</text>
+      <text x="1072" y="132" font-size="11.5" fill="#1F2430">keyed to parcel geometry</text>
+      <text x="1072" y="154" font-size="10.5" fill="#5A5647" font-style="italic">machine channel — API / file</text>
+    </g>
+    <line x1="1270" y1="168" x2="1270" y2="196" stroke="#1C5A33" stroke-width="2" marker-end="url(#d9-ag)"/>
+
+    <!-- analytics comparison -->
+    <g>
+      <rect x="1060" y="202" width="420" height="96" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8" stroke-dasharray="7 4"/>
+      <text x="1072" y="226" font-size="12.5" font-weight="bold" fill="#27467A">Analytics &amp; Intelligence — comparison</text>
+      <text x="1072" y="248" font-size="11.5" fill="#1F2430">observed canopy change vs reported planting</text>
+      <text x="1072" y="270" font-size="10.5" fill="#5A5647" font-style="italic">Layer 4 — derived, non-authoritative · reads from the record,</text>
+      <text x="1072" y="285" font-size="10.5" fill="#5A5647" font-style="italic">never the source of a fact</text>
+    </g>
+    <line x1="1270" y1="298" x2="1270" y2="330" stroke="#27467A" stroke-width="2" marker-end="url(#d9-an)"/>
+
+    <!-- divergence diamond -->
+    <g>
+      <polygon points="1300,336 1418,390 1300,444 1182,390" fill="#F6EEDC" stroke="#C09A3E" stroke-width="2.6"/>
+      <text x="1300" y="386" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">Divergence beyond</text>
+      <text x="1300" y="402" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">tolerance?</text>
+    </g>
+    <line x1="1182" y1="390" x2="1130" y2="390" stroke="#1C5A33" stroke-width="1.8" marker-end="url(#d9-ag)"/>
+    <g>
+      <rect x="1008" y="362" width="120" height="56" rx="6" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.4"/>
+      <text x="1068" y="386" text-anchor="middle" font-size="10.5" fill="#1F2430">within tolerance</text>
+      <text x="1068" y="402" text-anchor="middle" font-size="10.5" fill="#1F2430">no flag raised</text>
+    </g>
+    <path d="M1300,444 V472" fill="none" stroke="#C09A3E" stroke-width="2.4" marker-end="url(#d9-au)"/>
+    <text x="1312" y="466" font-size="10.5" fill="#5A5647" font-style="italic">beyond tolerance</text>
+
+    <!-- advisory flag -->
+    <g>
+      <rect x="1120" y="478" width="360" height="84" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8" stroke-dasharray="7 4"/>
+      <text x="1132" y="502" font-size="12.5" font-weight="bold" fill="#27467A">Advisory flag raised</text>
+      <text x="1132" y="524" font-size="11.5" fill="#1F2430">divergence recorded as an annotation on the parcel</text>
+      <text x="1132" y="546" font-size="10.5" fill="#5A5647" font-style="italic">the flag never alters the record itself</text>
+    </g>
+    <path d="M1120,520 H975 V98 H942" fill="none" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#d9-an)"/>
+    <text x="958" y="300" font-size="10.5" fill="#5A5647" font-style="italic" transform="rotate(-90 958 300)" text-anchor="middle">flag becomes an audit task — Flow C trigger</text>
+
+    <!-- standing rule -->
+    <g>
+      <rect x="1060" y="620" width="420" height="168" rx="6" fill="#F6EEDC" stroke="#C09A3E" stroke-width="3"/>
+      <text x="1076" y="650" font-family="Georgia,serif" font-size="14.5" font-weight="bold" fill="#1F2430">STANDING RULE — §3, Layer 4</text>
+      <text x="1076" y="678" font-size="11.5" fill="#1F2430">Intelligence services annotate and flag. They never alter,</text>
+      <text x="1076" y="696" font-size="11.5" fill="#1F2430">approve, or originate a record of fact.</text>
+      <text x="1076" y="722" font-size="11.5" fill="#1F2430">A flag raised here becomes a task for a human in Layer 3.</text>
+      <text x="1076" y="748" font-size="11.5" font-weight="bold" fill="#1F2430">An independent audit-cadre inspection decides —</text>
+      <text x="1076" y="766" font-size="11.5" font-weight="bold" fill="#1F2430">the analytics flag never alters the record.</text>
+    </g>
+
+    <!-- why separation note -->
+    <g>
+      <rect x="1060" y="820" width="420" height="120" rx="6" fill="#FDFBF4" stroke="#D9D2C0" stroke-width="1.5"/>
+      <text x="1076" y="848" font-family="Georgia,serif" font-size="13.5" font-weight="bold" fill="#1C5A33">Why the exclusion matters — §7.3</text>
+      <text x="1076" y="874" font-size="11" fill="#1F2430">An auditor who verified the land is auditing their own work.</text>
+      <text x="1076" y="892" font-size="11" fill="#1F2430">Every audit finding in Poshane is an independent second</text>
+      <text x="1076" y="910" font-size="11" fill="#1F2430">observation of the same physical parcel, made by someone</text>
+      <text x="1076" y="928" font-size="11" fill="#1F2430">with no stake in the original entry.</text>
+    </g>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 9 · Flows C &amp; D · Specification §8.3, §8.4, §7.3</span></div>
+  </div>
+</section>
+<!-- ============ DIAGRAM 12 — OFFLINE-FIRST ============ -->
+<section class="panel">
+  <h2>Diagram 12 · Offline-first field operation<span class="ref">Specification §11</span></h2>
+  <p class="lede">Connectivity across 240 taluks cannot be assumed. Field capture is designed as if the network does
+  not exist: the device carries its reference data, capture runs fully offline, and every payload is signed, encrypted
+  and queued in order on the device itself. When connectivity returns, the sync service verifies, orders by device
+  sequence, and commits. Capture never blocks on network — a field officer in a village without coverage is never
+  stopped from working.</p>
+  <div class="figure">
+  <svg viewBox="0 0 1560 1230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Offline-first field operation and sync">
+    <defs>
+      <marker id="d12-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="d12-an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+    </defs>
+
+    <!-- FIELD DEVICE PANEL -->
+    <g>
+      <rect x="20" y="40" width="560" height="536" rx="6" fill="#EAF1EC" stroke="#1C5A33" stroke-width="2.4"/>
+      <rect x="20" y="40" width="560" height="34" rx="6" fill="#1C5A33"/>
+      <text x="36" y="63" fill="#F7F3E9" font-family="Georgia,serif" font-size="15" font-weight="bold">FIELD DEVICE — village, no connectivity assumed</text>
+
+      <rect x="44" y="92" width="512" height="76" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="114" font-size="12" font-weight="bold" fill="#1F2430">1 · Reference data cached locally</text>
+      <text x="58" y="134" font-size="11" fill="#1F2430">assigned parcels · tasks · species master · zone rules</text>
+      <text x="58" y="150" font-size="11" fill="#1F2430">checklists · thresholds</text>
+      <line x1="300" y1="168" x2="300" y2="186" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="190" width="512" height="76" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="212" font-size="12" font-weight="bold" fill="#1F2430">2 · Capture proceeds fully offline</text>
+      <rect x="404" y="198" width="140" height="18" rx="9" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.4"/>
+      <text x="474" y="211" text-anchor="middle" font-size="10" fill="#1F2430">tag tap opens the form</text>
+      <text x="58" y="232" font-size="11" fill="#1F2430">tag tap / scan · forms · photographs · GPS</text>
+      <text x="58" y="250" font-size="10.5" fill="#5A5647" font-style="italic">no network request is made or awaited at any point</text>
+      <line x1="300" y1="266" x2="300" y2="284" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="288" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="310" font-size="12" font-weight="bold" fill="#1F2430">3 · Payload signed on device</text>
+      <text x="58" y="330" font-size="11" fill="#1F2430">tampering between capture and upload is detectable</text>
+      <line x1="300" y1="350" x2="300" y2="368" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="372" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="394" font-size="12" font-weight="bold" fill="#1F2430">4 · Written to an encrypted local store</text>
+      <text x="58" y="414" font-size="11" fill="#1F2430">devices are lost; the data on them is programme data</text>
+      <line x1="300" y1="434" x2="300" y2="452" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+
+      <rect x="44" y="456" width="512" height="76" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.6"/>
+      <text x="58" y="478" font-size="12" font-weight="bold" fill="#1F2430">5 · Enqueued for sync</text>
+      <text x="58" y="498" font-size="11" fill="#1F2430">monotonic device sequence number per payload</text>
+      <text x="58" y="516" font-size="10.5" fill="#5A5647" font-style="italic">queue depth and age visible to the field user</text>
+    </g>
+
+    <!-- CONNECTIVITY BOUNDARY -->
+    <line x1="670" y1="60" x2="670" y2="576" stroke="#C09A3E" stroke-width="2" stroke-dasharray="10 7"/>
+    <text x="670" y="120" font-size="11.5" fill="#1F2430" font-weight="bold" transform="rotate(-90 670 120)" text-anchor="end"> </text>
+    <g>
+      <rect x="600" y="240" width="140" height="96" rx="6" fill="#F7F3E9" stroke="#C09A3E" stroke-width="1.8"/>
+      <text x="670" y="268" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">connectivity</text>
+      <text x="670" y="284" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">returns</text>
+      <text x="670" y="306" text-anchor="middle" font-size="10" fill="#5A5647">opportunistic</text>
+      <text x="670" y="320" text-anchor="middle" font-size="10" fill="#5A5647">resumable · batched</text>
+    </g>
+    <line x1="580" y1="494" x2="752" y2="494" stroke="#1C5A33" stroke-width="2.6" marker-end="url(#d12-ag)"/>
+    <text x="666" y="484" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">signed payloads, in device order</text>
+    <line x1="752" y1="130" x2="580" y2="130" stroke="#27467A" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#d12-an)"/>
+    <text x="666" y="120" text-anchor="middle" font-size="10.5" fill="#5A5647" font-style="italic">reference data refresh</text>
+
+    <!-- SYNC SERVICE PANEL -->
+    <g>
+      <rect x="760" y="40" width="560" height="536" rx="6" fill="#EBEFF6" stroke="#27467A" stroke-width="2.4"/>
+      <rect x="760" y="40" width="560" height="34" rx="6" fill="#27467A"/>
+      <text x="776" y="63" fill="#F7F3E9" font-family="Georgia,serif" font-size="15" font-weight="bold">SYNC SERVICE — on reconnection</text>
+
+      <rect x="784" y="92" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="114" font-size="12" font-weight="bold" fill="#1F2430">1 · Verify signature &amp; device registration</text>
+      <text x="798" y="134" font-size="11" fill="#1F2430">unsigned or unregistered-device payloads do not enter the record</text>
+      <line x1="1040" y1="154" x2="1040" y2="172" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="176" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="198" font-size="12" font-weight="bold" fill="#1F2430">2 · Reject replay</text>
+      <text x="798" y="218" font-size="11" fill="#1F2430">sequence number + payload digest — the same payload commits once</text>
+      <line x1="1040" y1="238" x2="1040" y2="256" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="260" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="282" font-size="12" font-weight="bold" fill="#1F2430">3 · Validate against server-side rules</text>
+      <text x="798" y="302" font-size="11" fill="#1F2430">rules in force at capture time govern; divergence flagged for review</text>
+      <line x1="1040" y1="322" x2="1040" y2="340" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="344" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="366" font-size="12" font-weight="bold" fill="#1F2430">4 · Resolve ordering by device sequence — not arrival time</text>
+      <text x="798" y="386" font-size="11" fill="#1F2430">two visits made in order stay in order, even if uploaded out of order</text>
+      <line x1="1040" y1="406" x2="1040" y2="424" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+
+      <rect x="784" y="428" width="512" height="62" rx="4" fill="#FDFBF4" stroke="#27467A" stroke-width="1.6"/>
+      <text x="798" y="450" font-size="12" font-weight="bold" fill="#1F2430">5 · Commit</text>
+      <text x="798" y="470" font-size="11" fill="#1F2430">write to the operational store · append to the immutable audit log</text>
+
+      <text x="798" y="522" font-size="10.5" fill="#5A5647" font-style="italic">photographs sync separately and resumably — metadata does not wait for imagery</text>
+    </g>
+
+    <!-- stores -->
+    <path d="M1296,459 H1360" fill="none" stroke="#27467A" stroke-width="2" marker-end="url(#d12-an)"/>
+    <g>
+      <path d="M1370,400 a80,14 0 0 0 160,0 v56 a80,14 0 0 1 -160,0 z" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <ellipse cx="1450" cy="400" rx="80" ry="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="1450" y="438" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">Operational store</text>
+      <path d="M1370,510 a80,14 0 0 0 160,0 v56 a80,14 0 0 1 -160,0 z" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <ellipse cx="1450" cy="510" rx="80" ry="14" fill="#FDFBF4" stroke="#27467A" stroke-width="1.8"/>
+      <text x="1450" y="546" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1F2430">Immutable audit log</text>
+      <text x="1450" y="562" text-anchor="middle" font-size="10" fill="#5A5647">append-only</text>
+      <line x1="1450" y1="470" x2="1450" y2="494" stroke="#27467A" stroke-width="1.6" marker-end="url(#d12-an)"/>
+    </g>
+    <text x="1450" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#1C5A33" font-weight="bold">Every commit is</text>
+    <text x="1450" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#1C5A33" font-weight="bold">two writes:</text>
+    <text x="1450" y="160" text-anchor="middle" font-size="10.5" fill="#5A5647">the record, and the</text>
+    <text x="1450" y="175" text-anchor="middle" font-size="10.5" fill="#5A5647">append-only entry</text>
+    <text x="1450" y="190" text-anchor="middle" font-size="10.5" fill="#5A5647">that proves it</text>
+
+    <!-- CENTRAL MESSAGE -->
+    <g>
+      <rect x="20" y="600" width="1525" height="70" rx="6" fill="#F6EEDC" stroke="#C09A3E" stroke-width="3.2"/>
+      <text x="782" y="630" text-anchor="middle" font-family="Georgia,serif" font-size="19" font-weight="bold" fill="#1F2430">CAPTURE NEVER BLOCKS ON NETWORK</text>
+      <text x="782" y="654" text-anchor="middle" font-size="12.5" fill="#1F2430">a field officer in Yadgir — or any village without coverage — is never stopped from working · connectivity is an opportunity to synchronise, not a precondition to work</text>
+    </g>
+
+    <!-- EIGHT DESIGN RULES -->
+    <g>
+      <rect x="20" y="694" width="745" height="492" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2"/>
+      <rect x="20" y="694" width="745" height="32" rx="6" fill="#1C5A33"/>
+      <text x="36" y="716" fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5" font-weight="bold">EIGHT DESIGN RULES — §11.2</text>
+      <text x="36" y="750" font-size="10.5" fill="#5A5647" font-weight="bold">RULE</text>
+      <text x="380" y="750" font-size="10.5" fill="#5A5647" font-weight="bold">RATIONALE</text>
+      <line x1="36" y1="758" x2="749" y2="758" stroke="#D9D2C0" stroke-width="1.2"/>
+
+      <text x="36" y="782" font-size="11.5" font-weight="bold" fill="#1C5A33">1 · Capture never blocks on network</text>
+      <text x="380" y="782" font-size="11" fill="#1F2430">a field officer in Yadgir must not be stopped</text>
+      <text x="380" y="797" font-size="11" fill="#1F2430">by absent coverage</text>
+      <line x1="36" y1="808" x2="749" y2="808" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="832" font-size="11.5" font-weight="bold" fill="#1C5A33">2 · Local store is encrypted</text>
+      <text x="380" y="832" font-size="11" fill="#1F2430">devices are lost; the data on them is</text>
+      <text x="380" y="847" font-size="11" fill="#1F2430">programme data</text>
+      <line x1="36" y1="858" x2="749" y2="858" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="882" font-size="11.5" font-weight="bold" fill="#1C5A33">3 · Payloads are signed at capture</text>
+      <text x="380" y="882" font-size="11" fill="#1F2430">detects tampering between capture</text>
+      <text x="380" y="897" font-size="11" fill="#1F2430">and upload</text>
+      <line x1="36" y1="908" x2="749" y2="908" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="932" font-size="11.5" font-weight="bold" fill="#1C5A33">4 · Sync is idempotent</text>
+      <text x="380" y="932" font-size="11" fill="#1F2430">repeated upload of the same payload</text>
+      <text x="380" y="947" font-size="11" fill="#1F2430">commits once</text>
+      <line x1="36" y1="958" x2="749" y2="958" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="982" font-size="11.5" font-weight="bold" fill="#1C5A33">5 · Ordering follows device sequence</text>
+      <text x="380" y="982" font-size="11" fill="#1F2430">two visits made in order stay in order,</text>
+      <text x="380" y="997" font-size="11" fill="#1F2430">even if uploaded out of order</text>
+      <line x1="36" y1="1008" x2="749" y2="1008" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="1032" font-size="11.5" font-weight="bold" fill="#1C5A33">6 · Photographs sync separately, resumably</text>
+      <text x="380" y="1032" font-size="11" fill="#1F2430">imagery is the bulk of payload weight;</text>
+      <text x="380" y="1047" font-size="11" fill="#1F2430">metadata should not wait for it</text>
+      <line x1="36" y1="1058" x2="749" y2="1058" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="1082" font-size="11.5" font-weight="bold" fill="#1C5A33">7 · Conflicts supersede, never overwrite</text>
+      <text x="380" y="1082" font-size="11" fill="#1F2430">both versions retained; the later becomes</text>
+      <text x="380" y="1097" font-size="11" fill="#1F2430">current, the earlier stays visible</text>
+      <line x1="36" y1="1108" x2="749" y2="1108" stroke="#EDE8DA" stroke-width="1"/>
+
+      <text x="36" y="1132" font-size="11.5" font-weight="bold" fill="#1C5A33">8 · Queue depth and age are visible</text>
+      <text x="380" y="1132" font-size="11" fill="#1F2430">to the field user, to the taluk officer,</text>
+      <text x="380" y="1147" font-size="11" fill="#1F2430">and in the command view</text>
+    </g>
+
+    <!-- CONFLICT HANDLING -->
+    <g>
+      <rect x="785" y="694" width="760" height="290" rx="6" fill="#FFFFFF" stroke="#27467A" stroke-width="2"/>
+      <rect x="785" y="694" width="760" height="32" rx="6" fill="#27467A"/>
+      <text x="801" y="716" fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5" font-weight="bold">CONFLICT HANDLING — §11.3</text>
+      <text x="801" y="748" font-size="10.5" fill="#5A5647" font-style="italic">genuine conflicts are rare — most captures are new observations, not edits</text>
+
+      <text x="801" y="776" font-size="11.5" font-weight="bold" fill="#27467A">1 · Different actors, same parcel, different observations</text>
+      <text x="820" y="793" font-size="11" fill="#1F2430">both retained; both visible — no conflict</text>
+
+      <text x="801" y="820" font-size="11.5" font-weight="bold" fill="#27467A">2 · Same actor, same observation, re-submitted</text>
+      <text x="820" y="837" font-size="11" fill="#1F2430">idempotency key collapses to one record</text>
+
+      <text x="801" y="864" font-size="11.5" font-weight="bold" fill="#27467A">3 · Contradictory authoritative records — e.g. two survival censuses</text>
+      <text x="820" y="881" font-size="11" fill="#1F2430">later supersedes; earlier retained and visible · divergence beyond tolerance</text>
+      <text x="820" y="896" font-size="11" fill="#1F2430">raises an audit task automatically</text>
+
+      <text x="801" y="923" font-size="11.5" font-weight="bold" fill="#27467A">4 · Server-side rule changed between capture and sync</text>
+      <text x="820" y="940" font-size="11" fill="#1F2430">committed against the rules in force at capture time,</text>
+      <text x="820" y="955" font-size="11" fill="#1F2430">and flagged for review under the new rule</text>
+    </g>
+
+    <!-- STALE-DEVICE PROTECTION -->
+    <g>
+      <rect x="785" y="1002" width="760" height="184" rx="6" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2"/>
+      <rect x="785" y="1002" width="760" height="32" rx="6" fill="#1C5A33"/>
+      <text x="801" y="1024" fill="#F7F3E9" font-family="Georgia,serif" font-size="14.5" font-weight="bold">STALE-DEVICE PROTECTION — §11.4</text>
+
+      <rect x="801" y="1052" width="212" height="60" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.5"/>
+      <text x="815" y="1075" font-size="11" font-weight="bold" fill="#1F2430">Device not synchronised</text>
+      <text x="815" y="1091" font-size="11" fill="#1F2430">beyond configured period</text>
+      <line x1="1013" y1="1082" x2="1043" y2="1082" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+      <rect x="1049" y="1052" width="150" height="60" rx="4" fill="#F6EEDC" stroke="#C09A3E" stroke-width="1.8"/>
+      <text x="1063" y="1075" font-size="11" font-weight="bold" fill="#1F2430">Marked stale</text>
+      <text x="1063" y="1091" font-size="10.5" fill="#1F2430">user warned prominently</text>
+      <line x1="1199" y1="1082" x2="1229" y2="1082" stroke="#1C5A33" stroke-width="2" marker-end="url(#d12-ag)"/>
+      <rect x="1235" y="1052" width="292" height="60" rx="4" fill="#FDFBF4" stroke="#1C5A33" stroke-width="1.5"/>
+      <text x="1249" y="1075" font-size="11" font-weight="bold" fill="#1F2430">Capture continues — work must not stop</text>
+      <text x="1249" y="1091" font-size="11" fill="#1F2430">submissions flagged for review on sync</text>
+
+      <text x="801" y="1146" font-size="10.5" fill="#5A5647" font-style="italic">staleness affects how a submission is reviewed — never whether the officer may work</text>
+    </g>
+  </svg>
+  <div class="figfoot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Diagram 12 · Offline-first field operation · Specification §11</span></div>
+  </div>
+</section>
+
+<footer class="doc-footer">
+  Prepared by Grobet India Agrotech Pvt Ltd as Technology Partner. Architecture baseline issued for review by KSLSA
+  and the Institution of Agroforestry Farmers and Technologists. Diagrams 7–9 &amp; 12 of the fifteen-diagram set —
+  companion to Diagrams 1–3 (structure &amp; context) and 4–6 (identity, gate, entry points).
+</footer>
+</body>
+</html>

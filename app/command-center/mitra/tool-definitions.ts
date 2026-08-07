@@ -112,6 +112,21 @@ export const POSHANE_MITRA_TOOL_DEFINITIONS: RealtimeToolDefinition[] = [
   },
   {
     type: "function",
+    name: "poshane_get_taluk_progress",
+    description:
+      "Search or read a Karnataka taluk operational split including parent district, programme share, Year-1 target, planted stock, progress, survival, NGOs, volunteers, nurseries, land split, zone, and species.",
+    parameters: {
+      type: "object",
+      properties: {
+        taluk: { type: "string", description: "Taluk name or command-center taluk code." },
+        district: { type: "string", description: "Optional parent district name or code, used to disambiguate taluk names." },
+      },
+      required: ["taluk"],
+      additionalProperties: false,
+    },
+  },
+  {
+    type: "function",
     name: "poshane_compare_districts",
     description:
       "Compare two or more districts using the district metrics available in the command center.",
@@ -272,7 +287,7 @@ export const POSHANE_MITRA_TOOL_DEFINITIONS: RealtimeToolDefinition[] = [
     type: "function",
     name: "poshane_navigate_command_center",
     description:
-      "Navigate the existing command-center UI to a module or district. Use immediately when the user says open, show, display, go to, take me to, or asks about a module such as Monitoring and Audit. Read-only; never modifies records.",
+      "Navigate the existing command-center UI to a module, district, or taluk. Use immediately when the user says open, show, display, go to, take me to, or asks about a module such as Monitoring and Audit. Use taluk_drill_down for taluk-level records and data_flow_schematics for architecture diagrams or system data flow. Read-only; never modifies records.",
     parameters: {
       type: "object",
       properties: {
@@ -281,14 +296,17 @@ export const POSHANE_MITRA_TOOL_DEFINITIONS: RealtimeToolDefinition[] = [
           enum: [
             "state_overview",
             "district_drill_down",
+            "taluk_drill_down",
             "land_ownership",
             "stakeholders",
             "species_planning",
             "monitoring_audit",
             "financials",
+            "data_flow_schematics",
           ],
         },
         district: { type: "string" },
+        taluk: { type: "string" },
       },
       required: ["module"],
       additionalProperties: false,

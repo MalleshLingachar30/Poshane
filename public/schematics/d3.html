@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D3</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E;
+    --bg:#F7F3E9; --ink:#1F2430; --muted:#6B6F7B;
+    --panel:#FFFFFF; --green-tint:#EAF1EB; --navy-tint:#EAEEF5; --gold-tint:#F6EEDC;
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:-apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--ink); font-family:var(--sans);}
+  .wrap{max-width:1680px; margin:0 auto; padding:36px 40px 60px;}
+
+  /* Document masthead */
+  header.masthead{border-bottom:3px solid var(--green); padding-bottom:22px; margin-bottom:34px;}
+  header.masthead .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--navy); font-weight:600;}
+  header.masthead h1{font-family:var(--serif); font-size:34px; font-weight:600; color:var(--green); margin:8px 0 4px;}
+  header.masthead .sub{font-size:14.5px; color:var(--ink); margin-bottom:6px;}
+  header.masthead .meta{font-size:12px; color:var(--muted);}
+
+  section.panel{background:var(--panel); border:1px solid #DDD6C6; border-top:4px solid var(--green);
+    padding:26px 30px 22px; margin-bottom:40px; break-inside:avoid; page-break-inside:avoid;}
+  section.panel .dnum{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  section.panel h2{font-family:var(--serif); font-size:25px; font-weight:600; color:var(--green); margin:6px 0 2px;}
+  section.panel .specref{font-size:12px; color:var(--muted); margin-bottom:16px;}
+  section.panel svg{width:100%; height:auto; display:block;}
+  section.panel p.explain{font-size:13.5px; line-height:1.6; color:var(--ink); margin-top:16px;
+    border-left:3px solid var(--navy); padding-left:14px; max-width:1250px;}
+
+  footer.docfoot{font-size:11.5px; color:var(--muted); border-top:1px solid #DDD6C6; padding-top:14px;}
+
+  /* SVG shared text styling */
+  svg text{font-family:var(--sans);}
+  svg .serif{font-family:var(--serif);}
+
+  @media print{
+    @page{size:A3 landscape; margin:10mm;}
+    html,body{background:#FFFFFF;}
+    body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:none; padding:0;}
+    header.masthead{margin-bottom:16px;}
+    section.panel{page-break-after:always; border:1px solid #CFC8B8; margin-bottom:0;}
+    section.panel:last-of-type{page-break-after:auto;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+  <div class="dnum">Diagram 3</div>
+  <h2>Command Hierarchy &amp; Escalation</h2>
+  <div class="specref">Specification §4 — the geographic backbone, three command levels, and the two recorded flows between them</div>
+
+  <svg viewBox="0 0 1580 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Command hierarchy and escalation diagram">
+    <defs>
+      <marker id="ah-g3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+      <marker id="ah-n3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8.5" markerHeight="8.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27467A"/></marker>
+      <marker id="ah-au3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8.5" markerHeight="8.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C09A3E"/></marker>
+    </defs>
+
+    <!-- ===== LEFT: GEOGRAPHIC BACKBONE ===== -->
+    <text x="270" y="56" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#1C5A33" font-weight="700">GEOGRAPHIC BACKBONE</text>
+    <text x="270" y="74" text-anchor="middle" font-size="9.5" fill="#6B6F7B" font-style="italic">the backbone of both navigation and authority</text>
+
+    <rect x="120" y="90" width="300" height="82" fill="#1C5A33"/>
+    <text x="270" y="124" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">State</text>
+    <text x="270" y="146" text-anchor="middle" font-size="9.5" fill="#FFFFFF" fill-opacity=".85">Karnataka</text>
+    <line x1="270" y1="172" x2="270" y2="212" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+    <text x="286" y="197" font-size="10" font-weight="700" fill="#1C5A33">× 35</text>
+
+    <rect x="120" y="216" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="250" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">District</text>
+    <text x="270" y="272" text-anchor="middle" font-size="9.5" fill="#6B6F7B">35 districts</text>
+    <line x1="270" y1="298" x2="270" y2="338" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+    <text x="286" y="323" font-size="10" font-weight="700" fill="#1C5A33">× 240</text>
+
+    <rect x="120" y="342" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="376" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Taluk</text>
+    <text x="270" y="398" text-anchor="middle" font-size="9.5" fill="#6B6F7B">240 taluks</text>
+    <line x1="270" y1="424" x2="270" y2="464" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+
+    <rect x="120" y="468" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="502" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Site / Parcel</text>
+    <text x="270" y="524" text-anchor="middle" font-size="9.5" fill="#6B6F7B">the unit of physical work</text>
+    <line x1="270" y1="550" x2="270" y2="590" stroke="#1C5A33" stroke-width="2" marker-end="url(#ah-g3)"/>
+
+    <rect x="120" y="594" width="300" height="82" fill="#FFFFFF" stroke="#1C5A33" stroke-width="1.6"/>
+    <text x="270" y="628" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1C5A33">Batch</text>
+    <text x="270" y="650" text-anchor="middle" font-size="9.5" fill="#6B6F7B">a planting event within a parcel</text>
+    <line x1="270" y1="676" x2="270" y2="708" stroke="#1C5A33" stroke-width="1.4" stroke-dasharray="4 4"/>
+    <rect x="130" y="712" width="280" height="52" fill="none" stroke="#1C5A33" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="270" y="734" text-anchor="middle" font-size="9.5" fill="#1F2430">Sapling population</text>
+    <text x="270" y="750" text-anchor="middle" font-size="8.6" fill="#6B6F7B">counted, sampled — not individually tagged</text>
+
+    <!-- ===== MIDDLE: THE TWO RECORDED FLOWS ===== -->
+    <!-- Escalation (gold, upward) -->
+    <line x1="700" y1="790" x2="700" y2="106" stroke="#C09A3E" stroke-width="3.4" marker-end="url(#ah-au3)"/>
+    <text x="672" y="448" font-size="12" font-weight="700" fill="#C09A3E" letter-spacing="2.5" transform="rotate(-90 672 448)" text-anchor="middle">ESCALATION — UPWARD ON THRESHOLD BREACH</text>
+    <!-- Trigger ticks on the escalation arrow -->
+    <g stroke="#C09A3E" stroke-width="2.4">
+      <line x1="688" y1="300" x2="712" y2="300"/>
+      <line x1="688" y1="420" x2="712" y2="420"/>
+      <line x1="688" y1="540" x2="712" y2="540"/>
+    </g>
+    <g font-size="10" fill="#1F2430" text-anchor="end">
+      <text x="660" y="296">survival below threshold at census</text>
+      <text x="660" y="310" fill="#6B6F7B" font-size="8.8">casualty replacement raised (§8.2)</text>
+      <text x="660" y="416">repeated audit flags</text>
+      <text x="660" y="430" fill="#6B6F7B" font-size="8.8">not cleared on re-inspection → district; repeat breach → state (§8.3)</text>
+      <text x="660" y="536">rectification unresolved past deadline</text>
+      <text x="660" y="550" fill="#6B6F7B" font-size="8.8">carries a named owner and a deadline</text>
+    </g>
+
+    <!-- Direction (navy, downward) -->
+    <line x1="850" y1="106" x2="850" y2="790" stroke="#27467A" stroke-width="3.4" marker-end="url(#ah-n3)"/>
+    <text x="878" y="448" font-size="12" font-weight="700" fill="#27467A" letter-spacing="2.5" transform="rotate(90 878 448)" text-anchor="middle">DIRECTION &amp; INSTRUCTION — DOWNWARD</text>
+
+    <text x="775" y="828" text-anchor="middle" font-size="10.5" font-style="italic" fill="#1F2430">both flows are recorded</text>
+
+    <!-- ===== RIGHT: THREE COMMAND LEVELS ===== -->
+    <text x="1260" y="56" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#27467A" font-weight="700">COMMAND LEVELS</text>
+
+    <!-- State Command -->
+    <g>
+      <rect x="980" y="80" width="560" height="200" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6"/>
+      <rect x="980" y="80" width="560" height="46" fill="#27467A"/>
+      <text x="1000" y="109" font-size="13" font-weight="700" fill="#FFFFFF">STATE COMMAND</text>
+      <text x="1520" y="109" text-anchor="end" font-size="10" fill="#FFFFFF" fill-opacity=".85">KSLSA · IAFT PMU</text>
+      <text x="1000" y="156" font-size="10" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1060" y="156" font-size="10.5" fill="#1F2430">all 35 districts, aggregated · drill to any parcel</text>
+      <text x="1000" y="192" font-size="10" font-weight="700" fill="#C09A3E">ACTS ON</text>
+      <text x="1078" y="192" font-size="10.5" fill="#1F2430">policy thresholds · statewide exceptions</text>
+      <text x="1078" y="210" font-size="10.5" fill="#1F2430">programme-level decisions</text>
+      <text x="1000" y="252" font-size="9" fill="#6B6F7B" font-style="italic">receives repeat-breach escalations from district command</text>
+    </g>
+
+    <!-- District Command -->
+    <g>
+      <rect x="980" y="330" width="560" height="200" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6"/>
+      <rect x="980" y="330" width="560" height="46" fill="#27467A"/>
+      <text x="1000" y="359" font-size="13" font-weight="700" fill="#FFFFFF">DISTRICT COMMAND</text>
+      <text x="1520" y="359" text-anchor="end" font-size="10" fill="#FFFFFF" fill-opacity=".85">District administration · DFO-level</text>
+      <text x="1000" y="406" font-size="10" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1060" y="406" font-size="10.5" fill="#1F2430">one district · all its taluks and parcels</text>
+      <text x="1000" y="442" font-size="10" font-weight="700" fill="#C09A3E">ACTS ON</text>
+      <text x="1078" y="442" font-size="10.5" fill="#1F2430">district exceptions · resource reallocation</text>
+      <text x="1078" y="460" font-size="10.5" fill="#1F2430">escalation acceptance</text>
+      <text x="1000" y="502" font-size="9" fill="#6B6F7B" font-style="italic">also receives twice-rejected parcels flagged for district review (§6.3)</text>
+    </g>
+
+    <!-- Taluk / Field Command -->
+    <g>
+      <rect x="980" y="580" width="560" height="200" fill="#FFFFFF" stroke="#27467A" stroke-width="1.6"/>
+      <rect x="980" y="580" width="560" height="46" fill="#27467A"/>
+      <text x="1000" y="609" font-size="13" font-weight="700" fill="#FFFFFF">TALUK / FIELD COMMAND</text>
+      <text x="1520" y="609" text-anchor="end" font-size="9.4" fill="#FFFFFF" fill-opacity=".85">Taluk officers · verification cadre · implementing agencies</text>
+      <text x="1000" y="656" font-size="10" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1060" y="656" font-size="10.5" fill="#1F2430">one taluk · assigned parcels</text>
+      <text x="1000" y="692" font-size="10" font-weight="700" fill="#C09A3E">ACTS ON</text>
+      <text x="1078" y="692" font-size="10.5" fill="#1F2430">field execution · verification · rectification</text>
+      <text x="1000" y="734" font-size="9" fill="#6B6F7B" font-style="italic">scope is enforced at the data layer — a taluk user cannot see the adjacent taluk (§9)</text>
+    </g>
+
+    <!-- Footer -->
+    <text x="790" y="878" text-anchor="middle" font-size="11" font-style="italic" fill="#6B6F7B">Architecture baseline — issued for review. Illustrative of system structure.</text>
+  </svg>
+
+  <p class="explain">The programme's geography — State, 35 districts, 240 taluks, then the parcel as the unit of physical work
+  and the batch as a planting event within it — is the backbone of both navigation and authority. Three command levels operate
+  on that backbone with strictly scoped visibility: state sees everything aggregated and can drill to any parcel, a district
+  sees only its own taluks and parcels, and a taluk sees only assigned parcels. Between them run two recorded flows: escalation
+  moves upward on threshold breach — survival falling below threshold at census, audit flags not cleared on re-inspection, or a
+  rectification left unresolved past its deadline — while direction and instruction move downward. Repeat breaches escalate
+  from district to state command.</p>
+</section>
+</div>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

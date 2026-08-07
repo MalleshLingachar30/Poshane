@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D15</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --paper:#F7F3E9; --ink:#1F2430;
+    --green-tint:#E8F0EA; --navy-tint:#E9EDF5; --gold-tint:#F7EFDC; --line:#D8D2C2; --card:#FFFDF8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    padding:28px 34px; line-height:1.45; font-size:15px;
+  }
+  .doc-head{max-width:1560px; margin:0 auto 26px auto; border-bottom:3px solid var(--green); padding-bottom:16px;}
+  .doc-head h1{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:30px; font-weight:700; letter-spacing:0.2px;}
+  .doc-head .sub{color:var(--navy); font-size:15px; margin-top:4px; font-weight:600;}
+  .doc-head .meta{color:#5A5F6B; font-size:12.5px; margin-top:6px;}
+  .panel{
+    max-width:1560px; margin:0 auto 40px auto; background:var(--card);
+    border:1px solid var(--line); border-top:5px solid var(--green);
+    padding:26px 30px 18px 30px; page-break-after:always; break-after:page;
+  }
+  .panel:last-of-type{page-break-after:auto; break-after:auto;}
+  .panel.gov{border-top-color:var(--navy);}
+  .eyebrow{font-size:11.5px; letter-spacing:2.2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:24px; font-weight:700; margin-bottom:6px;}
+  .panel.gov h2{color:var(--navy);}
+  .panel .lede{font-size:14.5px; color:#3A3F4A; max-width:1150px; margin-bottom:18px;}
+  .panel h3{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--navy); font-size:17px; margin:22px 0 8px 0;}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;}
+  .serif{font-family:Fraunces,Georgia,"Times New Roman",serif;}
+  .foot{
+    border-top:1px solid var(--line); margin-top:18px; padding-top:8px;
+    font-size:11px; color:#6A6F7A; display:flex; justify-content:space-between; gap:16px;
+  }
+  /* ---------- permission matrix ---------- */
+  .matrix-wrap{overflow-x:auto; margin-top:10px;}
+  table.pmatrix{border-collapse:collapse; width:100%; font-size:12px;}
+  table.pmatrix thead th{
+    background:var(--navy); color:#FFFFFF; padding:8px 4px; vertical-align:bottom;
+    border:1px solid #1E3760; font-weight:600; font-size:11px;
+  }
+  table.pmatrix thead th span{display:inline-block; writing-mode:vertical-rl; transform:rotate(180deg); max-height:118px; line-height:1.1;}
+  table.pmatrix thead th.corner{text-align:left; vertical-align:middle; min-width:260px;}
+  table.pmatrix thead th.corner .axis, table.pmatrix thead th.corner .axis2{writing-mode:horizontal-tb; transform:none; display:block; font-size:10px; font-weight:400; color:#C9D4E8;}
+  table.pmatrix tbody th{
+    text-align:left; padding:5px 10px; border:1px solid var(--line); background:var(--green-tint);
+    font-weight:600; color:var(--ink); white-space:nowrap;
+  }
+  table.pmatrix tbody th .rname{display:block; font-size:12px;}
+  table.pmatrix tbody th .rscope{display:block; font-size:10px; font-weight:400; color:#55604F;}
+  table.pmatrix tbody td{border:1px solid var(--line); text-align:center; padding:4px 2px; min-width:44px; background:#FFFFFF;}
+  table.pmatrix tbody tr:nth-child(even) td{background:#FBF8F0;}
+  .cell{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; position:relative;}
+  .cell.full{background:var(--green);}
+  .cell.scoped{background:linear-gradient(135deg, var(--green) 50%, #FFFFFF 50%); border:1.5px solid var(--green);}
+  .cell.ro{background:#FFFFFF; border:2px solid var(--navy); border-radius:50%; width:12px; height:12px;}
+  .cell.none{background:#DDD8CB; width:6px; height:6px; border-radius:50%;}
+  .cell.stepup::after{content:"▲"; position:absolute; top:-9px; right:-9px; font-size:9px; color:var(--gold);}
+  .legend{display:flex; flex-wrap:wrap; gap:22px; align-items:center; margin:10px 0 4px 0; font-size:12px; color:#3A3F4A;}
+  .legend .cell{margin-right:6px;}
+  /* ---------- separation-of-duties panel ---------- */
+  .sod{
+    border:2px solid var(--gold); background:var(--gold-tint); border-radius:6px;
+    padding:16px 20px; margin-top:20px;
+  }
+  .sod h3{margin:0 0 10px 0; color:var(--ink); font-size:17px;}
+  .sod h3 .tag{color:var(--gold);}
+  .sod-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px 18px;}
+  .sod-item{background:#FFFDF6; border:1px solid #E0CE9E; border-radius:5px; padding:10px 12px; font-size:12.5px;}
+  .sod-item b{display:block; color:var(--navy); font-size:12.5px; margin-bottom:3px;}
+  .sod-item.key{border:2px solid var(--gold); background:#FFF9E8;}
+  .sod-item.key b{color:var(--green);}
+  .stepup-strip{
+    margin-top:14px; border-left:5px solid var(--gold); background:#FFFDF6; padding:10px 16px; font-size:13px;
+  }
+  .stepup-strip b{color:var(--navy);}
+  /* ---------- boundary + generic tables ---------- */
+  table.spec{border-collapse:collapse; width:100%; font-size:13px; margin-top:8px;}
+  table.spec th{background:var(--green); color:#fff; text-align:left; padding:8px 12px; border:1px solid #164628; font-weight:600;}
+  table.spec.navy th{background:var(--navy); border-color:#1E3760;}
+  table.spec td{border:1px solid var(--line); padding:7px 12px; background:#FFFFFF; vertical-align:top;}
+  table.spec tr:nth-child(even) td{background:#FBF8F0;}
+  table.spec td.inplat{color:var(--green); font-weight:700;}
+  table.spec td.outplat{color:var(--navy); font-weight:700;}
+  table.spec td.never{color:#8A2F2A; font-weight:700;}
+  .callout{
+    margin-top:16px; border:2px solid var(--navy); background:var(--navy-tint); border-radius:6px;
+    padding:14px 20px; font-size:14.5px; color:var(--ink);
+  }
+  .callout .q{font-family:Fraunces,Georgia,serif; font-style:italic; color:var(--navy); font-size:16px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  @media (max-width:900px){ .sod-grid{grid-template-columns:1fr;} .two-col{grid-template-columns:1fr;} }
+  @page{size:A3 landscape; margin:12mm;}
+  @media print{
+    body{padding:0; background:#FFFFFF;}
+    .panel{border:1px solid var(--line); box-shadow:none; margin-bottom:0;}
+    .matrix-wrap{overflow:visible;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel">
+  <div class="eyebrow">Diagram 15 · Specification §14</div>
+  <h2>Conceptual Data Model — Parcel and Location ID as the Spine</h2>
+  <p class="lede">The principal entities and their relationships, grouped by domain. Everything joins back to the
+  spine at the centre: one Parcel holds exactly one Location ID; one Location ID is served by many physical Tag
+  Instances over time; one Parcel receives many Batches. Survival Census is written against Parcel +
+  Batch and Audit against Parcel; authority flows from Identity through Role Assignment to Scope; and an Audit Log Entry can attach to any
+  entity in the model. This is the conceptual model, not a schema.</p>
+
+  <svg viewBox="0 0 1500 920" role="img" aria-label="Entity-relationship diagram of the conceptual data model">
+    <defs>
+      <marker id="dotE" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6"><circle cx="4" cy="4" r="3" fill="#1F2430"/></marker>
+    </defs>
+    <style>
+      .ent{fill:#FFFFFF; stroke-width:2;}
+      .ename{font-size:12.5px; font-weight:700;}
+      .edetail{font-size:10.5px; fill:#5A5F6B;}
+      .card{font-size:11px; font-weight:700; fill:#1F2430;}
+      .rel{stroke:#8B8F99; stroke-width:1.6; fill:none;}
+      .rellbl{font-size:10px; fill:#6A6F7A; font-style:italic;}
+      .grp{font-size:12px; font-weight:700; letter-spacing:1.5px;}
+    </style>
+
+    <!-- ===== domain group frames ===== -->
+    <rect x="24" y="30" width="440" height="200" rx="10" fill="#E8F0EA" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="44" y="54" class="grp" fill="#1C5A33">GEOGRAPHY</text>
+    <rect x="1024" y="30" width="452" height="240" rx="10" fill="#E9EDF5" stroke="#27467A" stroke-width="1.5"/>
+    <text x="1044" y="54" class="grp" fill="#27467A">PEOPLE &amp; IDENTITY</text>
+    <rect x="24" y="290" width="440" height="290" rx="10" fill="#E8F0EA" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="44" y="314" class="grp" fill="#1C5A33">LAND</text>
+    <rect x="510" y="300" width="470" height="300" rx="10" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="530" y="324" class="grp" fill="#8A6A1E">THE SPINE — PARCEL · LOCATION ID</text>
+    <rect x="1024" y="300" width="452" height="300" rx="10" fill="#E8F0EA" stroke="#1C5A33" stroke-width="1.5"/>
+    <text x="1044" y="324" class="grp" fill="#1C5A33">PLANTING</text>
+    <rect x="310" y="650" width="810" height="240" rx="10" fill="#E9EDF5" stroke="#27467A" stroke-width="1.5"/>
+    <text x="330" y="674" class="grp" fill="#27467A">ASSURANCE</text>
+    <rect x="1150" y="650" width="326" height="240" rx="10" fill="#FFF9E8" stroke="#C09A3E" stroke-width="1.5"/>
+    <text x="1170" y="674" class="grp" fill="#8A6A1E">CERTIFICATION</text>
+
+    <!-- ===== geography ===== -->
+    <rect x="48" y="72" width="190" height="86" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="60" y="92" class="ename" fill="#1C5A33">Administrative Unit</text>
+    <text x="60" y="110" class="edetail">State → District → Taluk</text>
+    <text x="60" y="124" class="edetail">hierarchical self-reference</text>
+    <path class="rel" d="M 100 72 C 84 46, 164 46, 148 72"/>
+    <text x="124" y="44" text-anchor="middle" class="rellbl">contains</text>
+
+    <rect x="268" y="72" width="176" height="86" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="280" y="92" class="ename" fill="#1C5A33">Agro-Climatic Zone</text>
+    <text x="280" y="110" class="edetail">Spans districts; governs</text>
+    <text x="280" y="124" class="edetail">eligible species</text>
+
+    <!-- Admin Unit to Parcel -->
+    <path class="rel" d="M 143 158 L 143 200 L 620 200 L 620 372" stroke-width="1.8"/>
+    <text x="150" y="182" class="card">1</text><text x="600" y="366" class="card">∗</text>
+    <text x="380" y="194" class="rellbl">a Parcel belongs to a Taluk</text>
+
+    <!-- Zone to Species -->
+    <path class="rel" d="M 356 158 L 356 284 L 1362 284 L 1362 340"/>
+    <text x="364" y="174" class="card">1</text><text x="1370" y="334" class="card">∗</text>
+    <text x="870" y="278" class="rellbl">zone governs species eligibility</text>
+
+    <!-- ===== people & identity ===== -->
+    <rect x="1044" y="72" width="196" height="72" rx="6" class="ent" stroke="#27467A"/>
+    <text x="1056" y="92" class="ename" fill="#27467A">Organisation</text>
+    <text x="1056" y="110" class="edetail">NGO · department · nursery ·</text>
+    <text x="1056" y="124" class="edetail">donor · institution</text>
+
+    <rect x="1264" y="72" width="196" height="72" rx="6" class="ent" stroke="#27467A"/>
+    <text x="1276" y="92" class="ename" fill="#27467A">Person / Identity</text>
+    <text x="1276" y="110" class="edetail">Holds roles; each role</text>
+    <text x="1276" y="124" class="edetail">carries scope</text>
+
+    <rect x="1264" y="176" width="196" height="76" rx="6" class="ent" stroke="#27467A" stroke-width="2.5"/>
+    <text x="1276" y="196" class="ename" fill="#27467A">Role Assignment</text>
+    <text x="1276" y="214" class="edetail">Identity × Role × Scope,</text>
+    <text x="1276" y="228" class="edetail">with validity period</text>
+    <text x="1276" y="244" class="edetail" fill="#8A6A1E">→ Scope (geography, §9)</text>
+
+    <rect x="1044" y="176" width="196" height="76" rx="6" class="ent" stroke="#27467A"/>
+    <text x="1056" y="196" class="ename" fill="#27467A">Device</text>
+    <text x="1056" y="214" class="edetail">Registered to an Identity;</text>
+    <text x="1056" y="228" class="edetail">carries sync state</text>
+
+    <path class="rel" d="M 1362 144 L 1362 176"/>
+    <text x="1368" y="158" class="card">1</text><text x="1368" y="174" class="card">∗</text>
+    <path class="rel" d="M 1240 108 L 1264 108"/>
+    <path class="rel" d="M 1142 176 L 1142 160 L 1300 160 L 1300 144"/>
+    <text x="1150" y="172" class="card">∗</text><text x="1288" y="156" class="card">1</text>
+
+    <!-- ===== spine ===== -->
+    <rect x="534" y="352" width="200" height="120" rx="8" class="ent" stroke="#1C5A33" stroke-width="3.5"/>
+    <text x="548" y="376" class="ename" fill="#1C5A33" font-size="15">PARCEL</text>
+    <text x="548" y="396" class="edetail">Belongs to Taluk · geometry ·</text>
+    <text x="548" y="410" class="edetail">land type · land record reference</text>
+    <text x="548" y="424" class="edetail">(survey no., RTC / Bhoomi)</text>
+    <text x="548" y="444" class="edetail" fill="#1C5A33" font-weight="700">Holds one Location ID</text>
+
+    <rect x="800" y="352" width="164" height="90" rx="8" class="ent" stroke="#C09A3E" stroke-width="3.5"/>
+    <text x="814" y="376" class="ename" fill="#8A6A1E" font-size="14">LOCATION ID</text>
+    <text x="814" y="394" class="edetail">Tag identity of the parcel</text>
+    <text x="814" y="408" class="edetail">— the permanent join key</text>
+
+    <path d="M 734 400 L 800 400" stroke="#C09A3E" stroke-width="4"/>
+    <text x="742" y="392" class="card">1</text><text x="786" y="392" class="card">1</text>
+    <text x="767" y="418" text-anchor="middle" class="rellbl">one-to-one</text>
+
+    <rect x="800" y="496" width="164" height="84" rx="6" class="ent" stroke="#C09A3E" stroke-width="2"/>
+    <text x="814" y="516" class="ename" fill="#8A6A1E">Tag Instance</text>
+    <text x="814" y="534" class="edetail">Physical tag bound to a</text>
+    <text x="814" y="548" class="edetail">Location ID; issue, bind,</text>
+    <text x="814" y="562" class="edetail">replace, retire events</text>
+    <path class="rel" d="M 882 442 L 882 496" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="890" y="458" class="card">1</text><text x="890" y="492" class="card">∗</text>
+    <text x="896" y="474" class="rellbl">over time</text>
+
+    <!-- ===== land ===== -->
+    <rect x="48" y="336" width="200" height="90" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="60" y="356" class="ename" fill="#1C5A33">Custody Assignment</text>
+    <text x="60" y="374" class="edetail">Parcel ↔ custodian body;</text>
+    <text x="60" y="388" class="edetail">type, obligation period,</text>
+    <text x="60" y="402" class="edetail">acceptance record</text>
+    <path class="rel" d="M 248 380 L 534 380"/>
+    <text x="254" y="374" class="card">∗</text><text x="520" y="374" class="card">1</text>
+
+    <rect x="48" y="452" width="200" height="104" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="60" y="472" class="ename" fill="#1C5A33">Verification Record</text>
+    <text x="60" y="490" class="edetail">Parcel ↔ verification-cadre</text>
+    <text x="60" y="504" class="edetail">identity; verified land</text>
+    <text x="60" y="518" class="edetail">parameters, gating decision,</text>
+    <text x="60" y="532" class="edetail">evidence</text>
+    <path class="rel" d="M 248 500 L 500 500 L 534 452"/>
+    <text x="254" y="494" class="card">∗</text><text x="514" y="470" class="card">1</text>
+    <path class="rel" d="M 248 472 L 280 472 L 280 262 L 1362 262 L 1362 252" stroke-dasharray="4 4"/>
+    <text x="720" y="256" class="rellbl">verified by a verification-cadre identity (role assignment in force)</text>
+
+    <!-- ===== planting ===== -->
+    <rect x="1044" y="340" width="196" height="96" rx="6" class="ent" stroke="#1C5A33" stroke-width="2.5"/>
+    <text x="1056" y="360" class="ename" fill="#1C5A33">Batch</text>
+    <text x="1056" y="378" class="edetail">A planting event on a Parcel;</text>
+    <text x="1056" y="392" class="edetail">species composition, counts,</text>
+    <text x="1056" y="406" class="edetail">date, nursery source</text>
+    <path class="rel" d="M 734 460 L 1006 460 L 1044 412" stroke-width="2"/>
+    <text x="742" y="454" class="card">1</text><text x="1024" y="420" class="card">∗</text>
+    <text x="990" y="452" text-anchor="end" class="rellbl">one parcel, many batches</text>
+
+    <rect x="1264" y="340" width="196" height="76" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="1276" y="360" class="ename" fill="#1C5A33">Species</text>
+    <text x="1276" y="378" class="edetail">Master list; eligibility</text>
+    <text x="1276" y="392" class="edetail">by Zone</text>
+    <path class="rel" d="M 1240 380 L 1264 380"/>
+    <text x="1243" y="374" class="card">∗</text><text x="1259" y="374" class="card">∗</text>
+
+    <rect x="1264" y="440" width="196" height="76" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="1276" y="460" class="ename" fill="#1C5A33">Nursery</text>
+    <text x="1276" y="478" class="edetail">Supplies batches; stock and</text>
+    <text x="1276" y="492" class="edetail">provenance records</text>
+    <path class="rel" d="M 1264 478 L 1248 478 L 1248 428 L 1240 428"/>
+    <text x="1252" y="470" class="card">1</text><text x="1246" y="420" text-anchor="end" class="card">∗</text>
+
+    <rect x="1044" y="480" width="196" height="96" rx="6" class="ent" stroke="#1C5A33"/>
+    <text x="1056" y="500" class="ename" fill="#1C5A33">Maintenance Record</text>
+    <text x="1056" y="518" class="edetail">Against Parcel + Batch;</text>
+    <text x="1056" y="532" class="edetail">activity, date, actor,</text>
+    <text x="1056" y="546" class="edetail">evidence</text>
+    <path class="rel" d="M 1142 480 L 1142 436"/>
+    <text x="1150" y="476" class="card">∗</text>
+
+    <!-- ===== assurance ===== -->
+    <rect x="334" y="692" width="190" height="112" rx="6" class="ent" stroke="#27467A" stroke-width="2.5"/>
+    <text x="346" y="712" class="ename" fill="#27467A">Survival Census</text>
+    <text x="346" y="730" class="edetail">Against Parcel + Batch;</text>
+    <text x="346" y="744" class="edetail">method, sample, tally,</text>
+    <text x="346" y="758" class="edetail">condition grading,</text>
+    <text x="346" y="772" class="edetail" fill="#8A6A1E">co-signature (audit cadre)</text>
+    <path class="rel" d="M 430 692 L 430 620 L 620 620 L 620 472" stroke-width="1.8"/>
+    <text x="438" y="686" class="card">∗</text><text x="600" y="486" class="card">1</text>
+    <text x="470" y="614" class="rellbl">against Parcel + Batch</text>
+    
+    <rect x="548" y="692" width="180" height="112" rx="6" class="ent" stroke="#27467A" stroke-width="2.5"/>
+    <text x="560" y="712" class="ename" fill="#27467A">Audit / Inspection</text>
+    <text x="560" y="730" class="edetail">Against Parcel; by audit-cadre</text>
+    <text x="560" y="744" class="edetail">identity excluded from that</text>
+    <text x="560" y="758" class="edetail">parcel's Verification Record;</text>
+    <text x="560" y="772" class="edetail">scheduled or surprise;</text>
+    <text x="560" y="786" class="edetail">findings, pass / flag</text>
+    <path class="rel" d="M 660 692 L 660 472" stroke-width="1.8"/>
+    <text x="668" y="686" class="card">∗</text><text x="668" y="486" class="card">1</text>
+
+    <rect x="752" y="692" width="170" height="92" rx="6" class="ent" stroke="#27467A"/>
+    <text x="764" y="712" class="ename" fill="#27467A">Rectification</text>
+    <text x="764" y="730" class="edetail">Raised by Audit; owner,</text>
+    <text x="764" y="744" class="edetail">deadline, evidence, closure</text>
+    <path class="rel" d="M 728 740 L 752 740"/>
+    <text x="734" y="734" class="card">1</text><text x="742" y="734" class="card">∗</text>
+
+    <rect x="944" y="692" width="160" height="92" rx="6" class="ent" stroke="#27467A"/>
+    <text x="956" y="712" class="ename" fill="#27467A">Issue / Grievance</text>
+    <text x="956" y="730" class="edetail">Against Parcel or Taluk;</text>
+    <text x="956" y="744" class="edetail">severity, status,</text>
+    <text x="956" y="758" class="edetail">escalation path</text>
+    <path class="rel" d="M 1024 692 L 1024 640 L 700 640 L 700 472" stroke-dasharray="4 4"/>
+
+    <!-- ===== certification ===== -->
+    <rect x="1170" y="692" width="286" height="80" rx="6" class="ent" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="1182" y="712" class="ename" fill="#8A6A1E">Certified Scope</text>
+    <text x="1182" y="730" class="edetail">IAFT certification; links an Organisation</text>
+    <text x="1182" y="744" class="edetail">to a defined body of work</text>
+    
+    <rect x="1170" y="792" width="286" height="80" rx="6" class="ent" stroke="#C09A3E" stroke-width="2.5"/>
+    <text x="1182" y="812" class="ename" fill="#8A6A1E">Utilisation Evidence</text>
+    <text x="1182" y="830" class="edetail">Against Certified Scope; reconciled</text>
+    <text x="1182" y="844" class="edetail">to operational records</text>
+    <path class="rel" d="M 1310 772 L 1310 792" stroke-width="2"/>
+    <text x="1318" y="780" class="card">1</text><text x="1318" y="792" class="card">∗</text>
+    <path class="rel" d="M 1170 832 L 1112 832" stroke-dasharray="4 4"/>
+    <text x="1118" y="826" class="rellbl" text-anchor="end">reconciled to operational records</text>
+
+    <!-- ===== audit log entry ===== -->
+    <rect x="40" y="700" width="240" height="100" rx="10" fill="#FFFFFF" stroke="#1F2430" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="160" y="728" text-anchor="middle" class="ename" fill="#1F2430">Audit Log Entry</text>
+    <text x="160" y="748" text-anchor="middle" class="edetail">Append-only ·</text>
+    <text x="160" y="762" text-anchor="middle" class="edetail">attaches to ANY entity</text>
+    <text x="160" y="782" text-anchor="middle" class="edetail" fill="#8A2F2A">never updated or deleted (§12)</text>
+    <path class="rel" d="M 280 750 L 320 750" marker-end="url(#dotE)" stroke-dasharray="3 3"/>
+    <path class="rel" d="M 160 700 L 160 600 L 300 560" marker-end="url(#dotE)" stroke-dasharray="3 3"/>
+    <text x="164" y="640" class="rellbl">to every entity in the model</text>
+  </svg>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 15 · §14 Core data model (conceptual)</span></div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

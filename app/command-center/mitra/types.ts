@@ -1,4 +1,4 @@
-export type CommandCenterFrameId = "f1" | "f2" | "f3" | "f4" | "f5" | "f6" | "f7";
+export type CommandCenterFrameId = "f1" | "f2" | "f3" | "f4" | "f5" | "f6" | "f7" | "f8" | "f9";
 
 export type RecordStatus =
   | "Mock"
@@ -13,6 +13,7 @@ export type PoshaneMitraToolName =
   | "poshane_get_state_overview"
   | "poshane_get_state_trends"
   | "poshane_get_district_progress"
+  | "poshane_get_taluk_progress"
   | "poshane_compare_districts"
   | "poshane_get_land_registry"
   | "poshane_get_stakeholders"
@@ -38,6 +39,7 @@ export type CommandCenterFilterSet = {
 export type CommandCenterUiAction = {
   frame?: CommandCenterFrameId;
   districtCode?: string;
+  talukCode?: string;
   filters?: CommandCenterFilterSet;
   highlightId?: string;
   highlightLabel?: string;

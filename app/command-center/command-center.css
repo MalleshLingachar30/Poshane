@@ -86,7 +86,7 @@
 
 /* ---------- TOPBAR ---------- */
 .pcc .topbar{grid-area:top;background:var(--navy-2);border-bottom:1px solid var(--shell-line);
-  display:flex;align-items:center;gap:16px;padding:0 20px}
+  display:flex;align-items:center;gap:16px;padding:0 20px;position:relative}
 .pcc .topbar .ttl{display:flex;flex-direction:column;min-width:0}
 .pcc .topbar .ttl .t1{font-family:var(--serif);font-size:15.5px;font-weight:600;color:#F2EDDF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pcc .topbar .ttl .t2{font-size:10.5px;color:var(--shell-dim);letter-spacing:.05em}
@@ -94,6 +94,14 @@
 .pcc .scope-toggle button{border:none;background:transparent;color:var(--shell-dim);font-size:12px;
   padding:5px 14px;border-radius:99px;font-weight:600}
 .pcc .scope-toggle button.on{background:var(--green);color:#fff}
+.pcc .demo-link{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:inline-flex;align-items:center;justify-content:center;padding:6px 14px;
+  border:1px solid rgba(230,204,133,.42);border-radius:999px;color:var(--gold-soft);
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-decoration:none;
+  transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
+.pcc .demo-link:hover{background:rgba(230,204,133,.12);border-color:rgba(230,204,133,.75);
+  color:#fff;box-shadow:0 0 0 3px rgba(230,204,133,.08)}
+.pcc .demo-link:focus-visible{border-color:var(--gold-soft);color:#fff}
 .pcc .mitra{position:relative;z-index:110;width:100%}
 .pcc .mitra-control{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;
   justify-items:center}
@@ -495,6 +503,126 @@
 .pcc .notecard{border-left:3px solid var(--gold);background:#FBF7EA;border-radius:0 9px 9px 0;
   padding:10px 13px;font-size:11.8px;color:#6B5A2A;line-height:1.5}
 
+/* ---------- TALUK DRILL-DOWN (FRAME 9) ---------- */
+.pcc .district-taluk-panel{margin-top:14px}
+.pcc .taluk-crumb{display:flex;align-items:center;gap:8px;margin:-7px 0 13px;color:var(--shell-dim);
+  font-size:11.5px;letter-spacing:.02em}
+.pcc .taluk-crumb i{font-style:normal;color:var(--gold)}
+.pcc .taluk-crumb b{color:var(--gold-soft);font-weight:700}
+.pcc .taluk-kpis{margin-bottom:14px}
+.pcc .taluk-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:14px;align-items:start}
+.pcc .taluk-side{min-width:0}
+.pcc .taluk-filters{padding-bottom:12px;border-bottom:1px solid var(--panel-line);margin-bottom:2px}
+.pcc .taluk-filters input[type="search"]{flex:1 1 220px;min-width:160px}
+.pcc .taluk-filters select{max-width:190px}
+.pcc .sort-direction{width:34px;height:34px;display:inline-grid;place-items:center;border:1px solid var(--panel-line);
+  border-radius:8px;background:#FFFDF6;color:var(--green);font-size:17px;font-weight:700}
+.pcc .sort-direction:hover{background:var(--green-tint);border-color:#BFD5BE}
+.pcc .taluk-table-wrap{max-width:100%;overflow:auto;max-height:520px;scrollbar-width:thin}
+.pcc .taluk-table{min-width:780px}
+.pcc .district-taluk-panel .taluk-table{min-width:660px}
+.pcc .taluk-table thead{position:sticky;top:0;z-index:2;background:var(--paper)}
+.pcc .taluk-table tr.selected td{background:#E3EDE2;border-bottom-color:#CADCC8}
+.pcc .taluk-link{display:grid;gap:1px;border:0;background:transparent;color:var(--ink);font:inherit;
+  font-weight:650;text-align:left;white-space:nowrap}
+.pcc .taluk-link:hover{color:var(--green)}
+.pcc .taluk-link span{color:var(--ink-dim);font-size:9.5px;font-weight:500}
+.pcc .taluk-survival.below{color:var(--red);font-weight:700}
+.pcc .taluk-empty{border:1px dashed var(--panel-line);border-radius:9px;color:var(--ink-dim);
+  font-size:12px;margin-top:12px;padding:28px;text-align:center}
+.pcc .taluk-donut{display:flex;align-items:center;gap:10px}
+.pcc .taluk-donut svg{flex:none;width:112px;height:112px}
+.pcc .taluk-donut .legendrow{display:grid;gap:8px}
+.pcc .taluk-zone-name{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--green-deep);margin-bottom:11px}
+.pcc .taluk-cadence{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:11.5px}
+.pcc .taluk-cadence b{color:var(--green);font-weight:700}
+.pcc .taluk-cadence span{color:var(--ink-dim)}
+@media (max-width:1180px){
+  .pcc .taluk-layout{grid-template-columns:1fr}
+  .pcc .taluk-side{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pcc .taluk-side .panel:last-child{grid-column:1/-1}
+}
+@media (max-width:760px){
+  .pcc .taluk-side{grid-template-columns:1fr}
+  .pcc .taluk-side .panel:last-child{grid-column:auto}
+  .pcc .taluk-filters select,.pcc .taluk-filters input[type="search"]{width:100%;max-width:none;flex-basis:100%}
+  .pcc .taluk-filters .count{margin-left:0}
+}
+
+/* ---------- DATA FLOW SCHEMATICS (FRAME 8) ---------- */
+/* The strip is the frame's whole navigation, so it stays pinned while a 1900px
+   diagram scrolls past underneath it — a presenter mid-sentence should never
+   have to scroll back up to reach the next diagram. */
+.pcc .schematic-strip{position:sticky;top:0;z-index:6;display:flex;gap:18px;flex-wrap:wrap;
+  background:var(--navy-2);border:1px solid var(--shell-line);border-radius:12px;
+  padding:12px 14px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+/* .main pins the strip at its own padding edge, leaving a 22px band above
+   through which the scrolling diagram would show. This fills that band — and
+   the frame's side padding — so the pinned strip reads as one solid bar. */
+.pcc .schematic-strip::before{content:"";position:absolute;left:-25px;right:-25px;top:-23px;
+  height:23px;background:var(--navy)}
+.pcc .sgroup{display:flex;flex-direction:column;gap:7px;min-width:0}
+.pcc .sglabel{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--shell-dim);
+  font-weight:700}
+.pcc .sgitems{display:flex;gap:6px;flex-wrap:wrap}
+.pcc .schip{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  background:var(--navy-3);color:var(--shell-text);border:1px solid var(--shell-line);
+  border-radius:999px;padding:6px 12px 6px 7px;font-size:12px;font-weight:600;
+  transition:background .15s,border-color .15s,color .15s}
+.pcc .schip .sno{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:18px;
+  border-radius:999px;background:rgba(255,255,255,.07);color:var(--gold-soft);
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.03em;padding:0 5px}
+.pcc .schip:hover{background:#22355A;border-color:#33456B;color:#F2EDDF}
+.pcc .schip.active{background:var(--green);border-color:var(--green-2);color:#fff}
+.pcc .schip.active .sno{background:rgba(255,255,255,.18);color:#fff}
+/* The walkthrough is the one moving, narrated item in the set — gold-edged so a
+   presenter opening the frame cold knows where the story starts. */
+.pcc .schip.anim{border-color:rgba(230,204,133,.5)}
+.pcc .schip.anim .sno{color:var(--gold-soft);font-size:11px}
+.pcc .schip.anim.active{background:var(--gold);border-color:var(--gold);color:#241C05}
+.pcc .schip.anim.active .sno{background:rgba(0,0,0,.16);color:#241C05}
+
+.pcc .schematic-viewer{background:var(--paper);border:1px solid var(--panel-line);border-radius:12px;
+  overflow:hidden}
+.pcc .schematic-viewer.fs{overflow-y:auto;border-radius:0;background:var(--paper)}
+.pcc .sv-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;
+  padding:14px 16px 12px;border-bottom:1px solid var(--panel-line);background:var(--paper-2)}
+.pcc .sv-title{flex:1;min-width:0}
+.pcc .sv-title h3{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--green);
+  display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.pcc .sv-no{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;
+  background:var(--green);border-radius:5px;padding:2px 7px}
+.pcc .sv-ref{margin-top:3px;font-size:11.5px;color:var(--ink-dim);letter-spacing:.02em}
+.pcc .sv-tools{display:flex;align-items:center;gap:6px;flex:none}
+.pcc .sv-tools button,.pcc .sv-tools a{display:inline-flex;align-items:center;gap:6px;
+  background:#fff;border:1px solid var(--panel-line);border-radius:8px;color:var(--ink);
+  font-size:11.5px;font-weight:600;padding:6px;text-decoration:none;transition:background .15s}
+.pcc .sv-tools .wide{padding:6px 11px}
+.pcc .sv-tools svg{width:15px;height:15px;flex:none}
+.pcc .sv-tools button:hover:not(:disabled),.pcc .sv-tools a:hover{background:var(--green-tint)}
+.pcc .sv-tools button:disabled{opacity:.35;cursor:default}
+.pcc .sv-count{font-family:var(--mono);font-size:11px;color:var(--ink-dim);
+  min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+.pcc .sv-cue{padding:12px 16px 0;font-size:13px;line-height:1.55;color:var(--ink-dim);max-width:1100px}
+
+.pcc .sv-stage{position:relative;padding:8px 6px 0}
+/* Height is set inline from the document's own postMessage report, so the
+   iframe never carries a nested scrollbar. */
+.pcc .sv-frame{display:block;width:100%;border:0;background:#F7F3E9;transition:height .18s ease}
+.pcc .schematic-viewer.fs .sv-frame{transition:none}
+.pcc .sv-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:var(--paper);color:var(--ink-dim);font-size:12.5px;letter-spacing:.04em;z-index:2}
+.pcc .sv-foot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:10px 16px 12px;border-top:1px solid var(--panel-line);
+  font-size:10.5px;color:var(--ink-dim)}
+
+@media (max-width:980px){
+  .pcc .schematic-strip{position:static;gap:12px}
+  .pcc .sv-head{padding:12px}
+  .pcc .sv-tools{width:100%}
+  .pcc .sv-cue{padding:10px 12px 0;font-size:12.3px}
+}
+
 /* ---------- AUTH GATE ---------- */
 .cc-login{
   min-height:100dvh;
@@ -667,6 +795,12 @@
     order:3;
     margin-left:0;
   }
+  .pcc .demo-link{
+    position:static;
+    order:2;
+    transform:none;
+    margin-left:auto;
+  }
   .pcc .mitra-drawer{
     top:0;
   }
@@ -814,6 +948,12 @@
     font-size:9.5px;
   }
   .pcc .scope-toggle{
+    width:100%;
+    order:4;
+  }
+  .pcc .demo-link{
+    order:3;
+    margin-left:0;
     width:100%;
   }
   .pcc .scope-toggle button{

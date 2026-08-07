@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poshane · D10</title>
+
+<script>if (window.self !== window.top) document.documentElement.className += " embedded";</script>
+<style>
+  :root{
+    --green:#1C5A33; --navy:#27467A; --gold:#C09A3E; --paper:#F7F3E9; --ink:#1F2430;
+    --green-tint:#E8F0EA; --navy-tint:#E9EDF5; --gold-tint:#F7EFDC; --line:#D8D2C2; --card:#FFFDF8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    padding:28px 34px; line-height:1.45; font-size:15px;
+  }
+  .doc-head{max-width:1560px; margin:0 auto 26px auto; border-bottom:3px solid var(--green); padding-bottom:16px;}
+  .doc-head h1{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:30px; font-weight:700; letter-spacing:0.2px;}
+  .doc-head .sub{color:var(--navy); font-size:15px; margin-top:4px; font-weight:600;}
+  .doc-head .meta{color:#5A5F6B; font-size:12.5px; margin-top:6px;}
+  .panel{
+    max-width:1560px; margin:0 auto 40px auto; background:var(--card);
+    border:1px solid var(--line); border-top:5px solid var(--green);
+    padding:26px 30px 18px 30px; page-break-after:always; break-after:page;
+  }
+  .panel:last-of-type{page-break-after:auto; break-after:auto;}
+  .panel.gov{border-top-color:var(--navy);}
+  .eyebrow{font-size:11.5px; letter-spacing:2.2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+  .panel h2{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--green); font-size:24px; font-weight:700; margin-bottom:6px;}
+  .panel.gov h2{color:var(--navy);}
+  .panel .lede{font-size:14.5px; color:#3A3F4A; max-width:1150px; margin-bottom:18px;}
+  .panel h3{font-family:Fraunces,Georgia,"Times New Roman",serif; color:var(--navy); font-size:17px; margin:22px 0 8px 0;}
+  svg{display:block; width:100%; height:auto;}
+  svg text{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;}
+  .serif{font-family:Fraunces,Georgia,"Times New Roman",serif;}
+  .foot{
+    border-top:1px solid var(--line); margin-top:18px; padding-top:8px;
+    font-size:11px; color:#6A6F7A; display:flex; justify-content:space-between; gap:16px;
+  }
+  /* ---------- permission matrix ---------- */
+  .matrix-wrap{overflow-x:auto; margin-top:10px;}
+  table.pmatrix{border-collapse:collapse; width:100%; font-size:12px;}
+  table.pmatrix thead th{
+    background:var(--navy); color:#FFFFFF; padding:8px 4px; vertical-align:bottom;
+    border:1px solid #1E3760; font-weight:600; font-size:11px;
+  }
+  table.pmatrix thead th span{display:inline-block; writing-mode:vertical-rl; transform:rotate(180deg); max-height:118px; line-height:1.1;}
+  table.pmatrix thead th.corner{text-align:left; vertical-align:middle; min-width:260px;}
+  table.pmatrix thead th.corner .axis, table.pmatrix thead th.corner .axis2{writing-mode:horizontal-tb; transform:none; display:block; font-size:10px; font-weight:400; color:#C9D4E8;}
+  table.pmatrix tbody th{
+    text-align:left; padding:5px 10px; border:1px solid var(--line); background:var(--green-tint);
+    font-weight:600; color:var(--ink); white-space:nowrap;
+  }
+  table.pmatrix tbody th .rname{display:block; font-size:12px;}
+  table.pmatrix tbody th .rscope{display:block; font-size:10px; font-weight:400; color:#55604F;}
+  table.pmatrix tbody td{border:1px solid var(--line); text-align:center; padding:4px 2px; min-width:44px; background:#FFFFFF;}
+  table.pmatrix tbody tr:nth-child(even) td{background:#FBF8F0;}
+  .cell{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; position:relative;}
+  .cell.full{background:var(--green);}
+  .cell.scoped{background:linear-gradient(135deg, var(--green) 50%, #FFFFFF 50%); border:1.5px solid var(--green);}
+  .cell.ro{background:#FFFFFF; border:2px solid var(--navy); border-radius:50%; width:12px; height:12px;}
+  .cell.none{background:#DDD8CB; width:6px; height:6px; border-radius:50%;}
+  .cell.stepup::after{content:"▲"; position:absolute; top:-9px; right:-9px; font-size:9px; color:var(--gold);}
+  .legend{display:flex; flex-wrap:wrap; gap:22px; align-items:center; margin:10px 0 4px 0; font-size:12px; color:#3A3F4A;}
+  .legend .cell{margin-right:6px;}
+  /* ---------- separation-of-duties panel ---------- */
+  .sod{
+    border:2px solid var(--gold); background:var(--gold-tint); border-radius:6px;
+    padding:16px 20px; margin-top:20px;
+  }
+  .sod h3{margin:0 0 10px 0; color:var(--ink); font-size:17px;}
+  .sod h3 .tag{color:var(--gold);}
+  .sod-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px 18px;}
+  .sod-item{background:#FFFDF6; border:1px solid #E0CE9E; border-radius:5px; padding:10px 12px; font-size:12.5px;}
+  .sod-item b{display:block; color:var(--navy); font-size:12.5px; margin-bottom:3px;}
+  .sod-item.key{border:2px solid var(--gold); background:#FFF9E8;}
+  .sod-item.key b{color:var(--green);}
+  .stepup-strip{
+    margin-top:14px; border-left:5px solid var(--gold); background:#FFFDF6; padding:10px 16px; font-size:13px;
+  }
+  .stepup-strip b{color:var(--navy);}
+  /* ---------- boundary + generic tables ---------- */
+  table.spec{border-collapse:collapse; width:100%; font-size:13px; margin-top:8px;}
+  table.spec th{background:var(--green); color:#fff; text-align:left; padding:8px 12px; border:1px solid #164628; font-weight:600;}
+  table.spec.navy th{background:var(--navy); border-color:#1E3760;}
+  table.spec td{border:1px solid var(--line); padding:7px 12px; background:#FFFFFF; vertical-align:top;}
+  table.spec tr:nth-child(even) td{background:#FBF8F0;}
+  table.spec td.inplat{color:var(--green); font-weight:700;}
+  table.spec td.outplat{color:var(--navy); font-weight:700;}
+  table.spec td.never{color:#8A2F2A; font-weight:700;}
+  .callout{
+    margin-top:16px; border:2px solid var(--navy); background:var(--navy-tint); border-radius:6px;
+    padding:14px 20px; font-size:14.5px; color:var(--ink);
+  }
+  .callout .q{font-family:Fraunces,Georgia,serif; font-style:italic; color:var(--navy); font-size:16px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  @media (max-width:900px){ .sod-grid{grid-template-columns:1fr;} .two-col{grid-template-columns:1fr;} }
+  @page{size:A3 landscape; margin:12mm;}
+  @media print{
+    body{padding:0; background:#FFFFFF;}
+    .panel{border:1px solid var(--line); box-shadow:none; margin-bottom:0;}
+    .matrix-wrap{overflow:visible;}
+  }
+</style>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F7F3E9; overflow-x: hidden; }
+  .embedded .wrap, .embedded .sheet { padding-top: 4px !important; padding-bottom: 18px !important; }
+  .embedded .panel { padding-top: 8px !important; margin-bottom: 0 !important;
+    border-top: 0 !important; box-shadow: none !important; page-break-after: auto !important; }
+  /* Duplicate title block. Direct children only, so the h3 subheadings inside
+     diagrams 10 and 15 are untouched. */
+  .embedded .panel > h2,
+  .embedded .panel > .dnum,
+  .embedded .panel > .dno,
+  .embedded .panel > .eyebrow,
+  .embedded .panel > .specref { display: none !important; }
+  /* The animation's masthead, minus its language toggle, which stays usable. */
+  .embedded header .t { display: none !important; }
+  .embedded header { border-bottom: 0 !important; padding-bottom: 0 !important;
+    justify-content: flex-end !important; }
+</style>
+</head>
+<body>
+<section class="panel">
+  <div class="eyebrow">Diagram 10 · Specification §9</div>
+  <h2>Role-Based Access Control — Two Axes, One Permission</h2>
+  <p class="lede">Authority in the platform is never a single grant. Every permission is the intersection of
+  <b>role</b> (what a person may do), <b>geographic scope</b> (where they may do it), and <b>record state</b>
+  (when in the lifecycle the role has authority). Part (a) shows the model with a worked example; part (b)
+  renders the full permission matrix and the separation-of-duties rules that prevent self-approval.</p>
+
+  <h3>(a) The two-axis model — permission = role × scope × record state</h3>
+  <svg viewBox="0 0 1500 660" role="img" aria-label="Two-axis access model with scope pyramid and worked example">
+    <!-- formula band -->
+    <rect x="20" y="14" width="1460" height="58" rx="6" fill="#27467A"/>
+    <text x="750" y="44" text-anchor="middle" fill="#FFFFFF" font-size="24" font-weight="700" font-family="Georgia,serif">PERMISSION&#160;&#160;=&#160;&#160;ROLE (function)&#160;&#160;×&#160;&#160;SCOPE (geography)&#160;&#160;×&#160;&#160;RECORD STATE (lifecycle)</text>
+    <text x="750" y="62" text-anchor="middle" fill="#C9D4E8" font-size="12">Neither axis alone is sufficient — scope is resolved at the data layer, before a query reaches the store (§9.3)</text>
+
+    <!-- AXIS 1: role catalogue -->
+    <rect x="20" y="100" width="330" height="470" rx="8" fill="#E9EDF5" stroke="#27467A" stroke-width="2"/>
+    <text x="185" y="128" text-anchor="middle" fill="#27467A" font-size="16" font-weight="700" font-family="Georgia,serif">AXIS 1 — ROLE CATALOGUE</text>
+    <text x="185" y="146" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Seventeen roles, six families (§9.2)</text>
+
+    <g font-size="12" fill="#1F2430">
+      <rect x="38" y="160" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="177" font-weight="700" fill="#27467A">Command &amp; governance</text>
+      <text x="50" y="193">Programme Administrator · State Command (KSLSA)</text>
+      <text x="50" y="208">IAFT Programme Management</text>
+
+      <rect x="38" y="224" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="241" font-weight="700" fill="#27467A">Department &amp; territory</text>
+      <text x="50" y="257">State Forest Officer · District Command</text>
+      <text x="50" y="272">District Forest Officer · Taluk Officer</text>
+
+      <rect x="38" y="288" width="294" height="58" rx="4" fill="#FFF9E8" stroke="#C09A3E" stroke-width="2"/>
+      <text x="50" y="305" font-weight="700" fill="#1C5A33">Two independent cadres</text>
+      <text x="50" y="321">Verification Cadre (RFO / DRFO)</text>
+      <text x="50" y="336">Audit Cadre — mutually exclusive with verification</text>
+
+      <rect x="38" y="354" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="371" font-weight="700" fill="#27467A">Execution</text>
+      <text x="50" y="387">Implementing Agency Supervisor · Field Operator</text>
+      <text x="50" y="402">Nursery Operator · Volunteer (advisory only)</text>
+
+      <rect x="38" y="418" width="294" height="56" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="435" font-weight="700" fill="#27467A">Finance &amp; assurance</text>
+      <text x="50" y="451">Finance Reviewer (IAFT) — step-up required</text>
+      <text x="50" y="466">Donor / CSR Observer · Auditor (external)</text>
+
+      <rect x="38" y="482" width="294" height="42" rx="4" fill="#FFFFFF" stroke="#27467A"/>
+      <text x="50" y="499" font-weight="700" fill="#27467A">Public</text>
+      <text x="50" y="514">Tag landing page · published dashboard only</text>
+    </g>
+    <text x="185" y="552" text-anchor="middle" fill="#5A5F6B" font-size="11" font-style="italic">Role defines function — it grants nothing anywhere by itself</text>
+
+    <!-- multiplication sign -->
+    <text x="380" y="350" text-anchor="middle" fill="#C09A3E" font-size="42" font-weight="700">×</text>
+
+    <!-- AXIS 2: scope pyramid -->
+    <rect x="410" y="100" width="380" height="470" rx="8" fill="#E8F0EA" stroke="#1C5A33" stroke-width="2"/>
+    <text x="600" y="128" text-anchor="middle" fill="#1C5A33" font-size="16" font-weight="700" font-family="Georgia,serif">AXIS 2 — GEOGRAPHIC SCOPE</text>
+    <text x="600" y="146" text-anchor="middle" fill="#3A3F4A" font-size="11.5">Resolved at the data layer, inherited downward only (§9.3)</text>
+
+    <!-- pyramid -->
+    <polygon points="600,168 660,238 540,238" fill="#1C5A33"/>
+    <text x="600" y="222" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">STATE</text>
+    <polygon points="530,246 670,246 706,316 494,316" fill="#2E7047"/>
+    <text x="600" y="288" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">DISTRICT (35)</text>
+    <polygon points="486,324 714,324 748,394 452,394" fill="#4C8A63"/>
+    <text x="600" y="366" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">TALUK (240)</text>
+    <polygon points="446,402 754,402 774,472 426,472" fill="#7AA98C"/>
+    <text x="600" y="444" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="700">ASSIGNED PARCELS</text>
+
+    <g font-size="11" fill="#1C5A33">
+      <path d="M 786 190 L 786 450" stroke="#1C5A33" stroke-width="1.6" marker-end="url(#arrGreen)"/>
+      <text x="782" y="320" text-anchor="end" transform="rotate(-90 782 320)" font-weight="600">inherited downward</text>
+    </g>
+    <text x="600" y="496" text-anchor="middle" fill="#8A2F2A" font-size="11.5" font-weight="700">Never inherited upward or sideways —</text>
+    <text x="600" y="512" text-anchor="middle" fill="#8A2F2A" font-size="11.5">a taluk verifier cannot see the adjacent taluk</text>
+    <text x="600" y="536" text-anchor="middle" fill="#5A5F6B" font-size="11">Assignment narrows further: an agency sees only its</text>
+    <text x="600" y="551" text-anchor="middle" fill="#5A5F6B" font-size="11">contracted parcels · aggregates respect scope</text>
+
+    <!-- multiplication sign 2 -->
+    <text x="820" y="350" text-anchor="middle" fill="#C09A3E" font-size="42" font-weight="700">×</text>
+
+    <!-- AXIS 3: record state -->
+    <rect x="850" y="100" width="180" height="470" rx="8" fill="#FFFDF6" stroke="#C09A3E" stroke-width="2"/>
+    <text x="940" y="128" text-anchor="middle" fill="#8A6A1E" font-size="15" font-weight="700" font-family="Georgia,serif">RECORD STATE</text>
+    <text x="940" y="146" text-anchor="middle" fill="#3A3F4A" font-size="11">Lifecycle gate (§6, §9.1)</text>
+    <g font-size="11.5" fill="#1F2430" text-anchor="middle">
+      <rect x="872" y="162" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="181">Identified</text>
+      <rect x="872" y="202" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="221">Verified</text>
+      <rect x="872" y="242" width="136" height="30" rx="4" fill="#FFF3D6" stroke="#C09A3E" stroke-width="2"/><text x="940" y="261" font-weight="700">Approved</text>
+      <rect x="872" y="282" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="301">Planted</text>
+      <rect x="872" y="322" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="341">Under census</text>
+      <rect x="872" y="362" width="136" height="30" rx="4" fill="#FFFFFF" stroke="#C09A3E"/><text x="940" y="381">Audited</text>
+      <path d="M 940 194 L 940 200" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 234 L 940 240" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 274 L 940 280" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 314 L 940 320" stroke="#C09A3E" stroke-width="1.5"/>
+      <path d="M 940 354 L 940 360" stroke="#C09A3E" stroke-width="1.5"/>
+    </g>
+    <text x="940" y="420" text-anchor="middle" fill="#5A5F6B" font-size="10.5">A role may act only on</text>
+    <text x="940" y="434" text-anchor="middle" fill="#5A5F6B" font-size="10.5">records in states where</text>
+    <text x="940" y="448" text-anchor="middle" fill="#5A5F6B" font-size="10.5">that role has authority</text>
+
+    <!-- equals -->
+    <text x="1058" y="350" text-anchor="middle" fill="#C09A3E" font-size="42" font-weight="700">=</text>
+
+    <!-- worked example -->
+    <rect x="1088" y="100" width="392" height="470" rx="8" fill="#FFFFFF" stroke="#1C5A33" stroke-width="2.5"/>
+    <rect x="1088" y="100" width="392" height="52" rx="8" fill="#1C5A33"/>
+    <rect x="1088" y="132" width="392" height="20" fill="#1C5A33"/>
+    <text x="1284" y="122" text-anchor="middle" fill="#FFFFFF" font-size="14.5" font-weight="700" font-family="Georgia,serif">WORKED EXAMPLE</text>
+    <text x="1284" y="142" text-anchor="middle" fill="#DCE8DF" font-size="12">District Verification Coordinator — Belagavi</text>
+
+    <g font-size="12" fill="#1F2430">
+      <rect x="1106" y="168" width="356" height="98" rx="5" fill="#E8F0EA" stroke="#1C5A33"/>
+      <text x="1118" y="188" font-weight="700" fill="#1C5A33">SEES</text>
+      <text x="1118" y="206">Verification records and land parcels across</text>
+      <text x="1118" y="221">Belagavi district — every taluk within it,</text>
+      <text x="1118" y="236">constrained before the query reaches the store.</text>
+      <text x="1118" y="256" fill="#5A5F6B" font-size="11">Role: verification-coordinator · Scope: Belagavi district</text>
+
+      <rect x="1106" y="278" width="356" height="112" rx="5" fill="#FFF9E8" stroke="#C09A3E" stroke-width="1.5"/>
+      <text x="1118" y="298" font-weight="700" fill="#8A6A1E">MAY ACT ON</text>
+      <text x="1118" y="316">Only records in lifecycle states where the</text>
+      <text x="1118" y="331">verification-coordinator role has authority —</text>
+      <text x="1118" y="346">parcels awaiting verification and the blocking</text>
+      <text x="1118" y="361">approval decision. No audit capability, ever.</text>
+      <text x="1118" y="381" fill="#5A5F6B" font-size="11">Role × scope × state — all three must agree</text>
+
+      <rect x="1106" y="402" width="356" height="92" rx="5" fill="#F2F0EA" stroke="#9AA0AC" stroke-dasharray="6 4"/>
+      <text x="1118" y="424" font-weight="700" fill="#6A6F7A">INVISIBLE — KALABURAGI</text>
+      <text x="1118" y="442" fill="#6A6F7A">The adjacent district does not appear in any</text>
+      <text x="1118" y="457" fill="#6A6F7A">list, map, search result, or aggregate detail.</text>
+      <text x="1118" y="472" fill="#6A6F7A" font-size="11">Scope is never inherited sideways (§9.3)</text>
+    </g>
+    <text x="1284" y="530" text-anchor="middle" fill="#27467A" font-size="12" font-weight="700">The same person, same login — three constraints,</text>
+    <text x="1284" y="546" text-anchor="middle" fill="#27467A" font-size="12" font-weight="700">one permission envelope</text>
+
+    <defs>
+      <marker id="arrGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1C5A33"/></marker>
+    </defs>
+  </svg>
+
+  <h3>(b) Permission matrix — seventeen roles × twelve capabilities</h3>
+  <div class="legend">
+    <span><span class="cell full"></span> Full</span>
+    <span><span class="cell scoped"></span> Scoped — within the role's geographic scope / assignment</span>
+    <span><span class="cell ro"></span> Read-only</span>
+    <span><span class="cell none"></span> None</span>
+    <span><span style="color:var(--gold); font-weight:700;">▲</span> Step-up authorisation required at the moment of access (§9.5)</span>
+  </div>
+  <div class="matrix-wrap">
+  <table class="pmatrix">
+<thead><tr><th scope="col" class="corner">Role &nbsp;<span class="axis">function ↓</span><span class="axis2">capability →</span></th><th scope="col"><span>Identify land</span></th><th scope="col"><span>Verify / gate</span></th><th scope="col"><span>Bind tag</span></th><th scope="col"><span>Record planting</span></th><th scope="col"><span>Record maintenance</span></th><th scope="col"><span>Record survival</span></th><th scope="col"><span>Co-sign census</span></th><th scope="col"><span>Audit</span></th><th scope="col"><span>Certify scope</span></th><th scope="col"><span>View utilisation</span></th><th scope="col"><span>Configure</span></th><th scope="col"><span>Export</span></th></tr></thead>
+<tbody>
+<tr><th scope="row"><span class="rname">Programme Administrator</span><span class="rscope">State</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell full" title="Full"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">State Command (KSLSA)</span><span class="rscope">State</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell full" title="Full"></span></td></tr>
+<tr><th scope="row"><span class="rname">IAFT Programme Management</span><span class="rscope">State</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell full stepup" title="Full — step-up authorisation"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">State Forest Officer</span><span class="rscope">State</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">District Command</span><span class="rscope">District</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">District Forest Officer</span><span class="rscope">District</span></th><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Taluk Officer</span><span class="rscope">Taluk</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Verification Cadre (RFO / DRFO)</span><span class="rscope">Taluk (assigned)</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Audit Cadre</span><span class="rscope">Taluk / district (assigned independently)</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Implementing Agency Supervisor</span><span class="rscope">Assigned parcels</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Field Operator (agency)</span><span class="rscope">Assigned parcels</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell scoped" title="Scoped"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Nursery Operator</span><span class="rscope">Nursery</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Volunteer</span><span class="rscope">Assigned parcels</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Finance Reviewer (IAFT)</span><span class="rscope">State / assigned</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell full stepup" title="Full — step-up authorisation"></span></td><td><span class="cell full stepup" title="Full — step-up authorisation"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Donor / CSR Observer</span><span class="rscope">Funded parcels only</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Auditor (external)</span><span class="rscope">Configurable</span></th><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell ro" title="Read-only"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+<tr><th scope="row"><span class="rname">Public</span><span class="rscope">None (published data only)</span></th><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td><td><span class="cell none" title="None"></span></td></tr>
+</tbody>
+</table>
+  </div>
+  <p style="font-size:11.5px; color:#5A5F6B; margin-top:6px;">All access is additionally constrained by geographic scope (§9.3) and record state (§9.1). Verification Cadre and Audit Cadre are <b>separate roles with mutually exclusive capabilities</b> — no identity holds both against the same parcel. Nursery Operator capabilities (stock, grading, dispatch) and Volunteer advisory observations sit outside this capability set. Public access is limited to the tag landing page and the published programme dashboard.</p>
+
+  <div class="sod">
+    <h3><span class="tag">■</span> Separation of duties — six structural rules that prevent self-approval (§9.4)</h3>
+    <div class="sod-grid">
+      <div class="sod-item key"><b>Verification vs audit</b>The cadre that verifies land and enters its parameters never audits it. Mutually exclusive roles, enforced at parcel level.</div>
+      <div class="sod-item key"><b>Identification vs verification</b>The department identifies land; the verification cadre approves it. Never the same identity.</div>
+      <div class="sod-item key"><b>Execution vs assurance</b>The agency that plants cannot record the authoritative survival census alone; audit-cadre co-signature is required.</div>
+      <div class="sod-item"><b>Operations vs finance</b>Scope certification and utilisation sit behind a separate role and step-up authorisation.</div>
+      <div class="sod-item"><b>Administration vs data</b>Programme administrators configure the system; they do not enter or alter operational records.</div>
+      <div class="sod-item"><b>Volunteer vs authoritative</b>Volunteer observations are always advisory. They may raise a flag; they can never close one.</div>
+    </div>
+  </div>
+  <div class="stepup-strip"><b>Step-up authorisation (§9.5) — applies even to the highest-privilege accounts.</b>
+  Restricted modules require a second factor at the moment of access, independent of session login. Every attempt, successful or not, is logged with identity, time, and device. Access does not persist across sessions; leaving the module re-locks it.</div>
+
+  <div class="foot"><span>Architecture baseline — issued for review. Illustrative of system structure.</span><span>Poshane · Diagram 10 · §9 Role-based access control</span></div>
+</section>
+
+<script>
+(function () {
+  var last = 0;
+  function measure() {
+    var body = document.body;
+    if (!body) return 0;
+    var box = body.getBoundingClientRect();
+    var height = box.height;
+    /* A trailing child's bottom margin can collapse out of the body box; take
+       whichever is larger so nothing is clipped. */
+    var tail = body.lastElementChild;
+    if (tail) height = Math.max(height, tail.getBoundingClientRect().bottom - box.top);
+    return Math.ceil(height) + 2;
+  }
+  function report() {
+    var h = measure();
+    if (!h || h === last) return;
+    last = h;
+    try { parent.postMessage({ type: "poshane-schematic-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", report);
+  window.addEventListener("resize", report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  setTimeout(report, 60);
+  setTimeout(report, 400);
+  report();
+})();
+</script>
+</body>
+</html>

@@ -128,6 +128,8 @@ function describeFrame(frame?: CommandCenterUiAction["frame"]) {
       return "State Overview";
     case "f2":
       return "District Drill-Down";
+    case "f9":
+      return "Taluk Drill-Down";
     case "f3":
       return "Land and Ownership Registry";
     case "f4":
@@ -203,6 +205,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       `Reconnect reason: ${reason}.`,
       `Current view: ${describeFrame(context.frame)}.`,
       context.districtCode ? `Selected district code: ${context.districtCode}.` : "",
+      context.talukCode ? `Selected taluk code: ${context.talukCode}.` : "",
       `Selected filters: ${filters}.`,
       context.highlightLabel ? `Current highlighted item: ${context.highlightLabel}.` : "",
       lastUserTurnRef.current ? `Last question: ${compactText(lastUserTurnRef.current)}.` : "",
