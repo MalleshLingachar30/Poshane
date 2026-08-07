@@ -572,12 +572,6 @@
    the frame's side padding — so the pinned strip reads as one solid bar. */
 .pcc .schematic-strip::before{content:"";position:absolute;left:-25px;right:-25px;top:-23px;
   height:23px;background:var(--navy)}
-.pcc .schematic-sections{display:flex;gap:8px;flex-wrap:wrap}
-.pcc .ssection{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid var(--shell-line);
-  border-radius:999px;background:rgba(255,255,255,.03);color:var(--shell-text);padding:7px 12px;
-  font-size:12px;font-weight:700;transition:background .15s,border-color .15s,color .15s}
-.pcc .ssection:hover{background:#22355A;border-color:#33456B;color:#F2EDDF}
-.pcc .ssection.active{background:#1B2B48;border-color:rgba(230,204,133,.28);color:#FFF7E2}
 .pcc .schematic-strip-note{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .pcc .sglabel{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--shell-dim);
   font-weight:700}
@@ -636,7 +630,6 @@
 
 @media (max-width:980px){
   .pcc .schematic-strip{position:static;gap:12px}
-  .pcc .schematic-sections{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
   .pcc .sv-head{padding:12px}
   .pcc .sv-tools{width:100%}
   .pcc .sv-cue{padding:10px 12px 0;font-size:12.3px}

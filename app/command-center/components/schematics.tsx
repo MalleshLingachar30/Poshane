@@ -159,23 +159,8 @@ export function Frame8({ requestedSection = "walkthrough", onSectionChange }: Fr
         </span>
       </div>
 
-      {/* ---------- section menu plus active section chips ---------- */}
+      {/* ---------- active section note plus document chips ---------- */}
       <div className="schematic-strip">
-        <div className="schematic-sections" aria-label="System architecture sections">
-          {SCHEMATIC_SECTIONS.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              className={`ssection${section.id === active.section ? " active" : ""}`}
-              aria-pressed={section.id === active.section}
-              onClick={() => selectSection(section.id)}
-              title={section.blurb}
-            >
-              <span>{section.label}</span>
-            </button>
-          ))}
-        </div>
-
         <div className="schematic-strip-note">
           <span className="sglabel">
             {SCHEMATIC_SECTIONS.find((section) => section.id === active.section)?.label}
