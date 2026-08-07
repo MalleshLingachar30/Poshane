@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   SCHEMATICS,
-  SCHEMATIC_SECTIONS,
   firstSchematicIdForSection,
   schematicSrc,
   type SchematicSectionId,
@@ -152,24 +151,8 @@ export function Frame8({ requestedSection = "walkthrough", onSectionChange }: Fr
 
   return (
     <section className="frame on" aria-label="System Architecture">
-      <div className="frame-head">
-        <h2>System Architecture</h2>
-        <span className="fdesc">
-          System architecture baseline v0.9 — {SCHEMATICS.length} documents · use ← → to step, F for fullscreen
-        </span>
-      </div>
-
-      {/* ---------- active section note plus document chips ---------- */}
+      {/* ---------- document chips ---------- */}
       <div className="schematic-strip">
-        <div className="schematic-strip-note">
-          <span className="sglabel">
-            {SCHEMATIC_SECTIONS.find((section) => section.id === active.section)?.label}
-          </span>
-          <span className="sgmeta">
-            {SCHEMATIC_SECTIONS.find((section) => section.id === active.section)?.blurb}
-          </span>
-        </div>
-
         <div className="sgitems" ref={stripRef} role="tablist" aria-label="Architecture documents">
           {sectionItems.map((s) => (
             <button

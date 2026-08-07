@@ -572,10 +572,6 @@
    the frame's side padding — so the pinned strip reads as one solid bar. */
 .pcc .schematic-strip::before{content:"";position:absolute;left:-25px;right:-25px;top:-23px;
   height:23px;background:var(--navy)}
-.pcc .schematic-strip-note{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.pcc .sglabel{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--shell-dim);
-  font-weight:700}
-.pcc .sgmeta{font-size:11.5px;color:#AAB7CF}
 .pcc .sgitems{display:flex;gap:6px;flex-wrap:wrap}
 .pcc .schip{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
   background:var(--navy-3);color:var(--shell-text);border:1px solid var(--shell-line);
