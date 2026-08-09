@@ -117,6 +117,13 @@ test("Realtime session is tuned for stable command-center voice continuity", () 
   assert.match(envExample, /POSHANE_MITRA_MAX_OUTPUT_TOKENS=800/);
   assert.match(sessionRoute, /Do not use technical words such as dataset/);
   assert.match(sessionRoute, /Based on the current demonstration records/);
+  assert.match(sessionRoute, /call the appropriate read-only lookup silently/);
+  assert.match(sessionRoute, /Speak only after the lookup result has been returned/);
+  assert.match(client, /All requested Command Center lookups are now complete/);
+  assert.match(client, /Promise\.all\(calls\.map/);
+  assert.match(client, /requestToolResultSpeech\(\)/);
+  assert.doesNotMatch(client, /event\.type === "response\.function_call_arguments\.done"/);
+  assert.doesNotMatch(client, /event\.type === "response\.output_item\.done"/);
 });
 
 test("assistant understands Poshane and routes monitoring audit requests", () => {

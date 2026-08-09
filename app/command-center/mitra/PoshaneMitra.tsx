@@ -549,6 +549,16 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
     return true;
   }, []);
 
+  const requestToolResultSpeech = useCallback(() => sendEvent({
+    type: "response.create",
+    response: {
+      output_modalities: ["audio"],
+      max_output_tokens: MITRA_MAX_SPOKEN_TOKENS,
+      instructions:
+        "All requested Command Center lookups are now complete. Answer only from their results. Speak naturally and avoid technical wording. Give a complete core answer in three to five sentences, usually 45 to 90 spoken words. Finish every sentence and include the requested facts and material caveats before offering more detail. For the guided district species workflow, if a planting type is still required, state the district and zone and ask the single planting-type question without listing species. If a planting model has been selected, speak every recommended species returned for that district and model, even when the list is longer than the usual response. Do not say that you are retrieving, checking, loading or waiting for data.",
+    },
+  }), [sendEvent]);
+
   const endSession = useCallback((reason = "ended") => {
     manualEndRef.current = true;
     connectionIdRef.current += 1;
@@ -585,7 +595,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
     argsJson: string,
     callId: string
   ) => {
-    if (!callId || handledCallsRef.current.has(callId)) return;
+    if (!callId || handledCallsRef.current.has(callId)) return false;
     handledCallsRef.current.add(callId);
     const callConnectionId = connectionIdRef.current;
     responseInProgressRef.current = true;
@@ -656,7 +666,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
             },
           }));
         }
-        return;
+        return false;
       }
 
       sendEvent({
@@ -667,19 +677,10 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
           output: JSON.stringify(payload),
         },
       });
-      sendEvent({
-        type: "response.create",
-        response: {
-          output_modalities: ["audio"],
-          max_output_tokens: MITRA_MAX_SPOKEN_TOKENS,
-          instructions:
-            "Answer from the provided Command Center result. Speak naturally and avoid technical wording. Give a complete core answer in three to five sentences, usually 45 to 90 spoken words. Finish every sentence and include the requested facts and material caveats before offering more detail. For the guided district species workflow, if a planting type is still required, state the district and zone and ask the single planting-type question without listing species. If a planting model has been selected, speak every recommended species returned for that district and model, even when the list is longer than the usual response.",
-        },
-      });
+      return true;
     } catch (toolError) {
       const message =
         toolError instanceof Error ? toolError.message : "Tool call failed.";
-      responseInProgressRef.current = false;
       appendEntry({
         question: currentQuestionRef.current || "Voice request",
         tool,
@@ -694,7 +695,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
           output: JSON.stringify({ error: message }),
         },
       });
-      sendEvent({ type: "response.create", response: { output_modalities: ["audio"] } });
+      return true;
     }
   }, [appendEntry, buildContinuityNote, sendEvent]);
 
@@ -757,28 +758,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
       return;
     }
 
-    if (event.type === "response.function_call_arguments.done") {
-      if (event.name && event.call_id) {
-        void handleToolCall(
-          event.name as PoshaneMitraToolName,
-          event.arguments ?? "{}",
-          event.call_id
-        );
-      }
-      return;
-    }
-
-    if (event.type === "response.output_item.done" && event.item?.type === "function_call") {
-      if (event.item.name && event.item.call_id) {
-        void handleToolCall(
-          event.item.name as PoshaneMitraToolName,
-          event.item.arguments ?? "{}",
-          event.item.call_id
-        );
-      }
-      return;
-    }
-
     if (event.type === "response.done") {
       const usage = event.response?.usage;
       const cancelled = event.response?.status === "cancelled";
@@ -786,11 +765,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         event.response?.status === "incomplete" &&
         event.response.status_details?.reason === "max_output_tokens";
       const calls = event.response?.output?.filter((item) => item.type === "function_call") ?? [];
-      calls.forEach((call) => {
-        if (call.name && call.call_id) {
-          void handleToolCall(call.name as PoshaneMitraToolName, call.arguments ?? "{}", call.call_id);
-        }
-      });
 
       const assistantText =
         responseTextRef.current ||
@@ -807,6 +781,30 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         releaseMicrophoneAfterOutput();
         releaseAudioOutputSoon();
         responseTextRef.current = "";
+        return;
+      }
+
+      if (calls.length > 0) {
+        responseTextRef.current = "";
+        responseInProgressRef.current = true;
+        setStatus("thinking");
+        audit({
+          event: "tool_call",
+          result_status: "Illustrative",
+          estimated_cost_usd: estimateCostUsd(usage),
+        });
+        void Promise.all(calls.map((call) => {
+          if (!call.name || !call.call_id) return Promise.resolve(false);
+          return handleToolCall(
+            call.name as PoshaneMitraToolName,
+            call.arguments ?? "{}",
+            call.call_id,
+          );
+        })).then((completedCalls) => {
+          if (completedCalls.some(Boolean)) {
+            requestToolResultSpeech();
+          }
+        });
         return;
       }
 
@@ -870,7 +868,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
       setStatus("error");
       appendEntry({ question: currentQuestionRef.current || "Realtime session", error: message });
     }
-  }, [appendEntry, audit, handleToolCall, lockMicrophoneForOutput, markAudioOutputActive, releaseAudioOutputSoon, releaseMicrophoneAfterOutput, sendEvent, sessionMeta, status]);
+  }, [appendEntry, audit, handleToolCall, lockMicrophoneForOutput, markAudioOutputActive, releaseAudioOutputSoon, releaseMicrophoneAfterOutput, requestToolResultSpeech, sendEvent, sessionMeta, status]);
 
   const connect = useCallback(async (reason: ConnectReason = "start") => {
     const reconnecting = reason !== "start";
