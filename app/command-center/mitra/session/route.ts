@@ -62,7 +62,7 @@ function sessionInstructions() {
   ].join("\n");
 }
 
-function openAIErrorMessage(payload: unknown) {
+function openAIErrorMessage(payload: unknown, fallback: string) {
   if (
     payload &&
     typeof payload === "object" &&
@@ -74,10 +74,52 @@ function openAIErrorMessage(payload: unknown) {
   ) {
     return payload.error.message;
   }
-  return "Realtime credential creation failed.";
+  return fallback;
 }
 
-async function createRealtimeClientSecret(session: Awaited<ReturnType<typeof getCommandCenterSession>>) {
+function realtimeSessionConfig() {
+  return {
+    type: "realtime",
+    model: process.env.POSHANE_MITRA_REALTIME_MODEL ?? "gpt-realtime-2.1",
+    output_modalities: ["audio"],
+    instructions: sessionInstructions(),
+    audio: {
+      input: {
+        noise_reduction: { type: "near_field" },
+        transcription: {
+          model:
+            process.env.POSHANE_MITRA_TRANSCRIPTION_MODEL ??
+            "gpt-4o-mini-transcribe",
+        },
+        turn_detection: {
+          type: "semantic_vad",
+          create_response: true,
+          interrupt_response: false,
+          eagerness: process.env.POSHANE_MITRA_VAD_EAGERNESS ?? "low",
+        },
+      },
+      output: {
+        voice: configuredVoice(),
+        speed: 1.0,
+      },
+    },
+    reasoning: {
+      effort: process.env.POSHANE_MITRA_REASONING_EFFORT ?? "low",
+    },
+    tools: POSHANE_MITRA_TOOL_DEFINITIONS,
+    tool_choice: "auto",
+    max_output_tokens: Number(
+      process.env.POSHANE_MITRA_MAX_OUTPUT_TOKENS ?? 800
+    ),
+    truncation: "auto",
+    tracing: null,
+  };
+}
+
+async function createRealtimeCall(
+  session: NonNullable<Awaited<ReturnType<typeof getCommandCenterSession>>>,
+  sdp: string,
+) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return {
@@ -93,81 +135,64 @@ async function createRealtimeClientSecret(session: Awaited<ReturnType<typeof get
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10_000);
+  const timeout = setTimeout(() => controller.abort(), 15_000);
 
   try {
+    const formData = new FormData();
+    formData.set("sdp", sdp);
+    formData.set("session", JSON.stringify(realtimeSessionConfig()));
+
     const realtimeResponse = await fetch(
-      "https://api.openai.com/v1/realtime/client_secrets",
+      "https://api.openai.com/v1/realtime/calls",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-          "OpenAI-Safety-Identifier": safetyIdentifierForSession(session!),
+          "OpenAI-Safety-Identifier": safetyIdentifierForSession(session),
         },
-        body: JSON.stringify({
-          expires_after: { anchor: "created_at", seconds: 600 },
-          session: {
-            type: "realtime",
-            model: process.env.POSHANE_MITRA_REALTIME_MODEL ?? "gpt-realtime-2.1",
-            output_modalities: ["audio"],
-            instructions: sessionInstructions(),
-            audio: {
-              input: {
-                noise_reduction: { type: "near_field" },
-                transcription: {
-                  model:
-                    process.env.POSHANE_MITRA_TRANSCRIPTION_MODEL ??
-                    "gpt-4o-mini-transcribe",
-                },
-                turn_detection: {
-                  type: "semantic_vad",
-                  create_response: true,
-                  interrupt_response: false,
-                  eagerness: process.env.POSHANE_MITRA_VAD_EAGERNESS ?? "low",
-                },
-              },
-              output: {
-                voice: configuredVoice(),
-                speed: 1.0,
-              },
-            },
-            reasoning: {
-              effort: process.env.POSHANE_MITRA_REASONING_EFFORT ?? "low",
-            },
-            tools: POSHANE_MITRA_TOOL_DEFINITIONS,
-            tool_choice: "auto",
-            max_output_tokens: Number(
-              process.env.POSHANE_MITRA_MAX_OUTPUT_TOKENS ?? 800
-            ),
-            truncation: "auto",
-            tracing: null,
-          },
-        }),
+        body: formData,
         signal: controller.signal,
       }
     );
 
-    const data = await realtimeResponse.json().catch(() => null);
+    const responseBody = await realtimeResponse.text();
     if (!realtimeResponse.ok) {
+      const payload = (() => {
+        try {
+          return JSON.parse(responseBody) as unknown;
+        } catch {
+          return null;
+        }
+      })();
+      const message = openAIErrorMessage(
+        payload,
+        `Realtime connection failed with status ${realtimeResponse.status}.`,
+      );
+      logPoshaneMitraAudit(session, {
+        event: "error",
+        result_status: "Error",
+        error: `OpenAI Realtime handshake ${realtimeResponse.status}: ${message}`,
+      });
       return {
         response: NextResponse.json(
-          { error: openAIErrorMessage(data), detail: data },
+          { error: message },
           { status: realtimeResponse.status }
         ),
       };
     }
 
-    return { data };
+    return { answer: responseBody };
   } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Realtime connection failed.";
+    logPoshaneMitraAudit(session, {
+      event: "error",
+      result_status: "Error",
+      error: `OpenAI Realtime handshake exception: ${message}`,
+    });
     return {
       response: NextResponse.json(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : "Realtime credential creation failed.",
-        },
+        { error: message },
         { status: 502 }
       ),
     };
@@ -176,14 +201,23 @@ async function createRealtimeClientSecret(session: Awaited<ReturnType<typeof get
   }
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   const session = await getCommandCenterSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorised." }, { status: 401 });
   }
 
+  if (!request.headers.get("content-type")?.includes("application/sdp")) {
+    return NextResponse.json({ error: "Expected an SDP offer." }, { status: 415 });
+  }
+
+  const sdp = await request.text();
+  if (!sdp.trim().startsWith("v=0")) {
+    return NextResponse.json({ error: "Invalid SDP offer." }, { status: 400 });
+  }
+
   const startedAt = performance.now();
-  const { response, data } = await createRealtimeClientSecret(session);
+  const { response, answer } = await createRealtimeCall(session, sdp);
   if (response) return response;
 
   logPoshaneMitraAudit(session, {
@@ -193,19 +227,14 @@ export async function POST() {
     estimated_cost_usd: 0,
   });
 
-  return NextResponse.json({
-    client_secret: data.value,
-    expires_at: data.expires_at,
-    session: {
-      id: data.session?.id,
-      model: data.session?.model,
-      voice: configuredVoice(),
-      record_status: "Illustrative",
-      is_mock: true,
-      disclosure:
-        "Illustrative prototype — mock data for demonstration. Not live operational data.",
+  return new Response(answer, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/sdp",
+      "Cache-Control": "no-store",
+      "X-Mitra-Model": realtimeSessionConfig().model,
+      "X-Mitra-Voice": configuredVoice(),
+      "X-Mitra-Record-Status": "Illustrative",
     },
-    bootstrap: getPoshaneMitraBootstrap(),
-    tools: POSHANE_MITRA_TOOL_DEFINITIONS.map((tool) => tool.name),
   });
 }

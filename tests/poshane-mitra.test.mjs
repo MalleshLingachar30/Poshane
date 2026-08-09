@@ -16,12 +16,16 @@ const uiActionEvent = read("app/command-center/mitra/ui-action-event.ts");
 const frames = read("app/command-center/components/frames.tsx");
 const envExample = read(".env.example");
 
-test("Realtime credentials are created server-side with ephemeral client secrets", () => {
-  assert.match(sessionRoute, /\/v1\/realtime\/client_secrets/);
+test("Realtime WebRTC calls are established server-side through the unified interface", () => {
+  assert.match(sessionRoute, /\/v1\/realtime\/calls/);
+  assert.match(sessionRoute, /formData\.set\("sdp", sdp\)/);
+  assert.match(sessionRoute, /formData\.set\("session", JSON\.stringify\(realtimeSessionConfig\(\)\)\)/);
   assert.match(sessionRoute, /OpenAI-Safety-Identifier/);
-  assert.match(sessionRoute, /expires_after/);
   assert.match(sessionRoute, /gpt-realtime-2\.1/);
   assert.match(sessionRoute, /cedar/);
+  assert.doesNotMatch(sessionRoute, /\/v1\/realtime\/client_secrets/);
+  assert.match(client, /fetch\(SESSION_ENDPOINT/);
+  assert.doesNotMatch(client, /https:\/\/api\.openai\.com\/v1\/realtime\/calls/);
   assert.doesNotMatch(client, /process\.env\.OPENAI_API_KEY|sk-proj|Bearer \$\{process\.env/);
 });
 
@@ -31,7 +35,11 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /echoCancellation: true/);
   assert.match(client, /noiseSuppression: true/);
   assert.match(client, /autoGainControl: true/);
-  assert.match(client, /\/v1\/realtime\/calls/);
+  assert.match(client, /fetch\(SESSION_ENDPOINT, \{/);
+  assert.match(client, /"Content-Type": "application\/sdp"/);
+  assert.match(client, /connectionIdRef\.current !== connectionId/);
+  assert.match(client, /dcRef\.current === channel/);
+  assert.match(client, /pcRef\.current !== pc/);
   assert.match(client, /output_audio_buffer\.clear/);
   assert.match(client, /IAFT_MEETING_GREETING/);
   assert.match(client, /Respected Chairman of IAFT, honourable Executive Committee members/);

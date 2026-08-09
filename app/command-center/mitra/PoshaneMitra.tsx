@@ -15,17 +15,10 @@ type PoshaneMitraProps = {
   uiContext: CommandCenterUiAction;
 };
 
-type SessionPayload = {
-  client_secret: string;
-  expires_at: number;
-  session: {
-    id?: string;
-    model?: string;
-    voice: string;
-    record_status: string;
-    is_mock: boolean;
-    disclosure: string;
-  };
+type SessionMeta = {
+  model?: string;
+  voice: string;
+  record_status: string;
 };
 
 type SessionErrorPayload = {
@@ -203,7 +196,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState("");
-  const [sessionMeta, setSessionMeta] = useState<SessionPayload["session"] | null>(null);
+  const [sessionMeta, setSessionMeta] = useState<SessionMeta | null>(null);
   const [entries, setEntries] = useState<PoshaneMitraTranscriptEntry[]>([]);
   const [draft, setDraft] = useState("");
   const [reconnectTick, setReconnectTick] = useState(0);
@@ -476,11 +469,13 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
     }
     microphoneLockedForOutputRef.current = false;
     audioOutputActiveRef.current = false;
-    dcRef.current?.close();
+    const channel = dcRef.current;
     dcRef.current = null;
-    pcRef.current?.getSenders().forEach((sender) => sender.track?.stop());
-    pcRef.current?.close();
+    channel?.close();
+    const peer = pcRef.current;
     pcRef.current = null;
+    peer?.getSenders().forEach((sender) => sender.track?.stop());
+    peer?.close();
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     if (audioRef.current) {
@@ -556,6 +551,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
 
   const endSession = useCallback((reason = "ended") => {
     manualEndRef.current = true;
+    connectionIdRef.current += 1;
     const duration = sessionStartedAtRef.current
       ? Date.now() - sessionStartedAtRef.current
       : 0;
@@ -878,6 +874,8 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
 
   const connect = useCallback(async (reason: ConnectReason = "start") => {
     const reconnecting = reason !== "start";
+    const connectionId = connectionIdRef.current + 1;
+    connectionIdRef.current = connectionId;
     manualEndRef.current = false;
     setError("");
     setStatus(reconnecting ? "reconnecting" : "connecting");
@@ -885,17 +883,8 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
     closePeer();
 
     try {
-      const tokenResponse = await fetch(SESSION_ENDPOINT, { method: "POST" });
-      const tokenData = (await tokenResponse.json()) as SessionPayload | SessionErrorPayload;
-      if (!tokenResponse.ok || "error" in tokenData) {
-        throw new Error("error" in tokenData ? tokenData.error : "Could not start Mitra.");
-      }
-
-      setSessionMeta(tokenData.session);
-      sessionStartedAtRef.current = Date.now();
       lastActivityRef.current = Date.now();
       handledCallsRef.current.clear();
-      connectionIdRef.current += 1;
 
       const pc = new RTCPeerConnection();
       pcRef.current = pc;
@@ -943,6 +932,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
       const channel = pc.createDataChannel("oai-events");
       dcRef.current = channel;
       channel.addEventListener("open", () => {
+        if (dcRef.current !== channel || connectionIdRef.current !== connectionId) return;
         setStatus("listening");
         if (!reconnecting && !greetingSentRef.current) {
           greetingSentRef.current = true;
@@ -964,6 +954,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         }
       });
       channel.addEventListener("message", (message) => {
+        if (dcRef.current !== channel || connectionIdRef.current !== connectionId) return;
         try {
           handleRealtimeEvent(JSON.parse(message.data));
         } catch {
@@ -971,11 +962,21 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         }
       });
       channel.addEventListener("close", () => {
-        if (!manualEndRef.current) setStatus("reconnecting");
+        if (
+          dcRef.current === channel &&
+          connectionIdRef.current === connectionId &&
+          !manualEndRef.current
+        ) {
+          setStatus("reconnecting");
+        }
       });
 
       pc.onconnectionstatechange = () => {
-        if (manualEndRef.current) return;
+        if (
+          pcRef.current !== pc ||
+          connectionIdRef.current !== connectionId ||
+          manualEndRef.current
+        ) return;
         if (["failed", "closed"].includes(pc.connectionState)) {
           setStatus("reconnecting");
           return;
@@ -1000,6 +1001,8 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
 
       pc.oniceconnectionstatechange = () => {
         if (
+          pcRef.current === pc &&
+          connectionIdRef.current === connectionId &&
           !manualEndRef.current &&
           (pc.iceConnectionState === "failed" || pc.iceConnectionState === "closed")
         ) {
@@ -1009,33 +1012,52 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      const sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
+      const sdpResponse = await fetch(SESSION_ENDPOINT, {
         method: "POST",
         body: offer.sdp,
         headers: {
-          Authorization: `Bearer ${tokenData.client_secret}`,
           "Content-Type": "application/sdp",
         },
       });
+      const responseBody = await sdpResponse.text();
       if (!sdpResponse.ok) {
-        throw new Error("Realtime WebRTC connection failed.");
+        let message = `Realtime connection failed with status ${sdpResponse.status}.`;
+        try {
+          const payload = JSON.parse(responseBody) as SessionErrorPayload;
+          if (payload.error) message = payload.error;
+        } catch {
+          // The same-origin endpoint normally returns JSON for errors.
+        }
+        throw new Error(message);
+      }
+      if (connectionIdRef.current !== connectionId || pcRef.current !== pc) {
+        return;
       }
 
       await pc.setRemoteDescription({
         type: "answer",
-        sdp: await sdpResponse.text(),
+        sdp: responseBody,
       });
 
+      const connectedSession: SessionMeta = {
+        model: sdpResponse.headers.get("X-Mitra-Model") ?? "gpt-realtime-2.1",
+        voice: sdpResponse.headers.get("X-Mitra-Voice") ?? "cedar",
+        record_status:
+          sdpResponse.headers.get("X-Mitra-Record-Status") ?? "Illustrative",
+      };
+      setSessionMeta(connectedSession);
+      sessionStartedAtRef.current = Date.now();
       reconnectAttemptRef.current = 0;
       appendEntry({
         question: reconnecting ? "Session restored" : "Session started",
         result: reconnecting
           ? "Mitra restored the recent Command Center context."
-          : `Mitra connected with ${tokenData.session.voice} voice.`,
+          : `Mitra connected with ${connectedSession.voice} voice.`,
         recordStatus: "Illustrative",
         lastUpdatedAt: new Date().toISOString(),
       });
     } catch (connectError) {
+      if (connectionIdRef.current !== connectionId) return;
       closePeer();
       const nonRetryableDeviceError =
         connectError instanceof DOMException &&
