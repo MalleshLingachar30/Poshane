@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Frame1, Frame2, Frame3, Frame4, Frame5, Frame6 } from "./components/frames";
 import { Frame7 } from "./components/financials";
 import { Frame8 } from "./components/schematics";
@@ -7,6 +7,10 @@ import type { SchematicSectionId } from "./schematics";
 import { TalukFrame } from "./components/taluk-frame";
 import { TALUKS, TALUKS_BY_DISTRICT, firstTalukCode } from "./taluks";
 import PoshaneMitra from "./mitra/PoshaneMitra";
+import {
+  MITRA_UI_ACTION_EVENT,
+  type MitraUiActionEvent,
+} from "./mitra/ui-action-event";
 import type {
   CommandCenterFilterSet,
   CommandCenterFrameId,
@@ -76,13 +80,22 @@ export default function CommandCenterApp({
     setFrame("f8");
   };
 
-  const applyMitraAction = (action: CommandCenterUiAction) => {
+  const applyMitraAction = useCallback((action: CommandCenterUiAction) => {
     if (action.frame) setFrame(action.frame);
     if (action.districtCode) setDistrict(action.districtCode);
     if (action.talukCode) setTaluk(action.talukCode);
     if (action.filters) setVoiceFilters((current) => ({ ...current, ...action.filters }));
     if (action.highlightId) setVoiceHighlight(action.highlightId);
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleMitraUiAction = (event: Event) => {
+      applyMitraAction((event as MitraUiActionEvent).detail);
+    };
+
+    window.addEventListener(MITRA_UI_ACTION_EVENT, handleMitraUiAction);
+    return () => window.removeEventListener(MITRA_UI_ACTION_EVENT, handleMitraUiAction);
+  }, [applyMitraAction]);
 
   useEffect(() => {
     if (!voiceHighlight) return;
@@ -158,7 +171,6 @@ export default function CommandCenterApp({
 
           <div className="mitra-dock">
             <PoshaneMitra
-              onUiAction={applyMitraAction}
               uiContext={{
                 frame,
                 districtCode: district,

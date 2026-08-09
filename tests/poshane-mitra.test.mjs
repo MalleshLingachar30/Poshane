@@ -12,6 +12,7 @@ const provider = read("app/command-center/mitra/provider.ts");
 const projectBrief = read("app/command-center/mitra/project-brief.ts");
 const definitions = read("app/command-center/mitra/tool-definitions.ts");
 const appShell = read("app/command-center/CommandCenterApp.tsx");
+const uiActionEvent = read("app/command-center/mitra/ui-action-event.ts");
 const frames = read("app/command-center/components/frames.tsx");
 const envExample = read(".env.example");
 
@@ -159,7 +160,11 @@ test("district species questions open Species Planning with the district filter 
 
 test("voice turns can navigate without forcing the transcript drawer open", () => {
   assert.match(client, /lastUiActionRef\.current = payload\.ui_action/);
-  assert.match(client, /onUiAction\(payload\.ui_action\)/);
+  assert.match(client, /dispatchMitraUiAction\(payload\.ui_action\)/);
+  assert.match(uiActionEvent, /poshane:mitra-ui-action/);
+  assert.match(uiActionEvent, /window\.dispatchEvent/);
+  assert.match(appShell, /window\.addEventListener\(MITRA_UI_ACTION_EVENT/);
+  assert.match(appShell, /applyMitraAction\(\(event as MitraUiActionEvent\)\.detail\)/);
   assert.doesNotMatch(client, /setStatus\("thinking"\);\n\s+setDrawerOpen\(true\);/);
   assert.match(client, /title="Open optional transcript"/);
 });

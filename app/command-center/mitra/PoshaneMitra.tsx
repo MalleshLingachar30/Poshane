@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { dispatchMitraUiAction } from "./ui-action-event";
 import type {
   CommandCenterUiAction,
   PoshaneMitraAuditEvent,
@@ -11,7 +12,6 @@ import type {
 } from "./types";
 
 type PoshaneMitraProps = {
-  onUiAction: (action: CommandCenterUiAction) => void;
   uiContext: CommandCenterUiAction;
 };
 
@@ -198,7 +198,7 @@ function preferredMicrophone(
   );
 }
 
-export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProps) {
+export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
   const [status, setStatus] = useState<PoshaneMitraStatus>("idle");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -624,7 +624,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       };
       if (payload.ui_action) {
         lastUiActionRef.current = payload.ui_action;
-        onUiAction(payload.ui_action);
+        dispatchMitraUiAction(payload.ui_action);
       }
 
       appendEntry({
@@ -700,7 +700,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       });
       sendEvent({ type: "response.create", response: { output_modalities: ["audio"] } });
     }
-  }, [appendEntry, buildContinuityNote, onUiAction, sendEvent]);
+  }, [appendEntry, buildContinuityNote, sendEvent]);
 
   const handleRealtimeEvent = useCallback((event: RealtimeEvent) => {
     lastActivityRef.current = Date.now();
