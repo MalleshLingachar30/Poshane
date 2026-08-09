@@ -38,7 +38,6 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /How may I assist you\?/);
   assert.match(client, /input: \[\]/);
   assert.doesNotMatch(client, /My role is to support this review with clear, concise and source-based answers/);
-  assert.match(client, /MITRA_GREETING_TOKENS = 240/);
   assert.match(client, /document\.body\.appendChild\(audio\)/);
   assert.match(client, /keepRemoteAudioAlive/);
   assert.match(client, /audioOutputActiveRef/);
@@ -51,7 +50,9 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /resumeRemoteAudio/);
   assert.match(client, /MAX_RECONNECTS/);
   assert.match(client, /MAX_SESSION_MS/);
-  assert.match(client, /MITRA_MAX_SPOKEN_TOKENS = 360/);
+  assert.match(client, /MITRA_MAX_SPOKEN_TOKENS = 800/);
+  assert.match(client, /MITRA_RECOVERY_TOKENS = 480/);
+  assert.match(client, /MITRA_GREETING_TOKENS = 480/);
   assert.match(client, /DISCONNECT_GRACE_MS/);
   assert.doesNotMatch(client, /REFRESH_BEFORE_EXPIRY_MS|setSessionExpiresAt/);
   assert.match(client, /setMuted/);
@@ -90,8 +91,14 @@ test("Realtime session is tuned for stable command-center voice continuity", () 
   assert.match(sessionRoute, /reasoning:\s*\{\s*effort:/);
   assert.match(envExample, /POSHANE_MITRA_REASONING_EFFORT=low/);
   assert.match(envExample, /POSHANE_MITRA_VAD_EAGERNESS=low/);
-  assert.match(sessionRoute, /Answer short first/);
-  assert.match(envExample, /POSHANE_MITRA_MAX_OUTPUT_TOKENS=360/);
+  assert.match(sessionRoute, /three to five natural spoken sentences/);
+  assert.match(sessionRoute, /Never stop mid-sentence merely to be brief/);
+  assert.match(client, /status_details/);
+  assert.match(client, /stoppedAtTokenLimit/);
+  assert.match(client, /reason === "max_output_tokens"/);
+  assert.match(client, /incompleteContinuationCountRef/);
+  assert.match(client, /Continue naturally from the exact point where it stopped/);
+  assert.match(envExample, /POSHANE_MITRA_MAX_OUTPUT_TOKENS=800/);
   assert.match(sessionRoute, /Do not use technical words such as dataset/);
   assert.match(sessionRoute, /Based on the current demonstration records/);
 });

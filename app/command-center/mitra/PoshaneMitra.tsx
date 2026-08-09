@@ -45,6 +45,10 @@ type RealtimeEvent = {
   };
   response?: {
     status?: string;
+    status_details?: {
+      type?: string;
+      reason?: string;
+    } | null;
     output?: Array<{
       type?: string;
       name?: string;
@@ -80,9 +84,9 @@ const MAX_SESSION_MS = 55 * 60 * 1000;
 const MAX_RECONNECTS = 4;
 const DISCONNECT_GRACE_MS = 5_000;
 const BLUETOOTH_MIC_RESUME_DELAY_MS = 650;
-const MITRA_MAX_SPOKEN_TOKENS = 360;
-const MITRA_RECOVERY_TOKENS = 240;
-const MITRA_GREETING_TOKENS = 240;
+const MITRA_MAX_SPOKEN_TOKENS = 800;
+const MITRA_RECOVERY_TOKENS = 480;
+const MITRA_GREETING_TOKENS = 480;
 const TOOL_ENDPOINT = "/command-center/mitra/tool";
 const SESSION_ENDPOINT = "/command-center/mitra/session";
 const AUDIT_ENDPOINT = "/command-center/mitra/audit";
@@ -184,6 +188,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
   const microphoneLockedForOutputRef = useRef(false);
   const greetingSentRef = useRef(false);
   const greetingInProgressRef = useRef(false);
+  const incompleteContinuationCountRef = useRef(0);
   const responseInProgressRef = useRef(false);
   const audioOutputActiveRef = useRef(false);
   const audioResumeTimerRef = useRef<number | null>(null);
@@ -384,6 +389,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     reconnectAttemptRef.current = 0;
     greetingSentRef.current = false;
     greetingInProgressRef.current = false;
+    incompleteContinuationCountRef.current = 0;
     responseInProgressRef.current = false;
     audioOutputActiveRef.current = false;
     responseTextRef.current = "";
@@ -494,7 +500,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
           output_modalities: ["audio"],
           max_output_tokens: MITRA_MAX_SPOKEN_TOKENS,
           instructions:
-            "Answer from the provided Command Center result. Speak naturally, avoid technical wording, and answer short first. Use one to three sentences, then offer to show more detail if useful.",
+            "Answer from the provided Command Center result. Speak naturally and avoid technical wording. Give a complete core answer in three to five sentences, usually 45 to 90 spoken words. Finish every sentence and include the requested facts and material caveats before offering more detail.",
         },
       });
     } catch (toolError) {
@@ -553,6 +559,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     if (event.type === "conversation.item.input_audio_transcription.completed") {
       currentQuestionRef.current = event.transcript ?? currentQuestionRef.current;
       lastUserTurnRef.current = currentQuestionRef.current;
+      incompleteContinuationCountRef.current = 0;
       responseInProgressRef.current = true;
       return;
     }
@@ -602,6 +609,9 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     if (event.type === "response.done") {
       const usage = event.response?.usage;
       const cancelled = event.response?.status === "cancelled";
+      const stoppedAtTokenLimit =
+        event.response?.status === "incomplete" &&
+        event.response.status_details?.reason === "max_output_tokens";
       const calls = event.response?.output?.filter((item) => item.type === "function_call") ?? [];
       calls.forEach((call) => {
         if (call.name && call.call_id) {
@@ -619,12 +629,40 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
 
       if (cancelled) {
         if (assistantText) lastAssistantTurnRef.current = compactText(assistantText);
+        incompleteContinuationCountRef.current = 0;
         responseInProgressRef.current = false;
         releaseMicrophoneAfterOutput();
         releaseAudioOutputSoon();
         responseTextRef.current = "";
         return;
       }
+
+      if (
+        stoppedAtTokenLimit &&
+        calls.length === 0 &&
+        incompleteContinuationCountRef.current < 1
+      ) {
+        incompleteContinuationCountRef.current += 1;
+        audit({
+          event: "tool_call",
+          result_status: "Illustrative",
+          estimated_cost_usd: estimateCostUsd(usage),
+        });
+        setStatus("thinking");
+        responseInProgressRef.current = true;
+        const continuationSent = sendEvent({
+          type: "response.create",
+          response: {
+            output_modalities: ["audio"],
+            max_output_tokens: MITRA_RECOVERY_TOKENS,
+            instructions:
+              "Your previous spoken response reached its output limit. Continue naturally from the exact point where it stopped, complete the unfinished sentence and the requested answer, and then stop. Do not repeat the introduction or any completed point. Use no more than three short sentences.",
+          },
+        });
+        if (continuationSent) return;
+      }
+
+      incompleteContinuationCountRef.current = 0;
 
       if (assistantText && calls.length === 0) {
         lastAssistantTurnRef.current = compactText(assistantText);
@@ -886,6 +924,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     if (!text) return;
     currentQuestionRef.current = text;
     lastUserTurnRef.current = text;
+    incompleteContinuationCountRef.current = 0;
     setDraft("");
     setDrawerOpen(true);
     if (!active || !sendEvent({
