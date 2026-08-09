@@ -43,6 +43,10 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /keepRemoteAudioAlive/);
   assert.match(client, /audioOutputActiveRef/);
   assert.match(client, /greetingInProgressRef/);
+  assert.match(client, /BLUETOOTH_MIC_RESUME_DELAY_MS = 650/);
+  assert.match(client, /microphoneLockedForOutputRef/);
+  assert.match(client, /lockMicrophoneForOutput/);
+  assert.match(client, /releaseMicrophoneAfterOutput/);
   assert.match(client, /setMicrophoneTracksEnabled/);
   assert.match(client, /resumeRemoteAudio/);
   assert.match(client, /MAX_RECONNECTS/);
@@ -81,6 +85,7 @@ test("assistant is presented to users as Mitra", () => {
 test("Realtime session is tuned for stable command-center voice continuity", () => {
   assert.match(sessionRoute, /output_modalities: \["audio"\]/);
   assert.match(sessionRoute, /type: "semantic_vad"/);
+  assert.match(sessionRoute, /interrupt_response: false/);
   assert.match(sessionRoute, /POSHANE_MITRA_VAD_EAGERNESS \?\? "low"/);
   assert.match(sessionRoute, /reasoning:\s*\{\s*effort:/);
   assert.match(envExample, /POSHANE_MITRA_REASONING_EFFORT=low/);

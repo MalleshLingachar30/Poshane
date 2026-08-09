@@ -117,7 +117,7 @@ async function createRealtimeClientSecret(session: Awaited<ReturnType<typeof get
                 turn_detection: {
                   type: "semantic_vad",
                   create_response: true,
-                  interrupt_response: true,
+                  interrupt_response: false,
                   eagerness: process.env.POSHANE_MITRA_VAD_EAGERNESS ?? "low",
                 },
               },

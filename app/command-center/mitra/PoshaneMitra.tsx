@@ -79,6 +79,7 @@ const INACTIVE_MS = 5 * 60 * 1000;
 const MAX_SESSION_MS = 55 * 60 * 1000;
 const MAX_RECONNECTS = 4;
 const DISCONNECT_GRACE_MS = 5_000;
+const BLUETOOTH_MIC_RESUME_DELAY_MS = 650;
 const MITRA_MAX_SPOKEN_TOKENS = 360;
 const MITRA_RECOVERY_TOKENS = 240;
 const MITRA_GREETING_TOKENS = 240;
@@ -179,6 +180,8 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
   const mutedRef = useRef(false);
   const handledCallsRef = useRef(new Set<string>());
   const disconnectTimerRef = useRef<number | null>(null);
+  const microphoneResumeTimerRef = useRef<number | null>(null);
+  const microphoneLockedForOutputRef = useRef(false);
   const greetingSentRef = useRef(false);
   const greetingInProgressRef = useRef(false);
   const responseInProgressRef = useRef(false);
@@ -285,6 +288,11 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       window.clearTimeout(audioResumeTimerRef.current);
       audioResumeTimerRef.current = null;
     }
+    if (microphoneResumeTimerRef.current != null) {
+      window.clearTimeout(microphoneResumeTimerRef.current);
+      microphoneResumeTimerRef.current = null;
+    }
+    microphoneLockedForOutputRef.current = false;
     audioOutputActiveRef.current = false;
     dcRef.current?.close();
     dcRef.current = null;
@@ -306,6 +314,28 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       track.enabled = enabled && !mutedRef.current;
     });
   }, []);
+
+  const lockMicrophoneForOutput = useCallback(() => {
+    if (microphoneResumeTimerRef.current != null) {
+      window.clearTimeout(microphoneResumeTimerRef.current);
+      microphoneResumeTimerRef.current = null;
+    }
+    microphoneLockedForOutputRef.current = true;
+    setMicrophoneTracksEnabled(false);
+  }, [setMicrophoneTracksEnabled]);
+
+  const releaseMicrophoneAfterOutput = useCallback(() => {
+    if (microphoneResumeTimerRef.current != null) {
+      window.clearTimeout(microphoneResumeTimerRef.current);
+    }
+    microphoneResumeTimerRef.current = window.setTimeout(() => {
+      microphoneResumeTimerRef.current = null;
+      microphoneLockedForOutputRef.current = false;
+      if (manualEndRef.current) return;
+      setMicrophoneTracksEnabled(true);
+      setStatus("listening");
+    }, BLUETOOTH_MIC_RESUME_DELAY_MS);
+  }, [setMicrophoneTracksEnabled]);
 
   const resumeRemoteAudio = useCallback(() => {
     const audio = audioRef.current;
@@ -498,6 +528,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     }
 
     if (event.type === "input_audio_buffer.speech_started") {
+      if (microphoneLockedForOutputRef.current) return;
       const wasResponding = responseInProgressRef.current || status === "speaking";
       if (responseTextRef.current) {
         lastAssistantTurnRef.current = compactText(responseTextRef.current);
@@ -528,6 +559,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
 
     if (event.type === "response.created") {
       responseInProgressRef.current = true;
+      lockMicrophoneForOutput();
       markAudioOutputActive();
       return;
     }
@@ -588,9 +620,9 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       if (cancelled) {
         if (assistantText) lastAssistantTurnRef.current = compactText(assistantText);
         responseInProgressRef.current = false;
+        releaseMicrophoneAfterOutput();
         releaseAudioOutputSoon();
         responseTextRef.current = "";
-        setStatus("listening");
         return;
       }
 
@@ -612,10 +644,9 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       });
       if (greetingInProgressRef.current) {
         greetingInProgressRef.current = false;
-        setMicrophoneTracksEnabled(true);
       }
-      setStatus("listening");
       responseInProgressRef.current = false;
+      releaseMicrophoneAfterOutput();
       releaseAudioOutputSoon();
       responseTextRef.current = "";
       return;
@@ -628,7 +659,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       setStatus("error");
       appendEntry({ question: currentQuestionRef.current || "Realtime session", error: message });
     }
-  }, [appendEntry, audit, handleToolCall, markAudioOutputActive, releaseAudioOutputSoon, sendEvent, sessionMeta, setMicrophoneTracksEnabled, status]);
+  }, [appendEntry, audit, handleToolCall, lockMicrophoneForOutput, markAudioOutputActive, releaseAudioOutputSoon, releaseMicrophoneAfterOutput, sendEvent, sessionMeta, status]);
 
   const connect = useCallback(async (reason: ConnectReason = "start") => {
     const reconnecting = reason !== "start";
@@ -844,7 +875,9 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     const next = !muted;
     mutedRef.current = next;
     setMuted(next);
-    setMicrophoneTracksEnabled(!greetingInProgressRef.current);
+    setMicrophoneTracksEnabled(
+      !greetingInProgressRef.current && !microphoneLockedForOutputRef.current
+    );
     setStatus(next ? "muted" : "listening");
   }, [muted, setMicrophoneTracksEnabled]);
 
