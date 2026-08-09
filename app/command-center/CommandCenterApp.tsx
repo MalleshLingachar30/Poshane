@@ -226,7 +226,7 @@ export default function CommandCenterApp({
           )}
           {frame === "f3" && <Frame3 voiceFilters={voiceFilters} />}
           {frame === "f4" && <Frame4 voiceFilters={voiceFilters} />}
-          {frame === "f5" && <Frame5 />}
+          {frame === "f5" && <Frame5 voiceFilters={voiceFilters} />}
           {frame === "f6" && <Frame6 />}
           {frame === "f7" && <Frame7 />}
           {frame === "f8" && (

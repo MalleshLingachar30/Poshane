@@ -21,9 +21,9 @@ import {
   lakhToStr,
   plantedOf,
   y1Of,
-  zoneAlloc,
 } from "../data";
 import { TALUKS, buildTalukMetrics } from "../taluks";
+import { MODELS, SILVI_ZONES, type ModelKey } from "../silvi";
 import type {
   CommandCenterFrameId,
   CommandCenterUiAction,
@@ -182,13 +182,58 @@ function optionalNumber(value: unknown) {
 }
 
 function findDistrict(value: unknown) {
-  const q = norm(value);
+  const q = norm(value).replace(/\s+district$/, "");
   if (!q) return undefined;
+  const silviAlias = SILVI_ZONES.flatMap((zone) => zone.agroZones)
+    .flatMap((zone) => zone.districts)
+    .find(
+      (district) =>
+        norm(district.source) === q || norm(district.district) === q,
+    )?.district;
+  const canonicalQuery = silviAlias ? norm(silviAlias) : q;
   const district = DISTRICTS.find(
-    (d) => norm(d.name) === q || norm(d.code) === q
+    (d) => norm(d.name) === canonicalQuery || norm(d.code) === canonicalQuery
   );
   if (!district) throw new Error(`Unknown Karnataka district: ${value}`);
   return district;
+}
+
+function resolvePlantingModel(value: unknown) {
+  const query = norm(value);
+  if (!query) return undefined;
+  const aliases: Record<string, ModelKey> = {
+    bund: "bund",
+    strip: "bund",
+    "shelter belt": "bund",
+    hedge: "bund",
+    "alley planting": "bund",
+    block: "block",
+    cluster: "block",
+    linear: "linear",
+    roadside: "linear",
+    "canal bank": "linear",
+    gua: "gua",
+    "urban greening": "gua",
+    "greening of urban area": "gua",
+    school: "institutional",
+    institute: "institutional",
+    temple: "institutional",
+    "grave yard": "institutional",
+    graveyard: "institutional",
+    institutional: "institutional",
+  };
+  const key = aliases[query] ?? query;
+  const model = MODELS.find((candidate) => candidate.key === key);
+  if (!model) throw new Error(`Unsupported planting type: ${value}`);
+  return model;
+}
+
+function silviZonesForDistrict(districtName: string) {
+  return SILVI_ZONES.filter((zone) =>
+    zone.agroZones.some((agroZone) =>
+      agroZone.districts.some((district) => district.district === districtName),
+    ),
+  );
 }
 
 function findDistrictByName(value: string) {
@@ -600,58 +645,137 @@ function stakeholders(args: Args) {
 }
 
 function speciesPlanning(args: Args) {
+  const district = findDistrict(args.district);
   const zoneQuery = optionalText(args.zone);
   const speciesQuery = optionalText(args.species);
+  const plantingModel = resolvePlantingModel(args.planting_model);
   const compareZones = Array.isArray(args.compare_zones) ? args.compare_zones.map(String) : [];
-  let zoneIndexes = ZONES.map((_, i) => i);
+  let matchedZones = district ? silviZonesForDistrict(district.name) : [...SILVI_ZONES];
 
   if (zoneQuery) {
-    const found = ZONES.findIndex((z) => norm(z.name).includes(norm(zoneQuery)));
-    if (found < 0) throw new Error(`Unknown agro-climatic zone: ${zoneQuery}`);
-    zoneIndexes = [found];
+    const found = SILVI_ZONES.find(
+      (zone) =>
+        norm(zone.key) === norm(zoneQuery) ||
+        norm(zone.name).includes(norm(zoneQuery)),
+    );
+    if (!found) throw new Error(`Unknown silvi zone: ${zoneQuery}`);
+    matchedZones = matchedZones.filter((zone) => zone.key === found.key);
   } else if (compareZones.length) {
-    zoneIndexes = compareZones.map((zq) => {
-      const found = ZONES.findIndex((z) => norm(z.name).includes(norm(zq)));
-      if (found < 0) throw new Error(`Unknown agro-climatic zone: ${zq}`);
-      return found;
+    const comparedKeys = compareZones.map((requestedZone) => {
+      const found = SILVI_ZONES.find(
+        (zone) =>
+          norm(zone.key) === norm(requestedZone) ||
+          norm(zone.name).includes(norm(requestedZone)),
+      );
+      if (!found) throw new Error(`Unknown silvi zone: ${requestedZone}`);
+      return found.key;
     });
-  } else if (speciesQuery) {
-    zoneIndexes = ZONES.flatMap((z, i) =>
-      z.species.some(([common, botanical]) =>
-        `${common} ${botanical}`.toLowerCase().includes(norm(speciesQuery))
-      )
-        ? [i]
-        : []
+    matchedZones = matchedZones.filter((zone) => comparedKeys.includes(zone.key));
+  }
+
+  if (speciesQuery) {
+    matchedZones = matchedZones.filter((zone) =>
+      MODELS.some((model) =>
+        zone.species[model.key].some(([botanical, local]) =>
+          norm(`${botanical} ${local}`).includes(norm(speciesQuery)),
+        ),
+      ),
     );
   }
 
-  const zones = zoneIndexes.map((zi) => {
-    const z = ZONES[zi];
-    const alloc = zoneAlloc(zi);
-    const dc = DISTRICTS.filter((d) => d.zone === zi).length;
+  const zones = matchedZones.map((zone) => {
+    const districtRows = zone.agroZones.flatMap((agroZone) =>
+      agroZone.districts
+        .filter((row) => !district || row.district === district.name)
+        .map((row) => ({
+          agro_climatic_zone: agroZone.name,
+          district: row.district,
+          source_district_name: row.source,
+          taluks: row.taluks,
+        })),
+    );
+    const models = (plantingModel ? [plantingModel] : MODELS).map((model) => ({
+      key: model.key,
+      name: model.name,
+      short: model.short,
+      seedling: model.seedling,
+      spacing: model.spacing,
+      species_type: model.speciesType,
+      common_land: model.commonLand,
+      species: zone.species[model.key].map(([botanical, local]) => ({
+        botanical,
+        local,
+      })),
+    }));
     return {
-      zone: z.name,
-      district_count: dc,
-      allocation_lakh: alloc,
-      share_of_five_crore_percent: Number(((alloc / TOT_ALLOC) * 100).toFixed(1)),
-      species: z.species.map(([common, botanical]) => ({ common, botanical })),
+      zone: zone.name,
+      zone_key: zone.key,
+      source_sheet: zone.sheet,
+      district_mappings: districtRows,
+      planting_models: models,
     };
   });
-  const largest = ZONES.map((z, i) => ({ zone: z.name, allocation_lakh: zoneAlloc(i) })).sort(
-    (a, b) => b.allocation_lakh - a.allocation_lakh
-  )[0];
+  const zoneNames = zones.map((zone) => zone.zone).join(" and ");
+  const plantingQuestion = MODELS.map((model) => model.name).join("; ");
+  const spokenSpecies = plantingModel
+    ? matchedZones.map((zone) => ({
+        zone: zone.name,
+        species: zone.species[plantingModel.key].map(
+          ([botanical, local]) => `${local} (${botanical})`,
+        ),
+      }))
+    : [];
+  const speciesSummary = spokenSpecies
+    .map(({ zone, species }) => `${zone}: ${species.join(", ")}`)
+    .join("; ");
+  const requiresPlantingType = Boolean(district && !plantingModel && !speciesQuery);
+  const summary = !zones.length
+    ? district
+      ? `no silvi-zone species record was found for ${district.name}.`
+      : "no silvi-zone species record matched that request."
+    : requiresPlantingType
+    ? `${district!.name} belongs to ${zoneNames}. Which planting type is needed: ${plantingQuestion}?`
+    : plantingModel
+    ? `${district ? `${district.name} belongs to ${zoneNames}. ` : ""}For ${plantingModel.name}, the recommended species are ${speciesSummary}.`
+    : speciesQuery
+    ? `${speciesQuery} appears in ${zoneNames}; open the filtered Species Planning view for the matching planting models.`
+    : `${zoneNames} matched the requested Species Planning view.`;
 
   return result(
     "poshane_get_species_planning",
-    zones.length
-      ? `${zones[0].zone} allocation is ${lakhToStr(zones[0].allocation_lakh)}; the largest zone allocation is ${largest.zone}.`
-      : "no zone contains that species in the current demonstration records.",
-    { zones, largest_allocation_zone: largest },
-    { zone: zoneQuery ?? null, species: speciesQuery ?? null },
+    summary,
+    {
+      requires_planting_type: requiresPlantingType,
+      district: district?.name ?? null,
+      zones,
+      available_planting_models: MODELS.map((model) => ({
+        key: model.key,
+        name: model.name,
+        common_land: model.commonLand,
+      })),
+      selected_planting_model: plantingModel
+        ? { key: plantingModel.key, name: plantingModel.name }
+        : null,
+      spoken_species: spokenSpecies,
+    },
+    {
+      district: district?.name ?? null,
+      zone: zoneQuery ?? null,
+      species: speciesQuery ?? null,
+      planting_model: plantingModel?.key ?? null,
+    },
     {
       frame: "f5",
-      highlightId: zones[0] ? `zone-${slug(zones[0].zone)}` : "species-planning",
-      highlightLabel: zones[0]?.zone ?? "Species planning",
+      districtCode: district?.code,
+      filters: {
+        speciesDistrict: district?.name,
+        speciesQuery,
+        speciesModel: plantingModel?.key,
+      },
+      highlightId: "species-search",
+      highlightLabel: district
+        ? `${district.name} ${plantingModel?.short ?? "species plan"}`
+        : plantingModel?.name ?? zones[0]?.zone ?? "Species planning",
     }
   );
 }
@@ -963,7 +1087,7 @@ function buildBootstrap(): BootstrapPayload {
       district: taluk.districtName,
       districtCode: taluk.districtCode,
     })),
-    zones: ZONES.map((z) => z.name),
+    zones: SILVI_ZONES.map((zone) => zone.name),
     project_brief_topics: projectBriefTopics(),
     land_types: LAND_TYPES,
     site_names: SITES.map((s) => s[1]),

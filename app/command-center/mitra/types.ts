@@ -34,6 +34,9 @@ export type CommandCenterFilterSet = {
   landStatus?: string;
   stakeholderCategory?: string;
   stakeholderDistrict?: string;
+  speciesDistrict?: string;
+  speciesQuery?: string;
+  speciesModel?: string;
 };
 
 export type CommandCenterUiAction = {

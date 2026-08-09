@@ -472,7 +472,7 @@ export function Frame4({ voiceFilters }: { voiceFilters?: CommandCenterFilterSet
 }
 
 /* ============ FRAME 5 — SPECIES PLANNING ============ */
-export function Frame5() {
+export function Frame5({ voiceFilters }: { voiceFilters?: CommandCenterFilterSet }) {
   const [mode, setMode] = useState<"plan" | "species">("plan");
   const [q, setQ] = useState("");
   const [zoneF, setZoneF] = useState("");
@@ -480,6 +480,20 @@ export function Frame5() {
   const [talukF, setTalukF] = useState("");
   const [modelF, setModelF] = useState("");
   const [notesOpen, setNotesOpen] = useState(false);
+
+  useEffect(() => {
+    const district = voiceFilters?.speciesDistrict;
+    const species = voiceFilters?.speciesQuery;
+    const model = voiceFilters?.speciesModel;
+    if (district === undefined && species === undefined && model === undefined) return;
+
+    setMode(species ? "species" : "plan");
+    setQ(species ?? "");
+    setZoneF("");
+    setDistrictF(district ?? "");
+    setTalukF("");
+    setModelF(model ?? "");
+  }, [voiceFilters]);
 
   const nq = q.trim().toLowerCase();
 

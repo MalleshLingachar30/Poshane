@@ -79,6 +79,19 @@ type LastToolSnapshot = {
   selectedFilters?: Record<string, string | number | boolean | null>;
 };
 
+type AudioDeviceOption = {
+  deviceId: string;
+  label: string;
+};
+
+type AudioOutputMediaDevices = MediaDevices & {
+  selectAudioOutput?: (options?: { deviceId?: string }) => Promise<MediaDeviceInfo>;
+};
+
+type SinkSelectableAudio = HTMLAudioElement & {
+  setSinkId?: (sinkId: string) => Promise<void>;
+};
+
 const INACTIVE_MS = 5 * 60 * 1000;
 const MAX_SESSION_MS = 55 * 60 * 1000;
 const MAX_RECONNECTS = 4;
@@ -95,6 +108,14 @@ const IAFT_MEETING_GREETING = [
   "Namaskara. Respected Chairman of IAFT, honourable Executive Committee members, and distinguished participants, welcome.",
   "I am Mitra, your voice assistant for the Poshane Command and Control Center. I can answer your questions, explain programme information, and guide you through the Command Center. How may I assist you?",
 ].join(" ");
+
+const MICROPHONE_CONSTRAINTS: MediaTrackConstraints = {
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
+};
+
+const BUILT_IN_MICROPHONE_PATTERN = /built[- ]?in|internal|macbook|laptop/i;
 
 const STATUS_COPY: Record<PoshaneMitraStatus, string> = {
   idle: "Idle",
@@ -156,6 +177,27 @@ function describeFrame(frame?: CommandCenterUiAction["frame"]) {
   }
 }
 
+function audioInputOptions(devices: MediaDeviceInfo[]) {
+  return devices
+    .filter((device) => device.kind === "audioinput" && device.deviceId)
+    .map((device, index) => ({
+      deviceId: device.deviceId,
+      label: device.label || `Microphone ${index + 1}`,
+    }));
+}
+
+function preferredMicrophone(
+  inputs: AudioDeviceOption[],
+  requestedDeviceId = "",
+) {
+  return (
+    inputs.find((input) => input.deviceId === requestedDeviceId) ??
+    inputs.find((input) => BUILT_IN_MICROPHONE_PATTERN.test(input.label)) ??
+    inputs.find((input) => input.deviceId === "default") ??
+    inputs[0]
+  );
+}
+
 export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProps) {
   const [status, setStatus] = useState<PoshaneMitraStatus>("idle");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -165,6 +207,14 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
   const [entries, setEntries] = useState<PoshaneMitraTranscriptEntry[]>([]);
   const [draft, setDraft] = useState("");
   const [reconnectTick, setReconnectTick] = useState(0);
+  const [audioInputs, setAudioInputs] = useState<AudioDeviceOption[]>([]);
+  const [selectedInputDeviceId, setSelectedInputDeviceId] = useState("");
+  const [selectedOutput, setSelectedOutput] = useState<AudioDeviceOption | null>(null);
+  const [audioSetupBusy, setAudioSetupBusy] = useState(false);
+  const [audioSetupError, setAudioSetupError] = useState("");
+  const [audioSetupNote, setAudioSetupNote] = useState(
+    "Mitra will prefer the laptop microphone and use your laptop's current speaker output.",
+  );
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const dcRef = useRef<RTCDataChannel | null>(null);
@@ -193,6 +243,8 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
   const audioOutputActiveRef = useRef(false);
   const audioResumeTimerRef = useRef<number | null>(null);
   const connectionIdRef = useRef(0);
+  const selectedInputDeviceIdRef = useRef("");
+  const selectedOutputDeviceIdRef = useRef("");
 
   const active = status !== "idle" && status !== "error";
   const displayStatus = muted && active ? "muted" : status;
@@ -210,6 +262,131 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
   useEffect(() => {
     mutedRef.current = muted;
   }, [muted]);
+
+  useEffect(() => {
+    selectedInputDeviceIdRef.current = selectedInputDeviceId;
+  }, [selectedInputDeviceId]);
+
+  useEffect(() => {
+    selectedOutputDeviceIdRef.current = selectedOutput?.deviceId ?? "";
+  }, [selectedOutput]);
+
+  const detectMicrophones = useCallback(async () => {
+    if (active) return;
+    setAudioSetupBusy(true);
+    setAudioSetupError("");
+    let permissionStream: MediaStream | null = null;
+
+    try {
+      permissionStream = await navigator.mediaDevices.getUserMedia({
+        audio: MICROPHONE_CONSTRAINTS,
+      });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const inputs = audioInputOptions(devices);
+      const preferred = preferredMicrophone(
+        inputs,
+        selectedInputDeviceIdRef.current,
+      );
+
+      setAudioInputs(inputs);
+      if (preferred) {
+        selectedInputDeviceIdRef.current = preferred.deviceId;
+        setSelectedInputDeviceId(preferred.deviceId);
+        setAudioSetupNote(
+          BUILT_IN_MICROPHONE_PATTERN.test(preferred.label)
+            ? "Laptop microphone selected. Bluetooth remains available for Mitra's voice output."
+            : "Microphones detected. Select the laptop microphone before starting Mitra.",
+        );
+      }
+    } catch (deviceError) {
+      setAudioSetupError(
+        deviceError instanceof DOMException && deviceError.name === "NotAllowedError"
+          ? "Microphone permission was denied. Allow access, then detect microphones again."
+          : "Mitra could not detect the microphones on this laptop.",
+      );
+    } finally {
+      permissionStream?.getTracks().forEach((track) => track.stop());
+      setAudioSetupBusy(false);
+    }
+  }, [active]);
+
+  const chooseAudioOutput = useCallback(async () => {
+    if (active) return;
+    setAudioSetupBusy(true);
+    setAudioSetupError("");
+
+    try {
+      const mediaDevices = navigator.mediaDevices as AudioOutputMediaDevices;
+      if (!mediaDevices.selectAudioOutput) {
+        setSelectedOutput(null);
+        selectedOutputDeviceIdRef.current = "";
+        setAudioSetupNote(
+          "This browser uses the laptop's system output. Keep your Bluetooth speaker selected in the laptop sound menu.",
+        );
+        return;
+      }
+
+      const device = await mediaDevices.selectAudioOutput(
+        selectedOutputDeviceIdRef.current
+          ? { deviceId: selectedOutputDeviceIdRef.current }
+          : undefined,
+      );
+      const output = {
+        deviceId: device.deviceId,
+        label: device.label || "Selected Bluetooth speaker",
+      };
+      selectedOutputDeviceIdRef.current = output.deviceId;
+      setSelectedOutput(output);
+      setAudioSetupNote(
+        "Bluetooth speaker selected. Mitra will keep the microphone and speaker routes separate.",
+      );
+    } catch (deviceError) {
+      setAudioSetupError(
+        deviceError instanceof DOMException && deviceError.name === "NotAllowedError"
+          ? "Speaker selection was cancelled or not allowed."
+          : "Mitra could not select that speaker. Keep it selected in the laptop sound menu.",
+      );
+    } finally {
+      setAudioSetupBusy(false);
+    }
+  }, [active]);
+
+  const acquireMicrophoneStream = useCallback(async () => {
+    const requestedDeviceId = selectedInputDeviceIdRef.current;
+    if (requestedDeviceId) {
+      return navigator.mediaDevices.getUserMedia({
+        audio: {
+          ...MICROPHONE_CONSTRAINTS,
+          deviceId: { exact: requestedDeviceId },
+        },
+      });
+    }
+
+    const initialStream = await navigator.mediaDevices.getUserMedia({
+      audio: MICROPHONE_CONSTRAINTS,
+    });
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const inputs = audioInputOptions(devices);
+    const preferred = preferredMicrophone(inputs);
+    setAudioInputs(inputs);
+
+    if (!preferred) return initialStream;
+
+    selectedInputDeviceIdRef.current = preferred.deviceId;
+    setSelectedInputDeviceId(preferred.deviceId);
+    const currentDeviceId = initialStream.getAudioTracks()[0]?.getSettings().deviceId;
+    if (preferred.deviceId === currentDeviceId || preferred.deviceId === "default") {
+      return initialStream;
+    }
+
+    initialStream.getTracks().forEach((track) => track.stop());
+    return navigator.mediaDevices.getUserMedia({
+      audio: {
+        ...MICROPHONE_CONSTRAINTS,
+        deviceId: { exact: preferred.deviceId },
+      },
+    });
+  }, []);
 
   const buildContinuityNote = useCallback((reason: ConnectReason) => {
     const context = uiContextRef.current;
@@ -500,7 +677,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
           output_modalities: ["audio"],
           max_output_tokens: MITRA_MAX_SPOKEN_TOKENS,
           instructions:
-            "Answer from the provided Command Center result. Speak naturally and avoid technical wording. Give a complete core answer in three to five sentences, usually 45 to 90 spoken words. Finish every sentence and include the requested facts and material caveats before offering more detail.",
+            "Answer from the provided Command Center result. Speak naturally and avoid technical wording. Give a complete core answer in three to five sentences, usually 45 to 90 spoken words. Finish every sentence and include the requested facts and material caveats before offering more detail. For the guided district species workflow, if a planting type is still required, state the district and zone and ask the single planting-type question without listing species. If a planting model has been selected, speak every recommended species returned for that district and model, even when the list is longer than the usual response.",
         },
       });
     } catch (toolError) {
@@ -733,6 +910,22 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       audio.addEventListener("pause", keepRemoteAudioAlive);
       audio.addEventListener("stalled", keepRemoteAudioAlive);
       audio.addEventListener("waiting", keepRemoteAudioAlive);
+      const selectedOutputDeviceId = selectedOutputDeviceIdRef.current;
+      if (selectedOutputDeviceId) {
+        const sinkSelectableAudio = audio as SinkSelectableAudio;
+        if (!sinkSelectableAudio.setSinkId) {
+          throw new Error(
+            "This browser cannot route Mitra directly to the selected speaker. Use the laptop sound menu instead.",
+          );
+        }
+        try {
+          await sinkSelectableAudio.setSinkId(selectedOutputDeviceId);
+        } catch {
+          throw new Error(
+            "The selected speaker is unavailable. Open Audio setup and choose the Bluetooth speaker again.",
+          );
+        }
+      }
       document.body.appendChild(audio);
       audioRef.current = audio;
       pc.ontrack = (event) => {
@@ -740,13 +933,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
         audio.play().catch(() => undefined);
       };
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+      const stream = await acquireMicrophoneStream();
       streamRef.current = stream;
       stream.getAudioTracks().forEach((track) => {
         track.enabled = reconnecting ? !mutedRef.current : false;
@@ -850,16 +1037,25 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       });
     } catch (connectError) {
       closePeer();
+      const nonRetryableDeviceError =
+        connectError instanceof DOMException &&
+        ["NotAllowedError", "OverconstrainedError", "NotFoundError"].includes(
+          connectError.name,
+        );
       const message =
         connectError instanceof DOMException && connectError.name === "NotAllowedError"
           ? "Microphone permission was denied. Use text mode or allow microphone access."
+          : connectError instanceof DOMException && connectError.name === "OverconstrainedError"
+          ? "The selected microphone is unavailable. Open Audio setup and choose the laptop microphone again."
+          : connectError instanceof DOMException && connectError.name === "NotFoundError"
+          ? "The selected microphone or speaker is no longer connected. Open Audio setup and choose it again."
           : connectError instanceof Error
           ? connectError.message
           : "Could not connect Mitra.";
       setError(message);
       if (
         reconnecting &&
-        !(connectError instanceof DOMException && connectError.name === "NotAllowedError") &&
+        !nonRetryableDeviceError &&
         reconnectAttemptRef.current < MAX_RECONNECTS
       ) {
         setStatus("reconnecting");
@@ -872,7 +1068,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       }
       audit({ event: "error", result_status: "Error", error: message });
     }
-  }, [appendEntry, audit, closePeer, handleRealtimeEvent, keepRemoteAudioAlive, restoreContinuity, setMicrophoneTracksEnabled]);
+  }, [acquireMicrophoneStream, appendEntry, audit, closePeer, handleRealtimeEvent, keepRemoteAudioAlive, restoreContinuity, setMicrophoneTracksEnabled]);
 
   useEffect(() => {
     if (status !== "reconnecting" || manualEndRef.current) return;
@@ -991,6 +1187,18 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
         <button
           type="button"
           className="mitra-iconbtn"
+          aria-label="Open Mitra audio setup"
+          title="Choose microphone and speaker"
+          onClick={() => {
+            setDrawerOpen(true);
+            void detectMicrophones();
+          }}
+        >
+          Audio
+        </button>
+        <button
+          type="button"
+          className="mitra-iconbtn"
           aria-label="Open Mitra transcript"
           title="Open optional transcript"
           onClick={() => setDrawerOpen(true)}
@@ -1014,6 +1222,66 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
               Close
             </button>
           </div>
+          <section className="mitra-audio-setup" aria-label="Audio device setup">
+            <div className="mitra-audio-heading">
+              <div>
+                <span>Room audio</span>
+                <strong>Laptop mic → Bluetooth speaker</strong>
+              </div>
+              <button
+                type="button"
+                disabled={active || audioSetupBusy}
+                onClick={() => void detectMicrophones()}
+              >
+                {audioSetupBusy ? "Working…" : "Detect"}
+              </button>
+            </div>
+            <label className="mitra-audio-field">
+              <span>Microphone</span>
+              <select
+                value={selectedInputDeviceId}
+                disabled={active || audioSetupBusy || audioInputs.length === 0}
+                onChange={(event) => {
+                  selectedInputDeviceIdRef.current = event.target.value;
+                  setSelectedInputDeviceId(event.target.value);
+                  setAudioSetupError("");
+                  const input = audioInputs.find(
+                    (device) => device.deviceId === event.target.value,
+                  );
+                  setAudioSetupNote(
+                    input && BUILT_IN_MICROPHONE_PATTERN.test(input.label)
+                      ? "Laptop microphone selected. Bluetooth remains available for Mitra's voice output."
+                      : "Selected microphone will be used when the next Mitra session starts.",
+                  );
+                }}
+              >
+                {audioInputs.length === 0 && (
+                  <option value="">Detect microphones first</option>
+                )}
+                {audioInputs.map((input) => (
+                  <option key={input.deviceId} value={input.deviceId}>
+                    {input.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="mitra-audio-output">
+              <div>
+                <span>Speaker</span>
+                <strong>{selectedOutput?.label ?? "Laptop system output"}</strong>
+              </div>
+              <button
+                type="button"
+                disabled={active || audioSetupBusy}
+                onClick={() => void chooseAudioOutput()}
+              >
+                Choose
+              </button>
+            </div>
+            <p>{audioSetupNote}</p>
+            {active && <small>End the Mitra session to change audio devices.</small>}
+            {audioSetupError && <div className="mitra-audio-error">{audioSetupError}</div>}
+          </section>
           <div className="mitra-textbox">
             <input
               value={draft}

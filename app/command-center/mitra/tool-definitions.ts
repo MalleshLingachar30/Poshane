@@ -180,12 +180,22 @@ export const POSHANE_MITRA_TOOL_DEFINITIONS: RealtimeToolDefinition[] = [
     type: "function",
     name: "poshane_get_species_planning",
     description:
-      "Read zone allocation and native species planning by zone or species name.",
+      "Run the guided native-species workflow by district, silvi zone, species name, and planting model. Always pass district when the user names one. If the user has not chosen a planting type, omit planting_model so the result can state the district's zone and ask the required follow-up. For the user's next short answer, retain the same district and pass the matching planting_model. Never return statewide defaults for a district-specific request.",
     parameters: {
       type: "object",
       properties: {
+        district: {
+          type: "string",
+          description: "Karnataka district name or code to filter and open in Species Planning.",
+        },
         zone: { type: "string" },
         species: { type: "string" },
+        planting_model: {
+          type: "string",
+          enum: ["bund", "block", "linear", "gua", "institutional"],
+          description:
+            "Planting type selected by the user: bund covers Bund/Strip/Shelter belt/Hedge/Alley; block covers Block/Cluster; linear covers Linear/Roadside/Canal Bank; gua covers Greening of Urban Area; institutional covers School/Institute/Temple/Grave yard.",
+        },
         compare_zones: stringArray("Zone names to compare."),
       },
       additionalProperties: false,

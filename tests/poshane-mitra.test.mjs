@@ -58,6 +58,13 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /setMuted/);
   assert.match(client, /Text fallback command/);
   assert.match(client, /Microphone permission was denied/);
+  assert.match(client, /navigator\.mediaDevices\.enumerateDevices/);
+  assert.match(client, /BUILT_IN_MICROPHONE_PATTERN/);
+  assert.match(client, /deviceId: \{ exact: requestedDeviceId \}/);
+  assert.match(client, /selectAudioOutput/);
+  assert.match(client, /setSinkId/);
+  assert.match(client, /Laptop mic → Bluetooth speaker/);
+  assert.match(client, /End the Mitra session to change audio devices/);
 });
 
 test("voice continuity survives reconnects and interrupted output", () => {
@@ -121,6 +128,33 @@ test("assistant understands Poshane and routes monitoring audit requests", () =>
   assert.match(provider, /opening \$\{MODULE_LABELS\[targetModule\]\}/);
   assert.match(provider, /data_flow_schematics: "System Architecture"/);
   assert.match(provider, /highlightId: targetModule === "monitoring_audit" \? "monitoring-calendar"/);
+});
+
+test("district species questions open Species Planning with the district filter applied", () => {
+  assert.match(sessionRoute, /guided two-turn workflow for every species question that names a district/);
+  assert.match(sessionRoute, /Retain the district from the immediately preceding species lookup/);
+  assert.match(sessionRoute, /Bellary as Ballari/);
+  assert.match(sessionRoute, /If the user answers only common land, do not guess/);
+  assert.match(sessionRoute, /every recommended species returned for that model/);
+  assert.match(definitions, /Always pass district when the user names one/);
+  assert.match(definitions, /district: \{/);
+  assert.match(definitions, /planting_model: \{/);
+  assert.match(definitions, /enum: \["bund", "block", "linear", "gua", "institutional"\]/);
+  assert.match(provider, /function speciesPlanning\(args: Args\) \{\n\s+const district = findDistrict\(args\.district\)/);
+  assert.match(provider, /SILVI_ZONES\.flatMap/);
+  assert.match(provider, /norm\(district\.source\) === q/);
+  assert.match(provider, /requires_planting_type: requiresPlantingType/);
+  assert.match(provider, /Which planting type is needed/);
+  assert.match(provider, /spoken_species: spokenSpecies/);
+  assert.match(provider, /speciesDistrict: district\?\.name/);
+  assert.match(provider, /speciesModel: plantingModel\?\.key/);
+  assert.match(provider, /districtCode: district\?\.code/);
+  assert.match(appShell, /<Frame5 voiceFilters=\{voiceFilters\} \/>/);
+  assert.match(frames, /export function Frame5\(\{ voiceFilters \}/);
+  assert.match(frames, /setDistrictF\(district \?\? ""\)/);
+  assert.match(frames, /setModelF\(model \?\? ""\)/);
+  assert.match(client, /if a planting type is still required/);
+  assert.match(client, /speak every recommended species returned/);
 });
 
 test("voice turns can navigate without forcing the transcript drawer open", () => {

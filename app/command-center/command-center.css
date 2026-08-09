@@ -113,7 +113,7 @@
   color:#fff;box-shadow:0 0 0 3px rgba(230,204,133,.08)}
 .pcc .demo-link:focus-visible{border-color:var(--gold-soft);color:#fff}
 .pcc .mitra{position:relative;z-index:110;width:100%}
-.pcc .mitra-control{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;
+.pcc .mitra-control{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;width:100%;
   justify-items:center}
 .pcc .mitra-mic{grid-column:1/-1;width:min(174px,100%);aspect-ratio:1;display:flex;
   flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(93,119,160,.38);
@@ -168,7 +168,7 @@
 .pcc .mitra[data-state="error"] .mitra-dot{background:var(--red)}
 .pcc .mitra-iconbtn{border:1px solid rgba(70,87,118,.82);background:rgba(13,21,36,.76);color:var(--shell-text);
   border-radius:999px;padding:7px 13px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  min-width:76px}
+  min-width:0;width:100%}
 .pcc .mitra-iconbtn:hover:not(:disabled){border-color:rgba(230,204,133,.48);color:var(--gold-soft)}
 .pcc .mitra-iconbtn:disabled{opacity:.45;cursor:not-allowed}
 .pcc .mitra-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -184,6 +184,27 @@
 .pcc .mitra-drawer-head button,.pcc .mitra-textbox button{border:1px solid rgba(230,204,133,.45);
   background:transparent;color:var(--gold-soft);border-radius:9px;font-size:10.5px;font-weight:800;
   text-transform:uppercase;letter-spacing:.08em;padding:8px 10px}
+.pcc .mitra-audio-setup{margin:12px 16px 0;padding:12px;border:1px solid rgba(93,119,160,.42);
+  border-radius:12px;background:linear-gradient(145deg,rgba(25,42,69,.86),rgba(12,21,37,.72));display:grid;gap:11px}
+.pcc .mitra-audio-heading,.pcc .mitra-audio-output{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pcc .mitra-audio-heading div,.pcc .mitra-audio-output div{display:grid;gap:3px;min-width:0}
+.pcc .mitra-audio-heading span,.pcc .mitra-audio-field span,.pcc .mitra-audio-output span{font-size:9px;
+  font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--shell-dim)}
+.pcc .mitra-audio-heading strong,.pcc .mitra-audio-output strong{font-size:12px;color:#F2EDDF;
+  font-weight:650;line-height:1.3;overflow-wrap:anywhere}
+.pcc .mitra-audio-heading button,.pcc .mitra-audio-output button{flex:none;border:1px solid rgba(230,204,133,.42);
+  background:rgba(8,15,27,.58);color:var(--gold-soft);border-radius:8px;padding:7px 9px;font-size:9.5px;
+  font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.pcc .mitra-audio-heading button:disabled,.pcc .mitra-audio-output button:disabled{opacity:.46;cursor:not-allowed}
+.pcc .mitra-audio-field{display:grid;gap:5px}
+.pcc .mitra-audio-field select{width:100%;min-width:0;border:1px solid #344565;border-radius:8px;
+  background:#0B1528;color:#E6ECF5;padding:8px 9px;font-size:11px;outline:none}
+.pcc .mitra-audio-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(192,154,62,.11)}
+.pcc .mitra-audio-field select:disabled{opacity:.58;cursor:not-allowed}
+.pcc .mitra-audio-setup p,.pcc .mitra-audio-setup small{font-size:10.5px;line-height:1.45;color:#AEBAD0}
+.pcc .mitra-audio-setup small{color:var(--gold-soft)}
+.pcc .mitra-audio-error{border-top:1px solid rgba(178,58,46,.32);padding-top:9px;color:#F0B0A7;
+  font-size:10.5px;line-height:1.4}
 .pcc .mitra-textbox{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--shell-line)}
 .pcc .mitra-textbox input{flex:1;min-width:0;background:#0F1930;border:1px solid #2C3B5C;border-radius:9px;
   color:#F7F3E9;padding:9px 10px;font-size:12px;outline:none}
@@ -192,7 +213,7 @@
   color:var(--gold-soft);font-size:10.5px;line-height:1.4;padding:8px 10px}
 .pcc .mitra-error{margin:12px 16px 0;border:1px solid rgba(178,58,46,.45);background:rgba(178,58,46,.13);
   color:#F0B0A7;border-radius:9px;padding:8px 10px;font-size:11px}
-.pcc .mitra-entries{overflow-y:auto;padding:12px 16px 18px;display:grid;gap:10px}
+.pcc .mitra-entries{flex:1;min-height:0;overflow-y:auto;padding:12px 16px 18px;display:grid;gap:10px;align-content:start}
 .pcc .mitra-entry{background:#0F1930;border:1px solid #2C3B5C;border-radius:12px;padding:11px 12px}
 .pcc .mitra-entry-top{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:var(--shell-dim)}
 .pcc .mitra-entry-top b{color:var(--gold-soft);font-weight:700}
@@ -913,7 +934,7 @@
     font-size:12px;
   }
   .pcc .mitra-iconbtn{
-    min-width:68px;
+    min-width:0;
     padding:6px 10px;
   }
   .pcc .side-foot{
