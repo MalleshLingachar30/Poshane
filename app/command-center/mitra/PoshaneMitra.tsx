@@ -81,9 +81,15 @@ const MAX_RECONNECTS = 4;
 const DISCONNECT_GRACE_MS = 5_000;
 const MITRA_MAX_SPOKEN_TOKENS = 360;
 const MITRA_RECOVERY_TOKENS = 240;
+const MITRA_GREETING_TOKENS = 240;
 const TOOL_ENDPOINT = "/command-center/mitra/tool";
 const SESSION_ENDPOINT = "/command-center/mitra/session";
 const AUDIT_ENDPOINT = "/command-center/mitra/audit";
+const IAFT_MEETING_GREETING = [
+  "Say exactly the following welcome, in a warm, dignified and unhurried manner:",
+  "Namaskara. Respected Chairman of IAFT, honourable Executive Committee members, and distinguished participants, welcome.",
+  "I am Mitra, your voice assistant for the Poshane Command and Control Center. I can answer your questions, explain programme information, and guide you through the Command Center. How may I assist you?",
+].join(" ");
 
 const STATUS_COPY: Record<PoshaneMitraStatus, string> = {
   idle: "Idle",
@@ -173,6 +179,8 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
   const mutedRef = useRef(false);
   const handledCallsRef = useRef(new Set<string>());
   const disconnectTimerRef = useRef<number | null>(null);
+  const greetingSentRef = useRef(false);
+  const greetingInProgressRef = useRef(false);
   const responseInProgressRef = useRef(false);
   const audioOutputActiveRef = useRef(false);
   const audioResumeTimerRef = useRef<number | null>(null);
@@ -344,6 +352,8 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     setStatus("idle");
     setError("");
     reconnectAttemptRef.current = 0;
+    greetingSentRef.current = false;
+    greetingInProgressRef.current = false;
     responseInProgressRef.current = false;
     audioOutputActiveRef.current = false;
     responseTextRef.current = "";
@@ -600,6 +610,10 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
         result_status: "Illustrative",
         estimated_cost_usd: estimateCostUsd(usage),
       });
+      if (greetingInProgressRef.current) {
+        greetingInProgressRef.current = false;
+        setMicrophoneTracksEnabled(true);
+      }
       setStatus("listening");
       responseInProgressRef.current = false;
       releaseAudioOutputSoon();
@@ -614,13 +628,14 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       setStatus("error");
       appendEntry({ question: currentQuestionRef.current || "Realtime session", error: message });
     }
-  }, [appendEntry, audit, handleToolCall, markAudioOutputActive, releaseAudioOutputSoon, sendEvent, sessionMeta, status]);
+  }, [appendEntry, audit, handleToolCall, markAudioOutputActive, releaseAudioOutputSoon, sendEvent, sessionMeta, setMicrophoneTracksEnabled, status]);
 
   const connect = useCallback(async (reason: ConnectReason = "start") => {
     const reconnecting = reason !== "start";
     manualEndRef.current = false;
     setError("");
     setStatus(reconnecting ? "reconnecting" : "connecting");
+    if (!reconnecting) greetingSentRef.current = false;
     closePeer();
 
     try {
@@ -673,7 +688,21 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
       dcRef.current = channel;
       channel.addEventListener("open", () => {
         setStatus("listening");
-        setMicrophoneTracksEnabled(true);
+        if (!reconnecting && !greetingSentRef.current) {
+          greetingSentRef.current = true;
+          greetingInProgressRef.current = true;
+          channel.send(JSON.stringify({
+            type: "response.create",
+            response: {
+              input: [],
+              output_modalities: ["audio"],
+              max_output_tokens: MITRA_GREETING_TOKENS,
+              instructions: IAFT_MEETING_GREETING,
+            },
+          }));
+        } else {
+          setMicrophoneTracksEnabled(true);
+        }
         if (reconnecting) {
           restoreContinuity(channel, reason);
         }
@@ -815,7 +844,7 @@ export default function PoshaneMitra({ onUiAction, uiContext }: PoshaneMitraProp
     const next = !muted;
     mutedRef.current = next;
     setMuted(next);
-    setMicrophoneTracksEnabled(true);
+    setMicrophoneTracksEnabled(!greetingInProgressRef.current);
     setStatus(next ? "muted" : "listening");
   }, [muted, setMicrophoneTracksEnabled]);
 
