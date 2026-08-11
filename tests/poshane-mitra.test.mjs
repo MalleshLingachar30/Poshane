@@ -268,4 +268,10 @@ test("assistant is embedded in the existing command-center shell and can target 
   assert.match(frames, /data-mitra-id="nursery-mapping"/);
   assert.match(frames, /data-mitra-id="monitoring-calendar"/);
   assert.match(frames, /data-mitra-id="complaints"/);
+  assert.match(commandCenterCss, /\.pcc \.topbar \.ttl\{display:flex;flex:1 1 240px/);
+  assert.match(commandCenterCss, /\.pcc \.demo-link\{display:inline-flex;flex:none/);
+  assert.doesNotMatch(commandCenterCss, /\.pcc \.demo-link\{position:absolute/);
+  assert.match(commandCenterCss, /\.pcc \.userchip\{display:flex;flex:none/);
+  assert.match(commandCenterCss, /@media \(min-width:981px\) and \(max-width:1200px\)/);
+  assert.match(commandCenterCss, /\.topbar \.ttl \.t2,\.pcc \.userchip \.urole\{display:none\}/);
 });
