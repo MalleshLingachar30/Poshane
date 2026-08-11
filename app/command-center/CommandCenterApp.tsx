@@ -211,10 +211,6 @@ export default function CommandCenterApp({
           >
             Demo
           </a>
-          <div className="proto-flag" title="Illustrative prototype — mock data for demonstration. Not live operational data.">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}><circle cx={12} cy={12} r={9} /><path d="M12 8v5M12 16.5v.01" /></svg>
-            <span>Illustrative prototype — mock data for demonstration. Not live operational data.</span>
-          </div>
           <div className="userchip">
             <div className="avatar">{initials || "SA"}</div>
             <div>

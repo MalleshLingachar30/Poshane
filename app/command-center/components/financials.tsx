@@ -169,7 +169,7 @@ export function Frame7() {
           </div>
 
           <div className="panel" style={{ marginTop: 14 }}>
-            <div className="phead"><h3>Funding Agencies</h3><span className="pnote">All figures illustrative</span></div>
+            <div className="phead"><h3>Funding Agencies</h3></div>
             <div className="pbody" style={{ overflowX: "auto" }}>
               <table className="tbl">
                 <tbody>

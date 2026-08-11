@@ -235,7 +235,7 @@ export function Frame8({ requestedSection = "walkthrough", onSectionChange }: Fr
         </div>
 
         <div className="sv-foot">
-          <span>Architecture baseline v0.9 — issued for review. Illustrative of system structure.</span>
+          <span>Architecture baseline v0.9 — issued for review.</span>
           <span>Poshane · Institution of Agroforestry Farmers and Technologists</span>
         </div>
       </div>

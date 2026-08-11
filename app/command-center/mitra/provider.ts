@@ -50,9 +50,7 @@ type BootstrapPayload = {
   stakeholder_names: string[];
   nursery_names: string[];
   issue_ids: string[];
-  record_status: "Illustrative";
   last_updated_at: string;
-  disclosure: string;
   formats: { saplings: string; lakh: string };
 };
 
@@ -145,7 +143,7 @@ function result(
     summary:
       tool === "poshane_get_project_brief"
         ? `Based on the IAFT strategic framework submitted to KSLSA, ${summary}`
-        : `Based on the current demonstration records, ${summary}`,
+        : summary,
     data,
     selected_filters: selectedFilters,
     ui_action: uiAction,
@@ -1094,10 +1092,7 @@ function buildBootstrap(): BootstrapPayload {
     stakeholder_names: STK.map((s) => s[0]),
     nursery_names: NURSERIES.map((n) => n[0]),
     issue_ids: ISSUES.map((i) => i[0]),
-    record_status: "Illustrative",
     last_updated_at: LAST_UPDATED_AT,
-    disclosure:
-      "Illustrative prototype — mock data for demonstration. Not live operational data.",
     formats: { saplings: fmtIN(1_00_000), lakh: lakhToStr(1) },
   };
 }

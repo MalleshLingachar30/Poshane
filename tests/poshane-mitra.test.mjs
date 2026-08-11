@@ -14,6 +14,9 @@ const definitions = read("app/command-center/mitra/tool-definitions.ts");
 const appShell = read("app/command-center/CommandCenterApp.tsx");
 const uiActionEvent = read("app/command-center/mitra/ui-action-event.ts");
 const frames = read("app/command-center/components/frames.tsx");
+const financials = read("app/command-center/components/financials.tsx");
+const schematics = read("app/command-center/components/schematics.tsx");
+const commandCenterCss = read("app/command-center/command-center.css");
 const envExample = read(".env.example");
 
 test("Realtime WebRTC calls are established server-side through the unified interface", () => {
@@ -123,7 +126,17 @@ test("Realtime session is tuned for stable command-center voice continuity", () 
   assert.match(client, /Continue naturally from the exact point where it stopped/);
   assert.match(envExample, /POSHANE_MITRA_MAX_OUTPUT_TOKENS=800/);
   assert.match(sessionRoute, /Do not use technical words such as dataset/);
-  assert.match(sessionRoute, /Based on the current demonstration records/);
+  assert.match(sessionRoute, /Answer directly from the current Command Center records/);
+  assert.match(sessionRoute, /Do not add qualifiers such as illustrative, mock, demonstration, prototype or not live/);
+  assert.match(sessionRoute, /Mention the source module or freshness only when the user asks/);
+  assert.doesNotMatch(sessionRoute, /Begin relevant factual answers with: Based on the current demonstration records/);
+  assert.doesNotMatch(client, /Illustrative prototype — mock data for demonstration/);
+  assert.doesNotMatch(appShell, /Illustrative prototype — mock data for demonstration/);
+  assert.doesNotMatch(financials, /All figures illustrative/);
+  assert.doesNotMatch(schematics, /Illustrative of system structure/);
+  assert.doesNotMatch(commandCenterCss, /proto-flag|mitra-disclosure/);
+  assert.match(client, /toolResultForAssistant/);
+  assert.doesNotMatch(client, /X-Mitra-Record-Status|recordStatus/);
   assert.match(sessionRoute, /call the appropriate read-only lookup silently/);
   assert.match(sessionRoute, /Speak only after the lookup result has been returned/);
   assert.match(client, /All requested Command Center lookups are now complete/);
@@ -198,7 +211,7 @@ test("server tools stay authenticated, read-only, and backed by provider validat
   assert.match(provider, /Unknown Karnataka district/);
   assert.match(provider, /Unsupported land type/);
   assert.match(provider, /Unsupported read-only Poshane Mitra tool/);
-  assert.match(provider, /Based on the current demonstration records/);
+  assert.doesNotMatch(provider, /Based on the current demonstration records/);
   assert.match(auditRoute, /audio_duration_ms/);
   assert.doesNotMatch(auditRoute, /raw_audio|audio_blob|recording_url/);
 });

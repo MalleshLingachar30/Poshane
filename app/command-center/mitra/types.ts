@@ -75,7 +75,6 @@ export type PoshaneMitraTranscriptEntry = {
   source?: string;
   selectedFilters?: Record<string, string | number | boolean | null>;
   result?: string;
-  recordStatus?: RecordStatus;
   lastUpdatedAt?: string;
   pendingSyncCount?: number;
   error?: string;

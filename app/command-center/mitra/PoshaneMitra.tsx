@@ -18,7 +18,6 @@ type PoshaneMitraProps = {
 type SessionMeta = {
   model?: string;
   voice: string;
-  record_status: string;
 };
 
 type SessionErrorPayload = {
@@ -67,7 +66,6 @@ type LastToolSnapshot = {
   tool: PoshaneMitraToolName;
   source: string;
   summary: string;
-  recordStatus: string;
   lastUpdatedAt: string;
   selectedFilters?: Record<string, string | number | boolean | null>;
 };
@@ -123,6 +121,18 @@ function greetingForDate(now = new Date()) {
   return calendarDateInProgrammeTimeZone(now) === IAFT_MEETING_DATE
     ? IAFT_MEETING_GREETING
     : GENERAL_GREETING;
+}
+
+function toolResultForAssistant(payload: PoshaneMitraToolResult) {
+  return {
+    tool: payload.tool,
+    source: payload.source,
+    last_updated_at: payload.last_updated_at,
+    pending_sync_count: payload.pending_sync_count,
+    summary: payload.summary,
+    data: payload.data,
+    selected_filters: payload.selected_filters,
+  };
 }
 
 const MICROPHONE_CONSTRAINTS: MediaTrackConstraints = {
@@ -420,7 +430,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
       lastUserTurnRef.current ? `Last question: ${compactText(lastUserTurnRef.current)}.` : "",
       lastAssistantTurnRef.current ? `Last answer: ${compactText(lastAssistantTurnRef.current)}.` : "",
       lastTool
-        ? `Last checked record: ${lastTool.source}; ${compactText(lastTool.summary)}; status ${lastTool.recordStatus}; updated ${lastTool.lastUpdatedAt}.`
+        ? `Last checked record: ${lastTool.source}; ${compactText(lastTool.summary)}; updated ${lastTool.lastUpdatedAt}.`
         : "",
       "If the previous answer was cut off, continue from the useful next sentence. Do not restart with a long introduction.",
     ];
@@ -647,7 +657,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         tool,
         source: payload.source,
         summary: payload.summary,
-        recordStatus: payload.record_status,
         lastUpdatedAt: payload.last_updated_at,
         selectedFilters: payload.selected_filters,
       };
@@ -662,7 +671,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         source: payload.source,
         selectedFilters: payload.selected_filters,
         result: payload.summary,
-        recordStatus: payload.record_status,
         lastUpdatedAt: payload.last_updated_at,
         pendingSyncCount: payload.pending_sync_count,
         latencyMs: Math.round(performance.now() - startedAt),
@@ -697,7 +705,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         item: {
           type: "function_call_output",
           call_id: callId,
-          output: JSON.stringify(payload),
+          output: JSON.stringify(toolResultForAssistant(payload)),
         },
       });
       return true;
@@ -864,7 +872,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
           question: currentQuestionRef.current || "Voice request",
           assistant: assistantText,
           result: assistantText,
-          recordStatus: "Illustrative",
           lastUpdatedAt: sessionMeta ? new Date().toISOString() : undefined,
           latencyMs: 0,
         });
@@ -1063,8 +1070,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
       const connectedSession: SessionMeta = {
         model: sdpResponse.headers.get("X-Mitra-Model") ?? "gpt-realtime-2.1",
         voice: sdpResponse.headers.get("X-Mitra-Voice") ?? "cedar",
-        record_status:
-          sdpResponse.headers.get("X-Mitra-Record-Status") ?? "Illustrative",
       };
       setSessionMeta(connectedSession);
       sessionStartedAtRef.current = Date.now();
@@ -1074,7 +1079,6 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
         result: reconnecting
           ? "Mitra restored the recent Command Center context."
           : `Mitra connected with ${connectedSession.voice} voice.`,
-        recordStatus: "Illustrative",
         lastUpdatedAt: new Date().toISOString(),
       });
     } catch (connectError) {
@@ -1190,7 +1194,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
   const statusTitle = useMemo(() => {
     if (error) return error;
     if (!sessionMeta) return "Mitra voice assistant";
-    return `${sessionMeta.model ?? "Realtime"} · ${sessionMeta.voice} · ${sessionMeta.record_status}`;
+    return `${sessionMeta.model ?? "Realtime"} · ${sessionMeta.voice}`;
   }, [error, sessionMeta]);
 
   return (
@@ -1338,15 +1342,11 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
             <button type="button" onClick={sendText}>Send</button>
           </div>
           {error && <div className="mitra-error">{error}</div>}
-          <div className="mitra-disclosure">
-            Illustrative prototype — mock data for demonstration. Not live operational data.
-          </div>
           <div className="mitra-entries">
             {entries.length ? entries.map((entry) => (
               <article key={entry.id} className="mitra-entry">
                 <div className="mitra-entry-top">
                   <span>{entry.at}</span>
-                  {entry.recordStatus && <b>{entry.recordStatus}</b>}
                 </div>
                 <h4>{entry.question}</h4>
                 {entry.tool && <p><strong>Tool</strong> {entry.tool}</p>}
