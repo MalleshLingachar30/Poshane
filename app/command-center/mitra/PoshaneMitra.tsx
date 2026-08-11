@@ -96,11 +96,34 @@ const MITRA_GREETING_TOKENS = 480;
 const TOOL_ENDPOINT = "/command-center/mitra/tool";
 const SESSION_ENDPOINT = "/command-center/mitra/session";
 const AUDIT_ENDPOINT = "/command-center/mitra/audit";
+const PROGRAMME_TIME_ZONE = "Asia/Kolkata";
+const IAFT_MEETING_DATE = "2026-08-10";
 const IAFT_MEETING_GREETING = [
   "Say exactly the following welcome, in a warm, dignified and unhurried manner:",
   "Namaskara. Respected Chairman of IAFT, honourable Executive Committee members, and distinguished participants, welcome.",
   "I am Mitra, your voice assistant for the Poshane Command and Control Center. I can answer your questions, explain programme information, and guide you through the Command Center. How may I assist you?",
 ].join(" ");
+const GENERAL_GREETING = [
+  "Say exactly the following greeting in a warm, concise manner:",
+  "Namaskara. I am Mitra, your voice assistant for the Poshane Command and Control Center. I can answer your questions, explain programme information, and guide you through the Command Center. How may I assist you?",
+].join(" ");
+
+function calendarDateInProgrammeTimeZone(now: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: PROGRAMME_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function greetingForDate(now = new Date()) {
+  return calendarDateInProgrammeTimeZone(now) === IAFT_MEETING_DATE
+    ? IAFT_MEETING_GREETING
+    : GENERAL_GREETING;
+}
 
 const MICROPHONE_CONSTRAINTS: MediaTrackConstraints = {
   echoCancellation: true,
@@ -941,7 +964,7 @@ export default function PoshaneMitra({ uiContext }: PoshaneMitraProps) {
               input: [],
               output_modalities: ["audio"],
               max_output_tokens: MITRA_GREETING_TOKENS,
-              instructions: IAFT_MEETING_GREETING,
+              instructions: greetingForDate(),
             },
           }));
         } else {

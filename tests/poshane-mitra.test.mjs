@@ -42,7 +42,14 @@ test("browser client uses WebRTC audio, interruption, mute, reconnect, and text 
   assert.match(client, /pcRef\.current !== pc/);
   assert.match(client, /output_audio_buffer\.clear/);
   assert.match(client, /IAFT_MEETING_GREETING/);
+  assert.match(client, /IAFT_MEETING_DATE = "2026-08-10"/);
+  assert.match(client, /PROGRAMME_TIME_ZONE = "Asia\/Kolkata"/);
+  assert.match(client, /calendarDateInProgrammeTimeZone/);
+  assert.match(client, /function greetingForDate/);
+  assert.match(client, /\? IAFT_MEETING_GREETING\s+: GENERAL_GREETING/);
+  assert.match(client, /instructions: greetingForDate\(\)/);
   assert.match(client, /Respected Chairman of IAFT, honourable Executive Committee members/);
+  assert.match(client, /Namaskara\. I am Mitra, your voice assistant/);
   assert.match(client, /I can answer your questions, explain programme information/);
   assert.match(client, /How may I assist you\?/);
   assert.match(client, /input: \[\]/);
